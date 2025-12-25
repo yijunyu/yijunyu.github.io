@@ -104,8 +104,18 @@ a:hover {
 }
 
 .profile-image {
-    font-size: 8rem;
-    color: rgba(255, 255, 255, 0.9);
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .profile-info h1 {
