@@ -1,0 +1,790 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>MIR Extraction - aspect-rs: AOP Framework for Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Comprehensive guide to aspect-rs, a zero-cost compile-time AOP framework for Rust with automatic aspect weaving">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-5e2e62cb.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-dd742820.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">aspect-rs: AOP Framework for Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/yijunyu/aspect-rs" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/yijunyu/aspect-rs/edit/main/docs/book/src/ch07-implementation/mir.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="mir-extraction"><a class="header" href="#mir-extraction">MIR Extraction</a></h1>
+<p>Mid-level Intermediate Representation (MIR) extraction is the foundation of Phase 3’s automatic aspect weaving. This chapter explains how aspect-rs extracts function metadata from Rust’s compiled MIR.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p><strong>MIR (Mid-level IR)</strong> is Rust’s intermediate representation used between:</p>
+<ul>
+<li>High-level HIR (High-level IR from AST)</li>
+<li>Low-level LLVM IR (machine code generation)</li>
+</ul>
+<p>MIR provides:</p>
+<ul>
+<li><strong>Complete function information</strong> - All metadata about functions</li>
+<li><strong>Type-checked code</strong> - Already validated by compiler</li>
+<li><strong>Control flow analysis</strong> - Statement-level granularity</li>
+<li><strong>Optimization-ready</strong> - Before final code generation</li>
+</ul>
+<h2 id="why-mir-for-aspect-weaving"><a class="header" href="#why-mir-for-aspect-weaving">Why MIR for Aspect Weaving?</a></h2>
+<h3 id="advantages-over-ast"><a class="header" href="#advantages-over-ast">Advantages over AST</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Feature</th><th>AST (syn crate)</th><th>MIR (rustc_middle)</th></tr>
+</thead>
+<tbody>
+<tr><td>Type information</td><td>❌ No</td><td>✅ Complete</td></tr>
+<tr><td>Trait resolution</td><td>❌ No</td><td>✅ Yes</td></tr>
+<tr><td>Generic instantiation</td><td>❌ No</td><td>✅ Yes</td></tr>
+<tr><td>Visibility</td><td>⚠️ Partial</td><td>✅ Complete</td></tr>
+<tr><td>Module paths</td><td>⚠️ Manual</td><td>✅ Automatic</td></tr>
+<tr><td>Control flow</td><td>❌ No</td><td>✅ Yes</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Conclusion</strong>: MIR provides everything needed for precise aspect matching.</p>
+<h3 id="phase-3-architecture"><a class="header" href="#phase-3-architecture">Phase 3 Architecture</a></h3>
+<pre><code>Source Code (.rs)
+    ↓
+Rustc Parsing → AST
+    ↓
+HIR Generation
+    ↓
+Type Checking
+    ↓
+MIR Generation  ← aspect-rustc-driver hooks here
+    ↓
+Aspect Analysis (Extract metadata)
+    ↓
+Pointcut Matching
+    ↓
+Code Weaving
+    ↓
+LLVM IR → Binary
+</code></pre>
+<h2 id="mir-structure"><a class="header" href="#mir-structure">MIR Structure</a></h2>
+<h3 id="function-body"><a class="header" href="#function-body">Function Body</a></h3>
+<p>MIR represents functions as control flow graphs:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct Body&lt;'tcx&gt; {
+    pub basic_blocks: IndexVec&lt;BasicBlock, BasicBlockData&lt;'tcx&gt;&gt;,
+    pub local_decls: LocalDecls&lt;'tcx&gt;,
+    pub arg_count: usize,
+    pub return_ty: Ty&lt;'tcx&gt;,
+    // ... more fields
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Components</strong>:</p>
+<ul>
+<li><code>basic_blocks</code> - Control flow graph nodes</li>
+<li><code>local_decls</code> - Local variables and temporaries</li>
+<li><code>arg_count</code> - Number of function parameters</li>
+<li><code>return_ty</code> - Return type information</li>
+</ul>
+<h3 id="example-mir"><a class="header" href="#example-mir">Example MIR</a></h3>
+<p>For this function:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Generated MIR</strong> (simplified):</p>
+<pre><code>fn add(_1: i32, _2: i32) -&gt; i32 {
+    let mut _0: i32;  // return place
+
+    bb0: {
+        _0 = Add(move _1, move _2);
+        return;
+    }
+}
+</code></pre>
+<p><strong>Key information</strong>:</p>
+<ul>
+<li><code>_1</code>, <code>_2</code> - Function parameters</li>
+<li><code>_0</code> - Return value</li>
+<li><code>bb0</code> - Basic block 0 (entry point)</li>
+<li><code>Add</code> - Binary operation</li>
+<li><code>return</code> - Function exit</li>
+</ul>
+<h2 id="accessing-mir-in-rustc"><a class="header" href="#accessing-mir-in-rustc">Accessing MIR in rustc</a></h2>
+<h3 id="tyctxt---the-type-context"><a class="header" href="#tyctxt---the-type-context">TyCtxt - The Type Context</a></h3>
+<p><code>TyCtxt</code> is the central structure for accessing compiler information:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn analyze_crate(tcx: TyCtxt&lt;'_&gt;) {
+    // TyCtxt provides access to ALL compiler data
+}
+<span class="boring">}</span></code></pre>
+<p><strong>What TyCtxt provides</strong>:</p>
+<ul>
+<li>Function definitions (<code>def_id_to_hir_id</code>)</li>
+<li>Type information (<code>type_of</code>)</li>
+<li>MIR bodies (<code>optimized_mir</code>)</li>
+<li>Module structure (<code>def_path</code>)</li>
+<li>Visibility (<code>visibility</code>)</li>
+</ul>
+<h3 id="getting-function-mir"><a class="header" href="#getting-function-mir">Getting Function MIR</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use rustc_middle::ty::TyCtxt;
+use rustc_hir::def_id::DefId;
+
+fn get_function_mir&lt;'tcx&gt;(tcx: TyCtxt&lt;'tcx&gt;, def_id: DefId) -&gt; &amp;'tcx Body&lt;'tcx&gt; {
+    tcx.optimized_mir(def_id)
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Optimization levels</strong>:</p>
+<ul>
+<li><code>mir_built</code> - Initial MIR (before optimizations)</li>
+<li><code>mir_const</code> - After const evaluation</li>
+<li><code>optimized_mir</code> - Fully optimized (best for analysis)</li>
+</ul>
+<h2 id="miranalyzer-implementation"><a class="header" href="#miranalyzer-implementation">MirAnalyzer Implementation</a></h2>
+<h3 id="core-structure"><a class="header" href="#core-structure">Core Structure</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct MirAnalyzer&lt;'tcx&gt; {
+    tcx: TyCtxt&lt;'tcx&gt;,
+    verbose: bool,
+    functions: Vec&lt;FunctionInfo&gt;,
+}
+
+impl&lt;'tcx&gt; MirAnalyzer&lt;'tcx&gt; {
+    pub fn new(tcx: TyCtxt&lt;'tcx&gt;, verbose: bool) -&gt; Self {
+        Self {
+            tcx,
+            verbose,
+            functions: Vec::new(),
+        }
+    }
+
+    pub fn extract_all_functions(&amp;mut self) -&gt; Vec&lt;FunctionInfo&gt; {
+        // Iterate over all items in the crate
+        for def_id in self.tcx.hir().body_owners() {
+            if let Some(func_info) = self.analyze_function(def_id.to_def_id()) {
+                self.functions.push(func_info);
+            }
+        }
+        self.functions.clone()
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="extracting-function-metadata"><a class="header" href="#extracting-function-metadata">Extracting Function Metadata</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn analyze_function(&amp;self, def_id: DefId) -&gt; Option&lt;FunctionInfo&gt; {
+    // Get the MIR body
+    let mir = self.tcx.optimized_mir(def_id);
+
+    // Extract function name
+    let name = self.tcx.def_path_str(def_id);
+
+    // Extract module path
+    let module_path = self.tcx.def_path(def_id)
+        .data
+        .iter()
+        .map(|seg| seg.to_string())
+        .collect::&lt;Vec&lt;_&gt;&gt;()
+        .join("::");
+
+    // Extract visibility
+    let visibility = match self.tcx.visibility(def_id) {
+        Visibility::Public =&gt; VisibilityKind::Public,
+        Visibility::Restricted(module) =&gt; VisibilityKind::Crate,
+        Visibility::Invisible =&gt; VisibilityKind::Private,
+    };
+
+    // Check if async
+    let is_async = mir.generator_kind().is_some();
+
+    // Extract return type
+    let return_ty = self.tcx.type_of(def_id);
+    let return_type_str = return_ty.to_string();
+
+    // Get source location
+    let span = self.tcx.def_span(def_id);
+    let source_map = self.tcx.sess.source_map();
+    let location = source_map.lookup_char_pos(span.lo());
+
+    Some(FunctionInfo {
+        name,
+        module_path,
+        visibility,
+        is_async,
+        return_type: Some(return_type_str),
+        file: location.file.name.to_string(),
+        line: location.line,
+    })
+}
+<span class="boring">}</span></code></pre>
+<h3 id="function-information-structure"><a class="header" href="#function-information-structure">Function Information Structure</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Clone, Debug)]
+pub struct FunctionInfo {
+    pub name: String,
+    pub module_path: String,
+    pub visibility: VisibilityKind,
+    pub is_async: bool,
+    pub is_generic: bool,
+    pub return_type: Option&lt;String&gt;,
+    pub parameters: Vec&lt;Parameter&gt;,
+    pub file: String,
+    pub line: usize,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum VisibilityKind {
+    Public,
+    Crate,
+    Private,
+}
+
+#[derive(Clone, Debug)]
+pub struct Parameter {
+    pub name: String,
+    pub ty: String,
+}
+<span class="boring">}</span></code></pre>
+<h2 id="iterating-over-functions"><a class="header" href="#iterating-over-functions">Iterating Over Functions</a></h2>
+<h3 id="finding-all-functions"><a class="header" href="#finding-all-functions">Finding All Functions</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn find_all_functions(tcx: TyCtxt&lt;'_&gt;) -&gt; Vec&lt;DefId&gt; {
+    let mut functions = Vec::new();
+
+    // Iterate over all HIR body owners
+    for owner in tcx.hir().body_owners() {
+        let def_id = owner.to_def_id();
+
+        // Check if it's a function (not const/static)
+        if tcx.def_kind(def_id) == DefKind::Fn {
+            functions.push(def_id);
+        }
+    }
+
+    functions
+}
+<span class="boring">}</span></code></pre>
+<h3 id="filtering-by-module"><a class="header" href="#filtering-by-module">Filtering by Module</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn find_functions_in_module(
+    tcx: TyCtxt&lt;'_&gt;,
+    module_pattern: &amp;str
+) -&gt; Vec&lt;DefId&gt; {
+    find_all_functions(tcx)
+        .into_iter()
+        .filter(|&amp;def_id| {
+            let path = tcx.def_path_str(def_id);
+            path.starts_with(module_pattern)
+        })
+        .collect()
+}
+<span class="boring">}</span></code></pre>
+<h3 id="filtering-by-visibility"><a class="header" href="#filtering-by-visibility">Filtering by Visibility</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn find_public_functions(tcx: TyCtxt&lt;'_&gt;) -&gt; Vec&lt;DefId&gt; {
+    find_all_functions(tcx)
+        .into_iter()
+        .filter(|&amp;def_id| {
+            matches!(tcx.visibility(def_id), Visibility::Public)
+        })
+        .collect()
+}
+<span class="boring">}</span></code></pre>
+<h2 id="extracting-parameter-information"><a class="header" href="#extracting-parameter-information">Extracting Parameter Information</a></h2>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn extract_parameters(tcx: TyCtxt&lt;'_&gt;, mir: &amp;Body&lt;'_&gt;) -&gt; Vec&lt;Parameter&gt; {
+    let mut params = Vec::new();
+
+    for (index, local) in mir.local_decls.iter_enumerated() {
+        // Skip return value (index 0) and get only args
+        if index.as_usize() &gt; 0 &amp;&amp; index.as_usize() &lt;= mir.arg_count {
+            params.push(Parameter {
+                name: format!("arg{}", index.as_usize() - 1),
+                ty: local.ty.to_string(),
+            });
+        }
+    }
+
+    params
+}
+<span class="boring">}</span></code></pre>
+<h2 id="extracting-generic-information"><a class="header" href="#extracting-generic-information">Extracting Generic Information</a></h2>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn is_generic(tcx: TyCtxt&lt;'_&gt;, def_id: DefId) -&gt; bool {
+    let generics = tcx.generics_of(def_id);
+    generics.count() &gt; 0
+}
+
+fn extract_generics(tcx: TyCtxt&lt;'_&gt;, def_id: DefId) -&gt; Vec&lt;String&gt; {
+    let generics = tcx.generics_of(def_id);
+    generics.params.iter()
+        .map(|param| param.name.to_string())
+        .collect()
+}
+<span class="boring">}</span></code></pre>
+<h2 id="real-world-example"><a class="header" href="#real-world-example">Real-World Example</a></h2>
+<h3 id="input-code"><a class="header" href="#input-code">Input Code</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub mod api {
+    pub fn fetch_user(id: u64) -&gt; User {
+        database::get(id)
+    }
+
+    async fn process_data(data: Vec&lt;u8&gt;) -&gt; Result&lt;(), Error&gt; {
+        // ...
+    }
+
+    pub(crate) fn internal_helper() {
+        // ...
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="extracted-metadata"><a class="header" href="#extracted-metadata">Extracted Metadata</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// fetch_user
+FunctionInfo {
+    name: "api::fetch_user",
+    module_path: "my_crate::api",
+    visibility: VisibilityKind::Public,
+    is_async: false,
+    is_generic: false,
+    return_type: Some("User"),
+    parameters: vec![
+        Parameter { name: "id", ty: "u64" }
+    ],
+    file: "src/api.rs",
+    line: 2,
+}
+
+// process_data
+FunctionInfo {
+    name: "api::process_data",
+    module_path: "my_crate::api",
+    visibility: VisibilityKind::Private,
+    is_async: true,
+    is_generic: false,
+    return_type: Some("Result&lt;(), Error&gt;"),
+    parameters: vec![
+        Parameter { name: "data", ty: "Vec&lt;u8&gt;" }
+    ],
+    file: "src/api.rs",
+    line: 6,
+}
+
+// internal_helper
+FunctionInfo {
+    name: "api::internal_helper",
+    module_path: "my_crate::api",
+    visibility: VisibilityKind::Crate,
+    is_async: false,
+    is_generic: false,
+    return_type: Some("()"),
+    parameters: vec![],
+    file: "src/api.rs",
+    line: 10,
+}
+<span class="boring">}</span></code></pre>
+<h2 id="integration-with-pointcut-matching"><a class="header" href="#integration-with-pointcut-matching">Integration with Pointcut Matching</a></h2>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn apply_aspects(tcx: TyCtxt&lt;'_&gt;, pointcuts: &amp;[PointcutPattern]) {
+    let analyzer = MirAnalyzer::new(tcx, true);
+    let functions = analyzer.extract_all_functions();
+
+    for func in &amp;functions {
+        for pointcut in pointcuts {
+            if pointcut.matches(func) {
+                println!("✓ Matched: {} by {}", func.name, pointcut.pattern);
+                // Weave aspect into this function
+            }
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="performance-considerations"><a class="header" href="#performance-considerations">Performance Considerations</a></h2>
+<h3 id="caching"><a class="header" href="#caching">Caching</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>lazy_static! {
+    static ref FUNCTION_CACHE: Mutex&lt;HashMap&lt;DefId, FunctionInfo&gt;&gt; =
+        Mutex::new(HashMap::new());
+}
+
+fn get_cached_function_info(tcx: TyCtxt&lt;'_&gt;, def_id: DefId) -&gt; FunctionInfo {
+    let mut cache = FUNCTION_CACHE.lock().unwrap();
+
+    cache.entry(def_id)
+        .or_insert_with(|| extract_function_info(tcx, def_id))
+        .clone()
+}
+<span class="boring">}</span></code></pre>
+<h3 id="incremental-compilation"><a class="header" href="#incremental-compilation">Incremental Compilation</a></h3>
+<p>MIR extraction works with Rust’s incremental compilation:</p>
+<ul>
+<li>Only changed functions re-analyzed</li>
+<li>Cached results reused for unchanged code</li>
+<li>Fast re-compilation</li>
+</ul>
+<p><strong>Typical performance</strong>:</p>
+<ul>
+<li>Extract metadata: ~0.1ms per function</li>
+<li>1000 functions: ~100ms total</li>
+<li>Negligible impact on build time</li>
+</ul>
+<h2 id="challenges-and-solutions"><a class="header" href="#challenges-and-solutions">Challenges and Solutions</a></h2>
+<h3 id="challenge-1-rustc-api-instability"><a class="header" href="#challenge-1-rustc-api-instability">Challenge 1: rustc API Instability</a></h3>
+<p><strong>Problem</strong>: rustc APIs change frequently between versions.</p>
+<p><strong>Solution</strong>: Pin to specific nightly version:</p>
+<pre><code class="language-toml">[package]
+rust-version = "nightly-2024-01-01"
+</code></pre>
+<h3 id="challenge-2-accessing-tyctxt"><a class="header" href="#challenge-2-accessing-tyctxt">Challenge 2: Accessing TyCtxt</a></h3>
+<p><strong>Problem</strong>: TyCtxt cannot be passed through closures.</p>
+<p><strong>Solution</strong>: Use function pointers with global state:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>static CONFIG: Mutex&lt;Option&lt;AspectConfig&gt;&gt; = Mutex::new(None);
+
+fn analyze_crate_with_aspects(tcx: TyCtxt&lt;'_&gt;, (): ()) {
+    let config = CONFIG.lock().unwrap().clone().unwrap();
+    let analyzer = MirAnalyzer::new(tcx, config.verbose);
+    // ... analysis
+}
+<span class="boring">}</span></code></pre>
+<h3 id="challenge-3-generic-function-instantiation"><a class="header" href="#challenge-3-generic-function-instantiation">Challenge 3: Generic Function Instantiation</a></h3>
+<p><strong>Problem</strong>: Generic functions have multiple instantiations.</p>
+<p><strong>Solution</strong>: Analyze the generic definition, apply aspects to all instantiations:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>if is_generic(tcx, def_id) {
+    // Get generic definition
+    let generic_info = extract_function_info(tcx, def_id);
+    // Apply aspect to generic definition
+    // Will affect all instantiations
+}
+<span class="boring">}</span></code></pre>
+<h2 id="debugging-mir-extraction"><a class="header" href="#debugging-mir-extraction">Debugging MIR Extraction</a></h2>
+<h3 id="viewing-mir"><a class="header" href="#viewing-mir">Viewing MIR</a></h3>
+<pre><code class="language-bash"># Dump MIR for a specific crate
+rustc +nightly -Z dump-mir=all src/lib.rs
+
+# Dump MIR for specific function
+rustc +nightly -Z dump-mir=my_function src/lib.rs
+
+# View optimized MIR
+rustc +nightly -Z dump-mir=optimized src/lib.rs
+</code></pre>
+<h3 id="verbose-output"><a class="header" href="#verbose-output">Verbose Output</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl MirAnalyzer {
+    fn analyze_function(&amp;self, def_id: DefId) -&gt; Option&lt;FunctionInfo&gt; {
+        if self.verbose {
+            println!("Analyzing: {}", self.tcx.def_path_str(def_id));
+        }
+
+        // ... extraction logic
+
+        if self.verbose {
+            println!("  Visibility: {:?}", visibility);
+            println!("  Async: {}", is_async);
+            println!("  Return type: {:?}", return_type);
+        }
+
+        Some(func_info)
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="future-enhancements"><a class="header" href="#future-enhancements">Future Enhancements</a></h2>
+<h3 id="control-flow-analysis"><a class="header" href="#control-flow-analysis">Control Flow Analysis</a></h3>
+<p>Extract control flow information:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn analyze_control_flow(mir: &amp;Body) -&gt; ControlFlowInfo {
+    ControlFlowInfo {
+        basic_blocks: mir.basic_blocks.len(),
+        loops: detect_loops(mir),
+        branches: count_branches(mir),
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="call-graph-construction"><a class="header" href="#call-graph-construction">Call Graph Construction</a></h3>
+<p>Build call graph for crate:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn build_call_graph(tcx: TyCtxt) -&gt; CallGraph {
+    let mut graph = CallGraph::new();
+
+    for def_id in find_all_functions(tcx) {
+        let mir = tcx.optimized_mir(def_id);
+        for block in &amp;mir.basic_blocks {
+            for statement in &amp;block.statements {
+                if let Call { func, .. } = statement.kind {
+                    graph.add_edge(def_id, func.def_id());
+                }
+            }
+        }
+    }
+
+    graph
+}
+<span class="boring">}</span></code></pre>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<p>MIR extraction provides:</p>
+<ol>
+<li><strong>Complete function metadata</strong> - Everything needed for aspect matching</li>
+<li><strong>Type-checked information</strong> - Guaranteed correctness</li>
+<li><strong>Compiler integration</strong> - Works with rustc directly</li>
+<li><strong>Zero runtime cost</strong> - All analysis at compile time</li>
+</ol>
+<p><strong>Key achievement</strong>: Phase 3 automatic weaving relies entirely on MIR extraction for precise, automatic aspect application.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See Also</a></h2>
+<ul>
+<li><a href="pointcuts.html">Pointcut Matching</a> - How extracted metadata is matched</li>
+<li><a href="weaving.html">Code Weaving Process</a> - Using metadata to weave aspects</li>
+<li><a href="../ch10-phase3/architecture.html">Phase 3 Architecture</a> - Complete system design</li>
+<li><a href="../ch10-phase3/how-it-works.html">Phase 3 How It Works</a> - End-to-end flow</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../ch07-implementation/pointcuts.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../ch07-implementation/weaving.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../ch07-implementation/pointcuts.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../ch07-implementation/weaving.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace-2a3cd908.js"></script>
+        <script src="../mode-rust-2c9d5c9a.js"></script>
+        <script src="../editor-16ca416c.js"></script>
+        <script src="../theme-dawn-4493f9c8.js"></script>
+        <script src="../theme-tomorrow_night-9dbe62a9.js"></script>
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

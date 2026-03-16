@@ -1,0 +1,992 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Macro Code Generation - aspect-rs: AOP Framework for Rust</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Comprehensive guide to aspect-rs, a zero-cost compile-time AOP framework for Rust with automatic aspect weaving">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-5e2e62cb.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-dd742820.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">aspect-rs: AOP Framework for Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/yijunyu/aspect-rs" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/yijunyu/aspect-rs/edit/main/docs/book/src/ch07-implementation/macros.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="macro-code-generation"><a class="header" href="#macro-code-generation">Macro Code Generation</a></h1>
+<p>This chapter details how the <code>#[aspect]</code> procedural macro transforms annotated functions to weave aspect behavior at compile time.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>The aspect-rs macro system performs <strong>compile-time code transformation</strong> to weave aspects into your functions. This approach provides:</p>
+<ul>
+<li><strong>Zero runtime overhead</strong> - All aspect setup happens at compile time</li>
+<li><strong>Type safety</strong> - Compiler verifies all generated code</li>
+<li><strong>Transparent integration</strong> - Works with existing Rust tooling</li>
+<li><strong>No reflection</strong> - No runtime introspection needed</li>
+</ul>
+<h2 id="macro-architecture"><a class="header" href="#macro-architecture">Macro Architecture</a></h2>
+<p>The <code>#[aspect]</code> macro follows a standard procedural macro pipeline:</p>
+<pre><code>Input Source Code
+    ↓
+Macro Attribute Parser
+    ↓
+Function AST Analysis
+    ↓
+Code Generator
+    ↓
+Output TokenStream
+    ↓
+Rust Compiler
+</code></pre>
+<h3 id="component-breakdown"><a class="header" href="#component-breakdown">Component Breakdown</a></h3>
+<h4 id="1-entry-point-aspect-macrossrclibrs"><a class="header" href="#1-entry-point-aspect-macrossrclibrs">1. Entry Point (<code>aspect-macros/src/lib.rs</code>)</a></h4>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[proc_macro_attribute]
+pub fn aspect(attr: TokenStream, item: TokenStream) -&gt; TokenStream {
+    let aspect_expr = parse_macro_input!(attr as Expr);
+    let func = parse_macro_input!(item as ItemFn);
+
+    aspect_attr::transform(aspect_expr, func)
+        .unwrap_or_else(|e| e.to_compile_error())
+        .into()
+}
+<span class="boring">}</span></code></pre>
+<p><strong>What happens here</strong>:</p>
+<ol>
+<li>Parse the aspect expression (e.g., <code>LoggingAspect::new()</code>)</li>
+<li>Parse the function being annotated</li>
+<li>Transform the function with aspect weaving</li>
+<li>Convert errors to compiler errors if transformation fails</li>
+</ol>
+<h4 id="2-parser-aspect-macrossrcparsingrs"><a class="header" href="#2-parser-aspect-macrossrcparsingrs">2. Parser (<code>aspect-macros/src/parsing.rs</code>)</a></h4>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct AspectInfo {
+    pub aspect_expr: Expr,
+}
+
+impl AspectInfo {
+    pub fn parse(expr: Expr) -&gt; Result&lt;Self&gt; {
+        // Validate the aspect expression
+        Ok(AspectInfo { aspect_expr: expr })
+    }
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Validation includes</strong>:</p>
+<ul>
+<li>Aspect expression is valid Rust syntax</li>
+<li>Expression evaluates to a type implementing <code>Aspect</code></li>
+<li>Type checking deferred to Rust compiler</li>
+</ul>
+<h4 id="3-transformer-aspect-macrossrcaspect_attrrs"><a class="header" href="#3-transformer-aspect-macrossrcaspect_attrrs">3. Transformer (<code>aspect-macros/src/aspect_attr.rs</code>)</a></h4>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn transform(aspect_expr: Expr, func: ItemFn) -&gt; Result&lt;TokenStream&gt; {
+    let aspect_info = AspectInfo::parse(aspect_expr)?;
+    let output = generate_aspect_wrapper(&amp;aspect_info, &amp;func);
+    Ok(output)
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Transformation strategy</strong>:</p>
+<ol>
+<li>Extract function metadata (name, parameters, return type)</li>
+<li>Generate renamed original function</li>
+<li>Create wrapper function with aspect calls</li>
+<li>Preserve all function signatures and attributes</li>
+</ol>
+<h2 id="code-generation-process"><a class="header" href="#code-generation-process">Code Generation Process</a></h2>
+<h3 id="step-1-rename-original-function"><a class="header" href="#step-1-rename-original-function">Step 1: Rename Original Function</a></h3>
+<p>The original function is preserved with a mangled name:</p>
+<p><strong>Input</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[aspect(Logger)]
+fn greet(name: &amp;str) -&gt; String {
+    format!("Hello, {}!", name)
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Generated (Step 1)</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn __aspect_original_greet(name: &amp;str) -&gt; String {
+    format!("Hello, {}!", name)
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Why rename?</strong></p>
+<ul>
+<li>Preserves original business logic unchanged</li>
+<li>Allows wrapper to call original</li>
+<li>Prevents name collision</li>
+<li>Enables clean separation</li>
+</ul>
+<h3 id="step-2-extract-function-metadata"><a class="header" href="#step-2-extract-function-metadata">Step 2: Extract Function Metadata</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let fn_name = &amp;func.sig.ident;           // "greet"
+let fn_vis = &amp;func.vis;                  // pub/private
+let fn_inputs = &amp;func.sig.inputs;        // Parameters
+let fn_output = &amp;func.sig.output;        // Return type
+let fn_generics = &amp;func.sig.generics;    // Generic params
+let fn_asyncness = &amp;func.sig.asyncness;  // async keyword
+<span class="boring">}</span></code></pre>
+<h3 id="step-3-create-joinpoint-context"><a class="header" href="#step-3-create-joinpoint-context">Step 3: Create JoinPoint Context</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let __context = JoinPoint {
+    function_name: "greet",
+    module_path: "my_crate::api",
+    location: Location {
+        file: "src/api.rs",
+        line: 42,
+    },
+};
+<span class="boring">}</span></code></pre>
+<p><strong>Metadata captured</strong>:</p>
+<ul>
+<li><code>function_name</code> - From <code>fn_name.to_string()</code></li>
+<li><code>module_path</code> - From <code>module_path!()</code> macro</li>
+<li><code>file</code> - From <code>file!()</code> macro</li>
+<li><code>line</code> - From <code>line!()</code> macro</li>
+</ul>
+<p>All captured at <strong>compile time</strong> with zero runtime cost.</p>
+<h3 id="step-4-create-proceedingjoinpoint"><a class="header" href="#step-4-create-proceedingjoinpoint">Step 4: Create ProceedingJoinPoint</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let __pjp = ProceedingJoinPoint::new(
+    || {
+        let __result = __aspect_original_greet(name);
+        Ok(Box::new(__result) as Box&lt;dyn Any&gt;)
+    },
+    __context,
+);
+<span class="boring">}</span></code></pre>
+<p><strong>ProceedingJoinPoint wraps</strong>:</p>
+<ul>
+<li>Original function as a closure</li>
+<li>Execution context</li>
+<li>Provides <code>proceed()</code> method for aspect</li>
+</ul>
+<h3 id="step-5-call-aspects-around-method"><a class="header" href="#step-5-call-aspects-around-method">Step 5: Call Aspect’s Around Method</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let __aspect = Logger;
+
+match __aspect.around(__pjp) {
+    Ok(__boxed_result) =&gt; {
+        *__boxed_result
+            .downcast::&lt;String&gt;()
+            .expect("aspect around() returned wrong type")
+    }
+    Err(__err) =&gt; {
+        panic!("aspect around() failed: {:?}", __err);
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="step-6-generate-wrapper-function"><a class="header" href="#step-6-generate-wrapper-function">Step 6: Generate Wrapper Function</a></h3>
+<p><strong>Final generated code</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Original function (renamed, private)
+fn __aspect_original_greet(name: &amp;str) -&gt; String {
+    format!("Hello, {}!", name)
+}
+
+// Wrapper function (original name, public)
+pub fn greet(name: &amp;str) -&gt; String {
+    use ::aspect_core::prelude::*;
+    use ::std::any::Any;
+
+    let __aspect = Logger;
+    let __context = JoinPoint {
+        function_name: "greet",
+        module_path: module_path!(),
+        location: Location {
+            file: file!(),
+            line: line!(),
+        },
+    };
+
+    let __pjp = ProceedingJoinPoint::new(
+        || {
+            let __result = __aspect_original_greet(name);
+            Ok(Box::new(__result) as Box&lt;dyn Any&gt;)
+        },
+        __context,
+    );
+
+    match __aspect.around(__pjp) {
+        Ok(__boxed_result) =&gt; {
+            *__boxed_result
+                .downcast::&lt;String&gt;()
+                .expect("aspect around() returned wrong type")
+        }
+        Err(__err) =&gt; {
+            panic!("aspect around() failed: {:?}", __err);
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="handling-different-function-types"><a class="header" href="#handling-different-function-types">Handling Different Function Types</a></h2>
+<h3 id="non-result-return-types"><a class="header" href="#non-result-return-types">Non-Result Return Types</a></h3>
+<p>For functions returning concrete types (not <code>Result</code>):</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[aspect(Timer)]
+fn calculate(x: i32) -&gt; i32 {
+    x * 2
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Generated wrapper</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn calculate(x: i32) -&gt; i32 {
+    // ... setup ...
+
+    let __pjp = ProceedingJoinPoint::new(
+        || {
+            let __result = __aspect_original_calculate(x);
+            Ok(Box::new(__result) as Box&lt;dyn Any&gt;)
+        },
+        __context,
+    );
+
+    match __aspect.around(__pjp) {
+        Ok(__boxed_result) =&gt; {
+            *__boxed_result
+                .downcast::&lt;i32&gt;()
+                .expect("type mismatch")
+        }
+        Err(__err) =&gt; {
+            panic!("aspect failed: {:?}", __err);
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="result-return-types"><a class="header" href="#result-return-types">Result Return Types</a></h3>
+<p>For functions returning <code>Result&lt;T, E&gt;</code>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[aspect(Logger)]
+fn fetch_user(id: u64) -&gt; Result&lt;User, DbError&gt; {
+    database::get(id)
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Generated wrapper</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn fetch_user(id: u64) -&gt; Result&lt;User, DbError&gt; {
+    // ... setup ...
+
+    let __pjp = ProceedingJoinPoint::new(
+        || {
+            match __aspect_original_fetch_user(id) {
+                Ok(__val) =&gt; Ok(Box::new(__val) as Box&lt;dyn Any&gt;),
+                Err(__err) =&gt; Err(AspectError::execution(format!("{:?}", __err))),
+            }
+        },
+        __context,
+    );
+
+    match __aspect.around(__pjp) {
+        Ok(__boxed_result) =&gt; {
+            let __inner = *__boxed_result
+                .downcast::&lt;User&gt;()
+                .expect("type mismatch");
+            Ok(__inner)
+        }
+        Err(__err) =&gt; {
+            Err(format!("{:?}", __err).into())
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Key difference</strong>: Errors converted to <code>AspectError</code> and back.</p>
+<h3 id="async-functions"><a class="header" href="#async-functions">Async Functions</a></h3>
+<p>For <code>async fn</code>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[aspect(Logger)]
+async fn fetch_data(url: &amp;str) -&gt; Result&lt;String, Error&gt; {
+    reqwest::get(url).await?.text().await
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Generated wrapper</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub async fn fetch_data(url: &amp;str) -&gt; Result&lt;String, Error&gt; {
+    use ::aspect_core::prelude::*;
+    use ::std::any::Any;
+
+    let __aspect = Logger;
+    let __context = JoinPoint {
+        function_name: "fetch_data",
+        module_path: module_path!(),
+        location: Location { file: file!(), line: line!() },
+    };
+
+    // Before advice
+    __aspect.before(&amp;__context);
+
+    // Execute original function
+    let __result = __aspect_original_fetch_data(url).await;
+
+    // After advice
+    match &amp;__result {
+        Ok(__val) =&gt; {
+            __aspect.after(&amp;__context, __val as &amp;dyn Any);
+        }
+        Err(__err) =&gt; {
+            let __aspect_err = AspectError::execution(format!("{:?}", __err));
+            __aspect.after_error(&amp;__context, &amp;__aspect_err);
+        }
+    }
+
+    __result
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Note</strong>: Async functions use before/after instead of around (no stable async traits yet).</p>
+<h3 id="generic-functions"><a class="header" href="#generic-functions">Generic Functions</a></h3>
+<p>For functions with type parameters:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[aspect(Logger)]
+fn identity&lt;T: Debug&gt;(value: T) -&gt; T {
+    println!("{:?}", value);
+    value
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Generated wrapper preserves generics</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn __aspect_original_identity&lt;T: Debug&gt;(value: T) -&gt; T {
+    println!("{:?}", value);
+    value
+}
+
+pub fn identity&lt;T: Debug&gt;(value: T) -&gt; T {
+    use ::aspect_core::prelude::*;
+
+    let __aspect = Logger;
+    let __context = JoinPoint { /* ... */ };
+
+    let __pjp = ProceedingJoinPoint::new(
+        || {
+            let __result = __aspect_original_identity(value);
+            Ok(Box::new(__result) as Box&lt;dyn Any&gt;)
+        },
+        __context,
+    );
+
+    match __aspect.around(__pjp) {
+        Ok(__boxed_result) =&gt; {
+            *__boxed_result.downcast::&lt;T&gt;().expect("type mismatch")
+        }
+        Err(__err) =&gt; panic!("{:?}", __err),
+    }
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Challenge</strong>: Type erasure via <code>Box&lt;dyn Any&gt;</code> works because <code>T: 'static</code> implied by <code>Any</code>.</p>
+<h2 id="advanced-generation-techniques"><a class="header" href="#advanced-generation-techniques">Advanced Generation Techniques</a></h2>
+<h3 id="multiple-aspects"><a class="header" href="#multiple-aspects">Multiple Aspects</a></h3>
+<p>When multiple <code>#[aspect]</code> macros applied:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[aspect(Logger)]
+#[aspect(Timer)]
+fn my_function() { }
+<span class="boring">}</span></code></pre>
+<p><strong>Processing order</strong> (bottom-up):</p>
+<ol>
+<li><code>Timer</code> macro applied first</li>
+<li><code>Logger</code> macro wraps Timer’s output</li>
+</ol>
+<p><strong>Generated nesting</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// After Timer
+fn __aspect_original_my_function() { }
+fn __timer_my_function() {
+    // Timer aspect wrapping original
+}
+
+// After Logger
+fn __logger___timer_my_function() {
+    // Logger aspect wrapping Timer
+}
+
+pub fn my_function() {
+    // Logger wrapper calling Timer wrapper
+}
+<span class="boring">}</span></code></pre>
+<h3 id="preserving-attributes"><a class="header" href="#preserving-attributes">Preserving Attributes</a></h3>
+<p>Non-aspect attributes are preserved:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[inline]
+#[cold]
+#[aspect(Logger)]
+fn rare_function() { }
+<span class="boring">}</span></code></pre>
+<p><strong>Generated</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn __aspect_original_rare_function() { }
+
+#[inline]
+#[cold]
+pub fn rare_function() {
+    // Aspect wrapper
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Attributes copied to</strong>:</p>
+<ul>
+<li>Wrapper function (visible to callers)</li>
+<li>NOT original (internal implementation)</li>
+</ul>
+<h3 id="capturing-closure-variables"><a class="header" href="#capturing-closure-variables">Capturing Closure Variables</a></h3>
+<p>For closures in aspect expressions:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let prefix = "[LOG]";
+#[aspect(LoggerWithPrefix::new(prefix))]
+fn my_func() { }
+<span class="boring">}</span></code></pre>
+<p><strong>Generated</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn my_func() {
+    let prefix = "[LOG]";  // Captured at call site
+    let __aspect = LoggerWithPrefix::new(prefix);
+    // ... rest of wrapper ...
+}
+<span class="boring">}</span></code></pre>
+<h2 id="optimization-strategies"><a class="header" href="#optimization-strategies">Optimization Strategies</a></h2>
+<h3 id="inline-hints"><a class="header" href="#inline-hints">Inline Hints</a></h3>
+<p>Generated wrappers marked for inlining:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[inline(always)]
+pub fn my_function() {
+    // Aspect wrapper
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Result</strong>: Compiler may inline entire aspect chain.</p>
+<h3 id="const-evaluation"><a class="header" href="#const-evaluation">Const Evaluation</a></h3>
+<p>JoinPoint data as constants:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>const __JOINPOINT_DATA: &amp;str = "my_function";
+
+pub fn my_function() {
+    let __context = JoinPoint {
+        function_name: __JOINPOINT_DATA,  // No allocation!
+        // ...
+    };
+}
+<span class="boring">}</span></code></pre>
+<h3 id="dead-code-elimination"><a class="header" href="#dead-code-elimination">Dead Code Elimination</a></h3>
+<p>For no-op aspects:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl Aspect for NoOpAspect {
+    fn before(&amp;self, _: &amp;JoinPoint) { }
+    fn after(&amp;self, _: &amp;JoinPoint, _: &amp;dyn Any) { }
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Compiler optimizes</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn my_function() {
+    // Empty before() inlined away
+    let result = __aspect_original_my_function();
+    // Empty after() inlined away
+    result
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Final code</strong>: Identical to no aspect!</p>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<h3 id="compilation-errors"><a class="header" href="#compilation-errors">Compilation Errors</a></h3>
+<p>Macro generates compiler errors for:</p>
+<p><strong>Invalid aspect expression</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[aspect(NotAnAspect)]
+fn my_func() { }
+<span class="boring">}</span></code></pre>
+<p><strong>Error</strong>: <code>NotAnAspect</code> does not implement <code>Aspect</code>.</p>
+<p><strong>Type mismatch</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[aspect(Logger)]
+fn my_func() -&gt; i32 {
+    "not an i32"  // Type error
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Error</strong>: Expected <code>i32</code>, found <code>&amp;str</code>.</p>
+<h3 id="runtime-type-safety"><a class="header" href="#runtime-type-safety">Runtime Type Safety</a></h3>
+<p>Downcasting validates types:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>*__boxed_result
+    .downcast::&lt;String&gt;()
+    .expect("aspect around() returned wrong type")
+<span class="boring">}</span></code></pre>
+<p><strong>Panic if</strong>: Aspect returns wrong type (programmer error).</p>
+<h2 id="expansion-examples"><a class="header" href="#expansion-examples">Expansion Examples</a></h2>
+<h3 id="simple-function"><a class="header" href="#simple-function">Simple Function</a></h3>
+<p><strong>Input</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[aspect(Logger)]
+fn add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Expanded</strong> (via <code>cargo expand</code>):</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn __aspect_original_add(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+
+fn add(a: i32, b: i32) -&gt; i32 {
+    use ::aspect_core::prelude::*;
+    use ::std::any::Any;
+
+    let __aspect = Logger;
+    let __context = JoinPoint {
+        function_name: "add",
+        module_path: "my_crate",
+        location: Location {
+            file: "src/main.rs",
+            line: 10u32,
+        },
+    };
+
+    let __pjp = ProceedingJoinPoint::new(
+        || {
+            let __result = __aspect_original_add(a, b);
+            Ok(Box::new(__result) as Box&lt;dyn Any&gt;)
+        },
+        __context,
+    );
+
+    match __aspect.around(__pjp) {
+        Ok(__boxed_result) =&gt; {
+            *__boxed_result
+                .downcast::&lt;i32&gt;()
+                .expect("aspect around() returned wrong type")
+        }
+        Err(__err) =&gt; panic!("aspect around() failed: {:?}", __err),
+    }
+}
+<span class="boring">}</span></code></pre>
+<h3 id="result-function"><a class="header" href="#result-function">Result Function</a></h3>
+<p><strong>Input</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[aspect(Logger)]
+fn divide(a: i32, b: i32) -&gt; Result&lt;i32, String&gt; {
+    if b == 0 {
+        Err("division by zero".to_string())
+    } else {
+        Ok(a / b)
+    }
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Expanded</strong>:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn __aspect_original_divide(a: i32, b: i32) -&gt; Result&lt;i32, String&gt; {
+    if b == 0 {
+        Err("division by zero".to_string())
+    } else {
+        Ok(a / b)
+    }
+}
+
+fn divide(a: i32, b: i32) -&gt; Result&lt;i32, String&gt; {
+    use ::aspect_core::prelude::*;
+    use ::std::any::Any;
+
+    let __aspect = Logger;
+    let __context = JoinPoint {
+        function_name: "divide",
+        module_path: "my_crate",
+        location: Location {
+            file: "src/main.rs",
+            line: 20u32,
+        },
+    };
+
+    let __pjp = ProceedingJoinPoint::new(
+        || match __aspect_original_divide(a, b) {
+            Ok(__val) =&gt; Ok(Box::new(__val) as Box&lt;dyn Any&gt;),
+            Err(__err) =&gt; Err(AspectError::execution(format!("{:?}", __err))),
+        },
+        __context,
+    );
+
+    match __aspect.around(__pjp) {
+        Ok(__boxed_result) =&gt; {
+            let __inner = *__boxed_result
+                .downcast::&lt;i32&gt;()
+                .expect("aspect around() returned wrong type");
+            Ok(__inner)
+        }
+        Err(__err) =&gt; Err(format!("{:?}", __err).into()),
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="testing-generated-code"><a class="header" href="#testing-generated-code">Testing Generated Code</a></h2>
+<h3 id="viewing-expansions"><a class="header" href="#viewing-expansions">Viewing Expansions</a></h3>
+<pre><code class="language-bash"># Install cargo-expand
+cargo install cargo-expand
+
+# View expanded macros
+cargo expand --lib
+cargo expand --example logging
+
+# View specific function
+cargo expand my_function
+</code></pre>
+<h3 id="unit-testing-macros"><a class="header" href="#unit-testing-macros">Unit Testing Macros</a></h3>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[test]
+fn test_aspect_macro() {
+    #[aspect(TestAspect)]
+    fn test_func() -&gt; i32 {
+        42
+    }
+
+    let result = test_func();
+    assert_eq!(result, 42);
+}
+<span class="boring">}</span></code></pre>
+<h3 id="integration-testing"><a class="header" href="#integration-testing">Integration Testing</a></h3>
+<p>See <code>aspect-macros/tests/</code> for comprehensive tests.</p>
+<h2 id="performance-characteristics"><a class="header" href="#performance-characteristics">Performance Characteristics</a></h2>
+<h3 id="compile-time-cost"><a class="header" href="#compile-time-cost">Compile-Time Cost</a></h3>
+<ul>
+<li><strong>Macro expansion</strong>: ~10ms per function</li>
+<li><strong>Type checking</strong>: Standard Rust cost</li>
+<li><strong>Code generation</strong>: Minimal impact</li>
+</ul>
+<p><strong>Total overhead</strong>: Negligible for typical projects.</p>
+<h3 id="runtime-cost"><a class="header" href="#runtime-cost">Runtime Cost</a></h3>
+<ul>
+<li><strong>Wrapper overhead</strong>: 0-5ns (inline eliminated)</li>
+<li><strong>JoinPoint creation</strong>: ~2ns (stack allocation)</li>
+<li><strong>Virtual dispatch</strong>: ~1-2ns (aspect.around() call)</li>
+</ul>
+<p><strong>Total</strong>: &lt;10ns for simple aspects.</p>
+<p>See <a href="../ch09-benchmarks/results.html">Benchmarks</a> for details.</p>
+<h2 id="limitations-and-workarounds"><a class="header" href="#limitations-and-workarounds">Limitations and Workarounds</a></h2>
+<h3 id="cannot-intercept-method-calls"><a class="header" href="#cannot-intercept-method-calls">Cannot Intercept Method Calls</a></h3>
+<p><strong>Limitation</strong>: Macro works on function definitions only.</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[aspect(Logger)]
+impl MyStruct {
+    fn method(&amp;self) { }  // ❌ Not supported
+}
+<span class="boring">}</span></code></pre>
+<p><strong>Workaround</strong>: Apply to individual methods:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl MyStruct {
+    #[aspect(Logger)]
+    fn method(&amp;self) { }  // ✅ Works
+}
+<span class="boring">}</span></code></pre>
+<h3 id="cannot-modify-external-code"><a class="header" href="#cannot-modify-external-code">Cannot Modify External Code</a></h3>
+<p><strong>Limitation</strong>: Must control source code.</p>
+<p><strong>Workaround</strong>: Use Phase 3 automatic weaving (see <a href="../ch10-phase3/README.html">Chapter 10</a>).</p>
+<h3 id="async-traits-unsupported"><a class="header" href="#async-traits-unsupported">Async Traits Unsupported</a></h3>
+<p><strong>Limitation</strong>: No stable async trait support yet.</p>
+<p><strong>Current approach</strong>: Use before/after instead of around for async.</p>
+<p><strong>Future</strong>: Async traits in development (RFC pending).</p>
+<h2 id="debugging-macros"><a class="header" href="#debugging-macros">Debugging Macros</a></h2>
+<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<p><strong>Issue</strong>: “Cannot find type <code>JoinPoint</code>”</p>
+<p><strong>Solution</strong>: Add dependency:</p>
+<pre><code class="language-toml">[dependencies]
+aspect-core = "0.1"
+</code></pre>
+<p><strong>Issue</strong>: “Type mismatch in downcast”</p>
+<p><strong>Solution</strong>: Ensure aspect returns correct type:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn around(&amp;self, pjp: ProceedingJoinPoint) -&gt; Result&lt;Box&lt;dyn Any&gt;, AspectError&gt; {
+    let result = pjp.proceed()?;
+    // Don't modify result type!
+    Ok(result)
+}
+<span class="boring">}</span></code></pre>
+<h3 id="debugging-techniques"><a class="header" href="#debugging-techniques">Debugging Techniques</a></h3>
+<ol>
+<li><strong>View expansion</strong>: <code>cargo expand</code></li>
+<li><strong>Check compiler errors</strong>: Read full error messages</li>
+<li><strong>Simplify</strong>: Remove aspect, verify function works</li>
+<li><strong>Test aspect separately</strong>: Unit test aspect implementation</li>
+</ol>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="do"><a class="header" href="#do">DO</a></h3>
+<p>✅ Use <code>cargo expand</code> to verify generated code
+✅ Keep aspect expressions simple
+✅ Test aspects independently
+✅ Use type inference where possible
+✅ Prefer const expressions for aspects</p>
+<h3 id="dont"><a class="header" href="#dont">DON’T</a></h3>
+<p>❌ Rely on side effects in aspect expressions
+❌ Mutate captured variables
+❌ Use expensive computations in aspect constructor
+❌ Return wrong types from around advice
+❌ Panic in aspects (use Result)</p>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<p>The <code>#[aspect]</code> macro provides:</p>
+<ol>
+<li><strong>Compile-time code transformation</strong> - No runtime magic</li>
+<li><strong>Type-safe weaving</strong> - Compiler verifies everything</li>
+<li><strong>Transparent integration</strong> - Works with all Rust tools</li>
+<li><strong>Zero-cost abstractions</strong> - Optimizes to hand-written code</li>
+</ol>
+<p><strong>Key insight</strong>: Procedural macros enable aspect-oriented programming in Rust while maintaining the language’s core principles of zero-cost abstractions and type safety.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See Also</a></h2>
+<ul>
+<li><a href="pointcuts.html">Pointcut Matching</a> - How functions are selected</li>
+<li><a href="weaving.html">Code Weaving Process</a> - Complete weaving pipeline</li>
+<li><a href="optimizations.html">Performance Optimizations</a> - Optimization techniques</li>
+<li><a href="../ch05-usage-guide/README.html">Usage Guide</a> - Practical usage patterns</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../ch07-implementation/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../ch07-implementation/pointcuts.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../ch07-implementation/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../ch07-implementation/pointcuts.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace-2a3cd908.js"></script>
+        <script src="../mode-rust-2c9d5c9a.js"></script>
+        <script src="../editor-16ca416c.js"></script>
+        <script src="../theme-dawn-4493f9c8.js"></script>
+        <script src="../theme-tomorrow_night-9dbe62a9.js"></script>
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
