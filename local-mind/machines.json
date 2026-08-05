@@ -1,0 +1,51 @@
+{
+  "_comment": [
+    "Numbers the page renders. Upload a new copy of this file and the page",
+    "updates — no HTML change, no redeploy of anything else.",
+    "",
+    "`decode` is a best recorded rate on that machine, or null for 'not",
+    "measured'. Null renders as 'not measured' rather than a blank or a zero,",
+    "because a missing measurement and a slow one are different claims.",
+    "",
+    "`modes` is how the model runs there: gpu = fully resident, ssd = experts",
+    "stream from disk, hyb = split CPU/GPU. Several modes means the app can",
+    "use any of them; an empty list renders 'does not fit'."
+  ],
+  "_provenance": "Carried over verbatim from the first version of this page. NOT yet re-verified against the app's RunHistory store, which is not present on the machine this was edited from. Replace with exported measurements before treating these as current.",
+  "boxes": [
+    {
+      "id": "m1u",
+      "label": "M1 Ultra · 64-core GPU · 128 GB",
+      "note": "Best decode recorded on this machine, each model on the engine the app picks for it — llama.cpp for the dense-ish Qwen, our own Rust/Metal engine for the four big MoEs. The last two rows are <strong>out-of-core</strong> rates: neither model fits 128&nbsp;GB, so the weights stream from disk and the cost is visible in the number.",
+      "rows": [
+        { "name": "Qwen3.6-35B-A3B",   "params": "35B MoE",    "size": "22.3 GB", "modes": ["gpu"],        "decode": "73.7 tok/s" },
+        { "name": "Laguna-S-2.1",      "params": "~110B MoE",  "size": "48.3 GB", "modes": ["gpu"],        "decode": "30.8 tok/s" },
+        { "name": "DeepSeek-V4-Flash", "params": "267B MoE",   "size": "97.6 GB", "modes": ["gpu"],        "decode": "27.5 tok/s" },
+        { "name": "GLM-5.2",           "params": "1020B MoE",  "size": "216.7 GB","modes": ["ssd","hyb"],  "decode": "3.5 tok/s" },
+        { "name": "Kimi-K3",           "params": "~1500B MoE", "size": "594.0 GB","modes": ["ssd","hyb"],  "decode": "0.2 tok/s" }
+      ]
+    },
+    {
+      "id": "m2max",
+      "label": "M2 Max · 64 GB",
+      "note": "The same catalogue, scored for 64&nbsp;GB. Laguna-S still fits in memory; DeepSeek-V4-Flash no longer does and moves <strong>out-of-core</strong>, which is what the 2.9 costs — the same file, a different machine, a different answer.",
+      "rows": [
+        { "name": "Qwen3-4B",          "params": "4B dense",  "size": "2 GB",  "modes": ["gpu"],       "decode": "60.5 tok/s" },
+        { "name": "Qwen3.6-35B-A3B",   "params": "35B MoE",   "size": "22 GB", "modes": ["gpu"],       "decode": "51.6 tok/s" },
+        { "name": "Laguna-S-2.1",      "params": "~110B MoE", "size": "48 GB", "modes": ["gpu"],       "decode": "26.4 tok/s" },
+        { "name": "DeepSeek-V4-Flash", "params": "267B MoE",  "size": "87 GB", "modes": ["ssd","hyb"], "decode": "2.9 tok/s" }
+      ]
+    },
+    {
+      "id": "m4mini",
+      "label": "M4 mini · 16 GB",
+      "note": "A 16&nbsp;GB Machine is offered the models that suit it, not the whole catalogue — the 87&nbsp;GB and 217&nbsp;GB entries are scored, flagged and left out of reach rather than dangled. Only the first row has been run here; the app will not print a rate it has not measured on the machine in front of you.",
+      "rows": [
+        { "name": "Qwen3-4B",  "params": "4B dense",  "size": "2 GB",  "modes": ["gpu"], "decode": "29.9 tok/s" },
+        { "name": "Qwen3-8B",  "params": "8B dense",  "size": "5 GB",  "modes": ["gpu"], "decode": null },
+        { "name": "Qwen3-14B", "params": "14B dense", "size": "9 GB",  "modes": ["gpu"], "decode": null },
+        { "name": "Qwen3-32B", "params": "32B dense", "size": "20 GB", "modes": ["gpu"], "decode": null }
+      ]
+    }
+  ]
+}

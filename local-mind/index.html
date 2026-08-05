@@ -226,11 +226,7 @@
     <h2>What your Machine can run</h2>
 
     <div class="tabrow">
-      <div class="tabs" role="tablist" aria-label="Machine">
-        <button type="button" role="tab" data-box="m1u" aria-selected="true" aria-controls="modeltable">M1 Ultra · 64-core GPU · 128 GB</button>
-        <button type="button" role="tab" data-box="m2max" aria-selected="false" aria-controls="modeltable">M2 Max · 64 GB</button>
-        <button type="button" role="tab" data-box="m4mini" aria-selected="false" aria-controls="modeltable">M4 mini · 16 GB</button>
-      </div>
+      <div class="tabs" role="tablist" aria-label="Machine"></div>
       <span class="bindnote">Engine binds 127.0.0.1:8000</span>
     </div>
 
@@ -276,91 +272,107 @@
     </div>
   </div>
 
+  <section class="sec" id="thanks">
+    <div>
+      <h2>Built on other people's work</h2>
+      <p class="lede">Local Mind is a small amount of new code on top of a great deal of open source. Named because a benchmark is meaningless without saying whose code produced it, and because these projects are the reason any of this runs at all.</p>
+    </div>
+    <div class="duo">
+      <div class="panel">
+        <h3>Engines</h3>
+        <ul>
+          <li><strong>llama.cpp</strong> and <strong>ggml</strong> — Georgi Gerganov and contributors. Linked in-process as one of the selectable engines, and the origin of the GGUF format every model here is distributed in. MIT.</li>
+          <li><strong>ds4</strong> — Salvatore Sanfilippo (antirez). The upstream reference engine, shipped as the <code>reference</code> option and used as the correctness oracle our own kernels are checked against.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Compiler and runtime</h3>
+        <ul>
+          <li><strong>Rust</strong> — the engine, the server and the compiler backend are Rust. Apache-2.0 / MIT.</li>
+          <li><strong>LLVM</strong> and <strong>MLIR</strong> — our kernels are generated through an MLIR dialect before they become Metal, CUDA or AscendC. Apache-2.0 with LLVM exceptions.</li>
+          <li>Rust crates doing load-bearing work, notably <strong>ed25519-dalek</strong>, <strong>sha2</strong>, <strong>serde</strong> and <strong>serde_json</strong>.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Models</h3>
+        <ul>
+          <li><strong>DeepSeek-V4-Flash</strong> — DeepSeek</li>
+          <li><strong>GLM-5.2</strong> — Zhipu AI</li>
+          <li><strong>Qwen3</strong> and <strong>Qwen3.6</strong> — Alibaba, Apache-2.0</li>
+          <li><strong>Laguna S / XS 2.1</strong> — Poolside</li>
+          <li><strong>Kimi-K3</strong> — Moonshot AI</li>
+        </ul>
+        <p>Each carries its own licence, shown in the app before download.</p>
+      </div>
+      <div class="panel">
+        <h3>Distribution</h3>
+        <ul>
+          <li><strong>Hugging Face</strong> — where the weights come from, and the quantisers who publish them.</li>
+          <li>The community that produces the GGUF conversions and imatrix quantisations these models are usable at all on a desktop because of.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <script>
-  // Sizes are the download, identical everywhere. Residency is computed by the
-  // app itself from model size against this machine's memory and disk, so it is
-  // the column that genuinely changes between tabs. Decode is only filled in
-  // where the model was actually run on that machine.
-  const MODELS = {
-    m1u: [
-      ["Qwen3.6-35B-A3B", "35B MoE",  "22.3 GB"],
-      ["Laguna-S-2.1",  "~110B MoE",  "48.3 GB"],
-      ["DeepSeek-V4-Flash", "267B MoE", "97.6 GB"],
-      ["GLM-5.2",       "1020B MoE",  "216.7 GB"],
-      ["Kimi-K3",       "~1500B MoE", "594.0 GB"]
-    ],
-    m2max: [
-      ["Qwen3-4B",      "4B dense",   "2 GB"],
-      ["Qwen3.6-35B-A3B", "35B MoE",  "22 GB"],
-      ["Laguna-S-2.1",  "~110B MoE",  "48 GB"],
-      ["DeepSeek-V4-Flash", "267B MoE", "87 GB"]
-    ],
-    small: [
-      ["Qwen3-4B",      "4B dense",   "2 GB"],
-      ["Qwen3-8B",      "8B dense",   "5 GB"],
-      ["Qwen3-14B",     "14B dense",  "9 GB"],
-      ["Qwen3-32B",     "32B dense",  "20 GB"]
-    ]
-  };
-  const BOXES = {
-    m1u: {
-      set: "m1u",
-      note: "Best decode recorded on this machine, each model on the engine the app picks for it — llama.cpp for the dense-ish Qwen, our own Rust/Metal engine for the four big MoEs. The last two rows are <strong>out-of-core</strong> rates: neither model fits 128&nbsp;GB, so the weights stream from disk and the cost is visible in the number.",
-      rows: [["gpu"], ["gpu"], ["gpu"], ["ssd","hyb"], ["ssd","hyb"]],
-      decode: ["73.7 tok/s", "30.8 tok/s", "27.5 tok/s", "3.5 tok/s", "0.2 tok/s"]
-    },
-    m2max: {
-      set: "m2max",
-      note: "The same catalogue, scored for 64&nbsp;GB. Laguna-S still fits in memory; DeepSeek-V4-Flash no longer does and moves <strong>out-of-core</strong>, which is what the 2.9 costs — the same file, a different machine, a different answer.",
-      rows: [["gpu"], ["gpu"], ["gpu"], ["ssd","hyb"]],
-      decode: ["60.5 tok/s", "51.6 tok/s", "26.4 tok/s", "2.9 tok/s"]
-    },
-    m4mini: {
-      set: "small",
-      note: "A 16&nbsp;GB Machine is offered the models that suit it, not the whole catalogue — the 87&nbsp;GB and 217&nbsp;GB entries are scored, flagged and left out of reach rather than dangled. Only the first row has been run here; the app will not print a rate it has not measured on the machine in front of you.",
-      rows: [["gpu"], ["gpu"], ["gpu"], ["ssd","hyb"]],
-      decode: ["29.9 tok/s", null, null, null]
-    }
-  };
+  // Numbers live in machines.json, NOT here. Uploading a new copy of that file
+  // updates the page — no HTML edit, no redeploy. The trade is that the table
+  // needs one fetch to populate, so failure has to be visible rather than
+  // leaving an empty table that looks like "nothing runs".
   const PILL = { gpu: ["p-gpu","GPU"], ssd: ["p-ssd","SSD"], hyb: ["p-hyb","CPU+GPU"] };
-
   const rowsEl = document.getElementById("modelrows");
   const noteEl = document.getElementById("tablenote");
+  const tabsEl = document.querySelector(".tabs");
+  let BOXES = [];
 
-  function render(box) {
-    const b = BOXES[box];
-    rowsEl.innerHTML = MODELS[b.set].map(([name, params, size], i) => {
-      const modes = b.rows[i];
-      const runs = modes.length
-        ? modes.map(m => `<span class="pill ${PILL[m][0]}">${PILL[m][1]}</span>`).join(" ")
+  function render(i) {
+    const b = BOXES[i];
+    if (!b) return;
+    rowsEl.innerHTML = b.rows.map(r => {
+      const runs = (r.modes && r.modes.length)
+        ? r.modes.map(m => `<span class="pill ${PILL[m][0]}">${PILL[m][1]}</span>`).join(" ")
         : `<span class="na">does not fit</span>`;
-      const d = b.decode[i] ? b.decode[i] : `<span class="na">not measured</span>`;
-      return `<tr><td class="fam">${name} <span class="variant">${params}</span></td>`
-           + `<td class="num">${size}</td><td>${runs}</td><td class="num">${d}</td></tr>`;
+      // null decode means NOT MEASURED, which is a different claim from slow.
+      const d = r.decode ? r.decode : `<span class="na">not measured</span>`;
+      return `<tr><td class="fam">${r.name} <span class="variant">${r.params}</span></td>`
+           + `<td class="num">${r.size}</td><td>${runs}</td><td class="num">${d}</td></tr>`;
     }).join("");
-    noteEl.innerHTML = b.note
+    noteEl.innerHTML = (b.note || "")
       + " Sizes are the real download; residency is computed from that size against this"
       + " machine's memory and disk.";
+    [...tabsEl.children].forEach((t, n) => t.setAttribute("aria-selected", String(n === i)));
   }
 
-  const tabs = [...document.querySelectorAll('.tabs button')];
-  tabs.forEach((t, idx) => {
-    t.addEventListener("click", () => select(idx));
-    t.addEventListener("keydown", e => {
-      const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-      if (!d) return;
-      e.preventDefault();
-      const n = (idx + d + tabs.length) % tabs.length;
-      select(n); tabs[n].focus();
+  function buildTabs() {
+    tabsEl.innerHTML = "";
+    BOXES.forEach((b, i) => {
+      const t = document.createElement("button");
+      t.type = "button"; t.setAttribute("role", "tab");
+      t.setAttribute("aria-controls", "modeltable");
+      t.textContent = b.label;
+      t.addEventListener("click", () => render(i));
+      t.addEventListener("keydown", e => {
+        const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        const n = (i + d + BOXES.length) % BOXES.length;
+        render(n); tabsEl.children[n].focus();
+      });
+      tabsEl.appendChild(t);
     });
-  });
-  function select(i) {
-    tabs.forEach((t, n) => t.setAttribute("aria-selected", String(n === i)));
-    render(tabs[i].dataset.box);
   }
-  select(0);
+
+  fetch("machines.json", { cache: "no-cache" })
+    .then(r => { if (!r.ok) throw new Error(`machines.json: HTTP ${r.status}`); return r.json(); })
+    .then(data => { BOXES = data.boxes || []; buildTabs(); render(0); })
+    .catch(err => {
+      // Say so plainly. An empty table would read as a product that runs
+      // nothing, which is worse than admitting the data did not load.
+      noteEl.textContent = `Could not load the measurements (${err.message}).`;
+      rowsEl.innerHTML = `<tr><td colspan="4" class="na">measurements unavailable</td></tr>`;
+    });
 </script>
 
 </body>
