@@ -11,11 +11,12 @@
     "stream from disk, hyb = split CPU/GPU. Several modes means the app can",
     "use any of them; an empty list renders 'does not fit'."
   ],
-  "_provenance": "Carried over verbatim from the first version of this page. NOT yet re-verified against the app's RunHistory store, which is not present on the machine this was edited from. Replace with exported measurements before treating these as current.",
+  "_provenance": "The M4 mini and DGX Spark rows were measured directly on those machines in August 2026 and carry the method in their notes. The M1 Ultra and M2 Max rows are still carried over verbatim from the first version of this page and have NOT been re-verified; replace them with exported measurements before treating them as current. Prices are approximate street or list prices in August 2026, recorded so a rate can be read against what the machine costs — they move, and they are not quotes.",
   "boxes": [
     {
       "id": "m1u",
       "label": "M1 Ultra · 64-core GPU · 128 GB",
+      "price": "from $3,999 at launch · discontinued, used market",
       "note": "Best decode recorded on this machine, each model on the engine the app picks for it — llama.cpp for the dense-ish Qwen, our own Rust/Metal engine for the four big MoEs. The last two rows are <strong>out-of-core</strong> rates: neither model fits 128&nbsp;GB, so the weights stream from disk and the cost is visible in the number.",
       "rows": [
         { "name": "Qwen3.6-35B-A3B",   "params": "35B MoE",    "size": "22.3 GB", "modes": ["gpu"],        "decode": "73.7 tok/s" },
@@ -28,6 +29,7 @@
     {
       "id": "m2max",
       "label": "M2 Max · 64 GB",
+      "price": "from $1,999 at launch · ~$1,200–1,400 refurbished",
       "note": "The same catalogue, scored for 64&nbsp;GB. Laguna-S still fits in memory; DeepSeek-V4-Flash no longer does and moves <strong>out-of-core</strong>, which is what the 2.9 costs — the same file, a different machine, a different answer.",
       "rows": [
         { "name": "Qwen3-4B",          "params": "4B dense",  "size": "2 GB",  "modes": ["gpu"],       "decode": "60.5 tok/s" },
@@ -39,12 +41,20 @@
     {
       "id": "m4mini",
       "label": "M4 mini · 16 GB",
-      "note": "A 16&nbsp;GB Machine is offered the models that suit it, not the whole catalogue — the 87&nbsp;GB and 217&nbsp;GB entries are scored, flagged and left out of reach rather than dangled. Only the first row has been run here; the app will not print a rate it has not measured on the machine in front of you.",
+      "price": "$799 · Apple list, Aug 2026",
+      "note": "A 16&nbsp;GB machine is offered the models that suit it, not the whole catalogue. Both rows were re-measured on this machine in August 2026, decode isolated as the difference between a 129-token and a 1-token completion so that prefill is excluded. The larger Qwen3 variants are absent because they cannot be tested here rather than because they are slow: 14B needs a download this machine has no room for, and 32B is a 20&nbsp;GB file on a 16&nbsp;GB machine with 12.7&nbsp;GB free — it cannot be stored, let alone run.",
       "rows": [
-        { "name": "Qwen3-4B",  "params": "4B dense",  "size": "2 GB",  "modes": ["gpu"], "decode": "29.9 tok/s" },
-        { "name": "Qwen3-8B",  "params": "8B dense",  "size": "5 GB",  "modes": ["gpu"], "decode": null },
-        { "name": "Qwen3-14B", "params": "14B dense", "size": "9 GB",  "modes": ["gpu"], "decode": null },
-        { "name": "Qwen3-32B", "params": "32B dense", "size": "20 GB", "modes": ["gpu"], "decode": null }
+        { "name": "Qwen3-4B",  "params": "4B dense",  "size": "2 GB",  "modes": ["gpu"], "decode": "19.6 tok/s" },
+        { "name": "Qwen3-8B",  "params": "8B dense",  "size": "5 GB",  "modes": ["gpu"], "decode": "12.0 tok/s" }
+      ]
+    },
+    {
+      "id": "gb10",
+      "label": "DGX Spark · GB10 · 128 GB",
+      "price": "$4,699 · NVIDIA list, Feb 2026",
+      "note": "Not a Local Mind machine — the app is macOS only. This is the same DeepSeek-V4-Flash file on an NVIDIA GB10 Grace&nbsp;Blackwell desktop through the reference CUDA engine, so the model and the quantisation are comparable to the Mac rows even though the engine is not. Measured August 2026 as an A/B/B/A sequence, three repetitions per arm, GPU clock sampled throughout (2405–2535&nbsp;MHz); the repetitions spanned 0.06&nbsp;tok/s. The weights sit in unified memory rather than streaming, which is why an 87&nbsp;GB model reports a resident rate on a 128&nbsp;GB box.",
+      "rows": [
+        { "name": "DeepSeek-V4-Flash", "params": "267B MoE", "size": "87 GB", "modes": ["gpu"], "decode": "21.0 tok/s" }
       ]
     }
   ]

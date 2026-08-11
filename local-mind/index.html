@@ -92,6 +92,9 @@
   .tabs button[aria-selected="true"]{background:var(--ink);color:var(--ground);
                                      border-color:var(--ink);}
   .bindnote{font-family:var(--mono);font-size:var(--step);color:var(--ink-3);}
+  /* What the machine costs, beside what it does — a rate means little without it. */
+  .price{font-family:var(--mono);font-size:var(--step);color:var(--ink-2);
+         letter-spacing:.04em;white-space:nowrap;}
   .na{color:var(--ink-3);}
 
   .tscroll{overflow-x:auto;border:1px solid var(--rule);border-radius:3px;background:var(--panel);}
@@ -227,6 +230,7 @@
 
     <div class="tabrow">
       <div class="tabs" role="tablist" aria-label="Machine"></div>
+      <span class="price" id="boxprice"></span>
       <span class="bindnote">Engine binds 127.0.0.1:8000</span>
     </div>
 
@@ -340,6 +344,7 @@
   const PILL = { gpu: ["p-gpu","GPU"], ssd: ["p-ssd","SSD"], hyb: ["p-hyb","CPU+GPU"] };
   const rowsEl = document.getElementById("modelrows");
   const noteEl = document.getElementById("tablenote");
+  const priceEl = document.getElementById("boxprice");
   const tabsEl = document.querySelector(".tabs");
   let BOXES = [];
 
@@ -355,6 +360,8 @@
       return `<tr><td class="fam">${r.name} <span class="variant">${r.params}</span></td>`
            + `<td class="num">${r.size}</td><td>${runs}</td><td class="num">${d}</td></tr>`;
     }).join("");
+    // A box with no recorded price says nothing rather than "$0" or "—".
+    priceEl.textContent = b.price ? `≈ ${b.price}` : "";
     noteEl.innerHTML = (b.note || "")
       + " Sizes are the real download; residency is computed from that size against this"
       + " machine's memory and disk.";
