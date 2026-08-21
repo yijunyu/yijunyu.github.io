@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ds4_cuda vs antirez on GB10 — A/B progress</title>
-<meta name="description" content="A/B progress of the Rust ds4_cuda engine against antirez's C reference on the GB10 (DGX Spark), across prefill, decode and quality.">
+<title>ds4-rs-cuda vs. ds4.c on GB10 — A/B progress</title>
+<meta name="description" content="A/B progress of the Rust ds4-rs-cuda engine vs. the ds4.c reference on the GB10 (DGX Spark), across prefill, decode and quality.">
 <style>
   html{color-scheme:light dark}
   *{box-sizing:border-box}
@@ -83,24 +83,24 @@
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">A/B progress · ds4_cuda (Rust) vs antirez (C reference) · GB10 · DeepSeek-V4-Flash IQ2XXS · 2026-08</p>
-    <h1>ds4_cuda on GB10 — the A/B against antirez</h1>
-    <p class="ctx">One box (GB10, 128&nbsp;GB), one model, one driver, both engines — the Rust <strong>ds4_cuda</strong> engine against antirez's C reference. The question: can our engine close the gap on NVIDIA? Measured ABBA with control spreads; every number below is a benchmark, never an estimate. <a class="lang" href="ds4cuda-zh.html">中文</a></p>
+    <p class="eyebrow">A/B progress · ds4-rs-cuda (Rust) vs. ds4.c (C reference) · GB10 · DeepSeek-V4-Flash IQ2XXS · 2026-08</p>
+    <h1>ds4-rs-cuda on GB10 — the A/B vs. ds4.c</h1>
+    <p class="ctx">One box (GB10, 128&nbsp;GB), one model, one driver, both engines — the Rust <strong>ds4-rs-cuda</strong> engine vs. the ds4.c reference. The question: can our engine close the gap on NVIDIA? Measured ABBA with control spreads; every number below is a benchmark, never an estimate. <a class="lang" href="ds4cuda-zh.html">中文</a></p>
   </header>
 
   <section class="apex">
     <span class="tag">Answer — governing thought</span>
-    <p class="caption">GB10 A/B: ds4_cuda vs antirez — <b>decode +10%</b>, prefill parity.</p>
+    <p class="caption">GB10 A/B: ds4-rs-cuda vs. ds4.c — <b>decode +10%</b>, prefill parity.</p>
   </section>
 
   <details open>
     <summary>
       <span class="kick">Prefill</span>
-      <span class="head">Reaches parity: whole-prompt fix (2.32×) ties antirez at 8k; cold first request closed.</span>
+      <span class="head">Reaches parity: whole-prompt fix (2.32×) ties ds4.c at 8k; cold first request closed.</span>
       <span class="arrow">›</span>
     </summary>
     <div class="leaves">
-      <div class="leaf"><span class="k">P1</span><div><b>Chunking cliff fixed:</b> ours 8.79&nbsp;s vs antirez 10.15&nbsp;s at ~7949 tokens (one ABBA).</div></div>
+      <div class="leaf"><span class="k">P1</span><div><b>Chunking cliff fixed:</b> ours 8.79&nbsp;s vs. ds4.c 10.15&nbsp;s at ~7949 tokens (one ABBA).</div></div>
       <div class="leaf"><span class="k">P2</span><div><b>Cold first request closed:</b> 16.2&nbsp;s → 5.0&nbsp;s (residency wall — filtered prefetch + load drain).</div></div>
       <div class="leaf"><span class="k">P3</span><div><b>Without whole-prompt</b> we were 2.2× behind at 7.7k and 1.19× at 4k.</div></div>
     </div>
@@ -109,11 +109,11 @@
   <details>
     <summary>
       <span class="kick">Decode</span>
-      <span class="head">Wins at long context: +10.4% over antirez at 7.7k; crossover at ~2–2.5k tokens.</span>
+      <span class="head">Wins at long context: +10.4% over ds4.c at 7.7k; crossover at ~2–2.5k tokens.</span>
       <span class="arrow">›</span>
     </summary>
     <div class="leaves">
-      <div class="leaf"><span class="k">D1</span><div><b>ABBA, 8 reps/arm:</b> ours 18.756 vs antirez 16.991 tok/s = <span class="win">+10.39%</span>.</div></div>
+      <div class="leaf"><span class="k">D1</span><div><b>ABBA, 8 reps/arm:</b> ours 18.756 vs. ds4.c 16.991 tok/s = <span class="win">+10.39%</span>.</div></div>
       <div class="leaf"><span class="k">D2</span><div><b>The curve:</b> <span class="lose">−5.3%</span> at 280 tokens, +5.3% at 4029, +10.4% at 7.7k, plateau past 8k.</div></div>
       <div class="leaf"><span class="k">D3</span><div><b>Banked wins:</b> sparse gate, decode-graph slot fix, E5 f16-pair fusion.</div></div>
     </div>
@@ -126,18 +126,18 @@
       <span class="arrow">›</span>
     </summary>
     <div class="leaves">
-      <div class="leaf"><span class="k">Q1</span><div><b>Both driven as raw completions:</b> ours continues the text, his answers as if templated.</div></div>
-      <div class="leaf"><span class="k">Q2</span><div><b>Ours is nondeterministic across reps;</b> his constant — a documented caveat, not a quality loss.</div></div>
+      <div class="leaf"><span class="k">Q1</span><div><b>Both driven as raw completions:</b> ours continues the text, ds4.c answers as if templated.</div></div>
+      <div class="leaf"><span class="k">Q2</span><div><b>Ours is nondeterministic across reps;</b> ds4.c's constant — a documented caveat, not a quality loss.</div></div>
     </div>
   </details>
 
   <section class="foot">
     <h2>Caveats that travel with the number</h2>
-    <p><b>End-to-end flips on the prompt type.</b> Cold prompts: antirez still wins below ~2149 generated tokens — the cold-prefill cliff eats the decode margin. Repeated prompts (KV reuse): we win 1.3–2.1× at 128 tokens, at every context.</p>
+    <p><b>End-to-end flips on the prompt type.</b> Cold prompts: ds4.c still wins below ~2149 generated tokens — the cold-prefill cliff eats the decode margin. Repeated prompts (KV reuse): we win 1.3–2.1× at 128 tokens, at every context.</p>
     <p><b>Prefill parity is flag-gated:</b> the 2.32× whole-prompt fix is measured but default-off (not yet a safe default). Decode +10% is shipped.</p>
   </section>
 
-  <p class="colophon">Minto pyramid — the answer first, three lines beneath, evidence at the base. Click a branch to expand or collapse its evidence. Every ×-figure is ours divided by antirez; above 1 we are faster. Measured on device, ABBA, canary-gated.</p>
+  <p class="colophon">Minto pyramid — the answer first, three lines beneath, evidence at the base. Click a branch to expand or collapse its evidence. Every ×-figure is ours divided by ds4.c; above 1 we are faster. Measured on device, ABBA, canary-gated.</p>
 
 </div>
 </body>

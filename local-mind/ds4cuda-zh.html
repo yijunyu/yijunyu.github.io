@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ds4_cuda 对 antirez 的 GB10 A/B 进展</title>
-<meta name="description" content="Rust ds4_cuda 引擎对 antirez C 参考实现在 GB10（DGX Spark）上的 A/B 进展，覆盖预填充、解码与质量。">
+<title>ds4-rs-cuda 对 ds4.c 的 GB10 A/B 进展</title>
+<meta name="description" content="Rust ds4-rs-cuda 引擎对 ds4.c C 参考实现在 GB10（DGX Spark）上的 A/B 进展，覆盖预填充、解码与质量。">
 <style>
   html{color-scheme:light dark}
   *{box-sizing:border-box}
@@ -79,24 +79,24 @@
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">A/B 进展 · ds4_cuda（Rust）对 antirez（C 参考）· GB10 · DeepSeek-V4-Flash IQ2XXS · 2026-08</p>
-    <h1>GB10 上的 ds4_cuda —— 对 antirez 的 A/B</h1>
-    <p class="ctx">同一台机器（GB10，128&nbsp;GB）、同一模型、同一驱动、两种引擎 —— Rust 的 <strong>ds4_cuda</strong> 引擎对 antirez 的 C 参考实现。问题：我们的引擎能否在 NVIDIA 上追平差距？以 ABBA 与控制组离散度实测；以下每个数字都是基准，绝非估算。 <a class="lang" href="ds4cuda-en.html">English</a></p>
+    <p class="eyebrow">A/B 进展 · ds4-rs-cuda（Rust）对 ds4.c（C 参考）· GB10 · DeepSeek-V4-Flash IQ2XXS · 2026-08</p>
+    <h1>GB10 上的 ds4-rs-cuda —— 对 ds4.c 的 A/B</h1>
+    <p class="ctx">同一台机器（GB10，128&nbsp;GB）、同一模型、同一驱动、两种引擎 —— Rust 的 <strong>ds4-rs-cuda</strong> 引擎对 ds4.c 的 C 参考实现。问题：我们的引擎能否在 NVIDIA 上追平差距？以 ABBA 与控制组离散度实测；以下每个数字都是基准，绝非估算。 <a class="lang" href="ds4cuda-en.html">English</a></p>
   </header>
 
   <section class="apex">
     <span class="tag">结论 —— 统领思想</span>
-    <p class="caption">GB10 A/B 对比：ds4_cuda <b>解码 +10%</b>，预填充持平。</p>
+    <p class="caption">GB10 A/B 对比：ds4-rs-cuda <b>解码 +10%</b>，预填充持平。</p>
   </section>
 
   <details open>
     <summary>
       <span class="kick">预填充</span>
-      <span class="head">达到持平：整段提示修复（2.32×）在 8k 追平 antirez；冷启动首请求已闭合。</span>
+      <span class="head">达到持平：整段提示修复（2.32×）在 8k 追平 ds4.c；冷启动首请求已闭合。</span>
       <span class="arrow">›</span>
     </summary>
     <div class="leaves">
-      <div class="leaf"><span class="k">P1</span><div><b>分块瓶颈已修复：</b>~7949 token 下 ours 8.79&nbsp;s 对 antirez 10.15&nbsp;s（一次 ABBA）。</div></div>
+      <div class="leaf"><span class="k">P1</span><div><b>分块瓶颈已修复：</b>~7949 token 下 ours 8.79&nbsp;s 对 ds4.c 10.15&nbsp;s（一次 ABBA）。</div></div>
       <div class="leaf"><span class="k">P2</span><div><b>冷启动首请求已闭合：</b>16.2&nbsp;s → 5.0&nbsp;s（驻留墙——过滤预取 + 加载排空）。</div></div>
       <div class="leaf"><span class="k">P3</span><div><b>无整段提示时</b> 7.7k 落后 2.2×，4k 落后 1.19×。</div></div>
     </div>
@@ -105,11 +105,11 @@
   <details>
     <summary>
       <span class="kick">解码</span>
-      <span class="head">长上下文胜出：7.7k 领先 antirez 10.4%；交叉点约 2–2.5k token。</span>
+      <span class="head">长上下文胜出：7.7k 领先 ds4.c 10.4%；交叉点约 2–2.5k token。</span>
       <span class="arrow">›</span>
     </summary>
     <div class="leaves">
-      <div class="leaf"><span class="k">D1</span><div><b>ABBA 每组 8 次：</b>ours 18.756 对 antirez 16.991 tok/s = <span class="win">+10.39%</span>。</div></div>
+      <div class="leaf"><span class="k">D1</span><div><b>ABBA 每组 8 次：</b>ours 18.756 对 ds4.c 16.991 tok/s = <span class="win">+10.39%</span>。</div></div>
       <div class="leaf"><span class="k">D2</span><div><b>曲线：</b><span class="lose">−5.3%</span> @280 token，+5.3% @4029，+10.4% @7.7k，8k 后趋平。</div></div>
       <div class="leaf"><span class="k">D3</span><div><b>已积累的胜出：</b>稀疏门控、解码图槽位修复、E5 f16 对融合。</div></div>
     </div>
@@ -122,18 +122,18 @@
       <span class="arrow">›</span>
     </summary>
     <div class="leaves">
-      <div class="leaf"><span class="k">Q1</span><div><b>两者均以原始补全驱动：</b>我们续写文本，他按模板回答。</div></div>
-      <div class="leaf"><span class="k">Q2</span><div><b>我们跨次非确定，</b>他恒定——已记录的注意事项，非质量损失。</div></div>
+      <div class="leaf"><span class="k">Q1</span><div><b>两者均以原始补全驱动：</b>我们续写文本，ds4.c 按模板回答。</div></div>
+      <div class="leaf"><span class="k">Q2</span><div><b>我们跨次非确定，</b>ds4.c 恒定——已记录的注意事项，非质量损失。</div></div>
     </div>
   </details>
 
   <section class="foot">
     <h2>随数字而来的注意事项</h2>
-    <p><b>端到端随提示类型反转。</b>冷提示：antirez 在 ~2149 生成 token 内仍胜出——冷预填充瓶颈吞掉了解码优势。重复提示（KV 复用）：128 token 时我们胜 1.3–2.1×，任何上下文。</p>
+    <p><b>端到端随提示类型反转。</b>冷提示：ds4.c 在 ~2149 生成 token 内仍胜出——冷预填充瓶颈吞掉了解码优势。重复提示（KV 复用）：128 token 时我们胜 1.3–2.1×，任何上下文。</p>
     <p><b>预填充持平依赖开关：</b>2.32× 整段提示修复已实测但默认关闭（尚非安全默认）。解码 +10% 已上线。</p>
   </section>
 
-  <p class="colophon">Minto 金字塔——先给结论，下分三线，证据在底部。点击分支展开或收起其证据。每个 × 值都是 ours 除以 antirez；大于 1 表示我们更快。设备实测，ABBA，金丝雀校验。</p>
+  <p class="colophon">Minto 金字塔——先给结论，下分三线，证据在底部。点击分支展开或收起其证据。每个 × 值都是 ours 除以 ds4.c；大于 1 表示我们更快。设备实测，ABBA，金丝雀校验。</p>
 
 </div>
 </body>
