@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ds4_cuda vs antirez on GB10 — A/B progress</title>
+<meta name="description" content="A/B progress of the Rust ds4_cuda engine against antirez's C reference on the GB10 (DGX Spark), across prefill, decode and quality.">
+<style>
+  html{color-scheme:light dark}
+  *{box-sizing:border-box}
+  body{margin:0;padding:0;font:15px -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
+       background:#f4f6f5;color:#10161a;line-height:1.55;-webkit-font-smoothing:antialiased}
+  :root{
+    --ground:#F2F5F3;--panel:#FFFFFF;--panel-2:#EAF0ED;
+    --ink:#0E1512;--ink-2:#44514B;--ink-3:#75817B;
+    --line:#D7DFDA;--line-2:#B9C5BE;
+    --accent:#0E8C57;--accent-soft:#D9EFE5;
+    --win:#0E8C57;--lose:#B5451F;--note:#9A6B00;
+    --display:ui-serif,"New York","Iowan Old Style",Georgia,serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0C1110;--panel:#151B18;--panel-2:#1D2622;
+      --ink:#E7EEEB;--ink-2:#9AA69F;--ink-3:#6D7972;
+      --line:#27312C;--line-2:#35413B;
+      --accent:#2ED08A;--accent-soft:#143324;
+      --win:#2ED08A;--lose:#F0774A;--note:#D4A23A;
+    }
+  }
+  body{background:var(--ground);color:var(--ink);font-family:var(--body)}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(1.6rem,4vw,3rem) clamp(1rem,3vw,1.75rem) 4rem;
+        display:flex;flex-direction:column;gap:2rem}
+
+  /* header */
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  header h1{font-family:var(--display);font-weight:500;letter-spacing:-.02em;
+            font-size:clamp(1.9rem,1.4rem + 2.6vw,2.9rem);line-height:1.05;margin:.4rem 0 .7rem}
+  header .ctx{color:var(--ink-2);max-width:44rem}
+  header .ctx strong{color:var(--ink)}
+  .lang{display:inline-block;margin-top:.6rem;font-family:var(--mono);font-size:.74rem;font-weight:700;
+        color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:4px;padding:.12rem .55rem}
+  .lang:hover{background:var(--accent-soft)}
+
+  /* apex */
+  .apex{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);
+        border-radius:6px;padding:1.5rem 1.7rem}
+  .apex .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+             color:var(--accent);font-weight:700}
+  .apex .caption{font-family:var(--display);font-size:clamp(1.35rem,1.15rem + 1.6vw,1.9rem);
+                 font-weight:500;letter-spacing:-.01em;line-height:1.25;margin:.5rem 0 0;text-wrap:balance}
+  .apex .caption b{color:var(--accent);font-weight:600}
+
+  /* branches */
+  details{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  summary{list-style:none;cursor:pointer;padding:1rem 1.2rem;display:flex;gap:1rem;align-items:baseline}
+  summary::-webkit-details-marker{display:none}
+  summary .kick{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+                font-weight:700;color:var(--accent);flex:0 0 5.5rem}
+  summary .head{font-size:1.06rem;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+  summary .arrow{margin-left:auto;color:var(--ink-3);font-family:var(--mono);font-size:.9rem;transition:transform .15s}
+  details[open] summary .arrow{transform:rotate(90deg)}
+  details[open] summary{border-bottom:1px solid var(--line)}
+  .leaves{padding:.4rem 1.2rem 1.1rem}
+  .leaf{display:grid;grid-template-columns:auto 1fr;gap:.6rem;padding:.55rem 0;border-top:1px solid var(--line);
+        color:var(--ink-2);font-size:.92rem}
+  .leaf:first-child{border-top:none}
+  .leaf b{color:var(--ink);font-weight:600}
+  .leaf .k{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);padding-top:.18rem}
+
+  /* footer */
+  .foot{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:1.1rem 1.25rem}
+  .foot h2{font-size:.8rem;font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;
+           color:var(--ink-3);margin:0 0 .5rem}
+  .foot p{font-size:.88rem;color:var(--ink-2);margin:0 0 .5rem}
+  .foot p:last-child{margin-bottom:0}
+  .foot b{color:var(--ink)}
+  .win{color:var(--win);font-weight:700}.lose{color:var(--lose);font-weight:700}
+  .colophon{color:var(--ink-3);font-size:.76rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">A/B progress · ds4_cuda (Rust) vs antirez (C reference) · GB10 · DeepSeek-V4-Flash IQ2XXS · 2026-08</p>
+    <h1>ds4_cuda on GB10 — the A/B against antirez</h1>
+    <p class="ctx">One box (GB10, 128&nbsp;GB), one model, one driver, both engines — the Rust <strong>ds4_cuda</strong> engine against antirez's C reference. The question: can our engine close the gap on NVIDIA? Measured ABBA with control spreads; every number below is a benchmark, never an estimate. <a class="lang" href="ds4cuda-zh.html">中文</a></p>
+  </header>
+
+  <section class="apex">
+    <span class="tag">Answer — governing thought</span>
+    <p class="caption">GB10 A/B: ds4_cuda vs antirez — <b>decode +10%</b>, prefill parity.</p>
+  </section>
+
+  <details open>
+    <summary>
+      <span class="kick">Prefill</span>
+      <span class="head">Reaches parity: whole-prompt fix (2.32×) ties antirez at 8k; cold first request closed.</span>
+      <span class="arrow">›</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">P1</span><div><b>Chunking cliff fixed:</b> ours 8.79&nbsp;s vs antirez 10.15&nbsp;s at ~7949 tokens (one ABBA).</div></div>
+      <div class="leaf"><span class="k">P2</span><div><b>Cold first request closed:</b> 16.2&nbsp;s → 5.0&nbsp;s (residency wall — filtered prefetch + load drain).</div></div>
+      <div class="leaf"><span class="k">P3</span><div><b>Without whole-prompt</b> we were 2.2× behind at 7.7k and 1.19× at 4k.</div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="kick">Decode</span>
+      <span class="head">Wins at long context: +10.4% over antirez at 7.7k; crossover at ~2–2.5k tokens.</span>
+      <span class="arrow">›</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">D1</span><div><b>ABBA, 8 reps/arm:</b> ours 18.756 vs antirez 16.991 tok/s = <span class="win">+10.39%</span>.</div></div>
+      <div class="leaf"><span class="k">D2</span><div><b>The curve:</b> <span class="lose">−5.3%</span> at 280 tokens, +5.3% at 4029, +10.4% at 7.7k, plateau past 8k.</div></div>
+      <div class="leaf"><span class="k">D3</span><div><b>Banked wins:</b> sparse gate, decode-graph slot fix, E5 f16-pair fusion.</div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="kick">Quality</span>
+      <span class="head">Output equivalent: both run raw completions; the divergence is harness, not comprehension.</span>
+      <span class="arrow">›</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">Q1</span><div><b>Both driven as raw completions:</b> ours continues the text, his answers as if templated.</div></div>
+      <div class="leaf"><span class="k">Q2</span><div><b>Ours is nondeterministic across reps;</b> his constant — a documented caveat, not a quality loss.</div></div>
+    </div>
+  </details>
+
+  <section class="foot">
+    <h2>Caveats that travel with the number</h2>
+    <p><b>End-to-end flips on the prompt type.</b> Cold prompts: antirez still wins below ~2149 generated tokens — the cold-prefill cliff eats the decode margin. Repeated prompts (KV reuse): we win 1.3–2.1× at 128 tokens, at every context.</p>
+    <p><b>Prefill parity is flag-gated:</b> the 2.32× whole-prompt fix is measured but default-off (not yet a safe default). Decode +10% is shipped.</p>
+  </section>
+
+  <p class="colophon">Minto pyramid — the answer first, three lines beneath, evidence at the base. Click a branch to expand or collapse its evidence. Every ×-figure is ours divided by antirez; above 1 we are faster. Measured on device, ABBA, canary-gated.</p>
+
+</div>
+</body>
+</html>
