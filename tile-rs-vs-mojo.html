@@ -132,11 +132,12 @@
 <p>A budget that is merely <em>wrong</em> gets caught by the next tool down. A budget that is <em>absent</em> does not get caught until the chip faults. That ordering is the argument for pushing the constraint into the type system, where it is checked before anything is emitted.</p>
 <hr>
 <h2>Credit where it is due</h2>
-<p>Mojo&#x27;s abstraction level holds up well on safety. In our tables the Mojo operator is byte-identical between the two readings of the input — it did not have to change when the ill-formed shapes were fixed, unlike Ascend C, TileLang, Triton and PTO. That is a real design win, and hats off to the Modular team for it.</p>
+<p>Mojo&#x27;s abstraction level holds up well on safety, and here is the evidence for that from outside the timing tables. Every kernel in this corpus exists in two readings: the shapes as they were first captured, some of them degenerate and ill-formed, and the same kernels after those shapes were fixed. Ascend C, TileLang, Triton and PTO all emit <em>different code</em> for the two readings — they were sensitive to a malformation they had no business being sensitive to. The Mojo operator is byte-identical across both. It never had to care.</p>
+<p>That is a real design win, and hats off to the Modular team for it.</p>
 <hr>
 <h2>An invitation</h2>
-<p>Comparing on 26 August against a compiler open-sourced on 18 August is not especially fair to Chris Lattner and his team. Eight days is not long.</p>
-<p>So: consider this a challenge, warmly meant. The benchmarks, the kernels and the measurement harnesses are public. If the next Mojo release takes these numbers back, everyone who runs a model on any of this hardware wins — which is rather the point of doing it in the open.</p>
+<p>Measuring nine days after a 1.0 open-sourcing is not especially fair to Chris Lattner and his team. Nine days is not long.</p>
+<p>So: consider this a challenge, warmly meant. The kernel corpus and the benchmark entries are published at <a href="https://pu-rs.org" target="_blank" rel="noopener">pu-rs.org</a>, and the measurement method is described above in enough detail to be argued with — which is the part that matters. If the next Mojo release takes these numbers back, everyone who runs a model on any of this hardware wins, and that is rather the point of doing it in the open.</p>
 <hr>
 <p><em>All Ascend figures: Ascend 910B2, DeepSeek-R1-Distill-Qwen-1.5B, CANN 8.5.2. All Apple figures: M1 Ultra, 128 GB. Every kernel in both tables is verified against a host reference before it is timed.</em></p>
 
