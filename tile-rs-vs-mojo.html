@@ -79,7 +79,7 @@
 <h2>How? Three claims</h2>
 <p><strong>One: the kernels are safe, in three specific senses.</strong></p>
 <ul>
-<li><em>Type safety.</em> No raw pointers, no runtime checks needed to establish it.</li>
+<li><em>Type safety.</em> No raw pointers, and nothing that needs a runtime check to stay true.</li>
 <li><em>Concurrency safety.</em> No data races, with no synchronisation the programmer has to remember to add.</li>
 <li><em>Resource safety.</em> A kernel cannot allocate more than the buffer it was given. This one is not theoretical — see the section on the four Ascend backends below, where three of four got a hardware capacity limit wrong, each in a different way.</li>
 </ul>
@@ -87,7 +87,7 @@
 <p>GPUs, TPUs and NPUs have genuinely different architectures, and no single emitted implementation suits all of them. What they <em>do</em> share is enough structure to be captured by one type system and one set of invariants. tile-rs generates a different implementation per target, keeping the operator&#x27;s meaning while satisfying that target&#x27;s memory, concurrency, synchronisation and capacity constraints.</p>
 <p><strong>Three: the two directions compose.</strong></p>
 <p><em>Lowering</em> goes from types and invariants to a hardware-affine implementation; it must preserve the safety properties while introducing hardware detail. <em>Lifting</em> goes the other way — from an optimised, target-specific kernel back to types and invariants — and it must re-establish safety. The payoff is what happens when you lift and then lower again to a <em>different</em> target: an optimisation discovered on one backend transfers to the others.</p>
-<p>If you know <em>Journey to the West</em>: tile-rs is the Monkey King. Safety is the golden headband that constrains him, hardware affinity is the extending staff, and the lift/lower cycle is his seventy-two transformations. Constrained, he can still go anywhere — heaven or the dragon king&#x27;s palace.</p>
+<p>If you know <em>Journey to the West</em>: tile-rs is the Monkey King. Safety is the golden headband, hardware affinity is the staff that grows to any length, and the lift/lower cycle is his seventy-two transformations. The headband is usually read as a punishment, but it is the thing that makes the rest of him safe to let loose — and wearing it he still goes everywhere, heaven and the dragon king&#x27;s palace included.</p>
 <p>In practice this has been a magpie exercise. tile-rs borrows from NVIDIA&#x27;s cuTile, Huawei&#x27;s PTO and Ascend C, and Mojo, then lifts and lowers repeatedly. Adding safety to those ideas has, repeatedly, also made them faster.</p>
 <hr>
 <h2>Two objections worth answering</h2>
@@ -138,6 +138,7 @@
 <p>So: consider this a challenge, warmly meant. The benchmarks, the kernels and the measurement harnesses are public. If the next Mojo release takes these numbers back, everyone who runs a model on any of this hardware wins — which is rather the point of doing it in the open.</p>
 <hr>
 <p><em>All Ascend figures: Ascend 910B2, DeepSeek-R1-Distill-Qwen-1.5B, CANN 8.5.2. All Apple figures: M1 Ultra, 128 GB. Every kernel in both tables is verified against a host reference before it is timed.</em></p>
+
       </article>
     </main>
 
