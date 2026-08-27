@@ -68,6 +68,17 @@
   .opts .d{font-size:.76rem;color:var(--ink-2);line-height:1.4;}
   .opts .tag{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;
              text-transform:uppercase;color:var(--ink-3);}
+  /* A release is only legible if the delta is marked where the choice is made,
+     not only summarised at the top. */
+  .nu{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;
+      text-transform:uppercase;color:var(--resident);border:1px solid var(--resident);
+      border-radius:2px;padding:0 .28rem;margin-left:.4rem;vertical-align:.08em;}
+  .newband{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+           padding:clamp(1.25rem,3vw,2rem) 0;}
+  .newband h2{font-size:clamp(1.3rem,1.1rem + .8vw,1.7rem);}
+  .newband .duo{margin-top:1rem;}
+  .newband .panel h3{font-size:1.05rem;}
+  .newband .panel h3 .nu{margin-left:.45rem;}
 
   li.res-gpu{background:var(--resident-bg);box-shadow:inset 3px 0 0 var(--resident);}
   li.res-ssd{background:var(--stream-bg);box-shadow:inset 3px 0 0 var(--stream);}
@@ -139,7 +150,7 @@
 
   <header class="mast">
     <div class="mast-copy">
-      <div class="eyebrow">macOS · Apple silicon · version 1.0.2</div>
+      <div class="eyebrow">macOS · Apple silicon · version 1.0.3</div>
       <h1>Local&nbsp;Mind</h1>
       <p class="thesis">Large models run on the Machine in front of you. Once a model is serving, the engine cannot open a network connection — the prompt has nowhere else to go.</p>
       <p style="margin:.5rem 0 0;font-family:var(--mono);font-size:.82rem">
@@ -160,6 +171,40 @@
     </aside>
   </header>
 
+  <section class="sec newband">
+    <h2>New in 1.0.3</h2>
+    <div class="duo">
+      <div class="panel">
+        <h3>Video, from a description</h3>
+        <p>A <strong>Generate Video</strong> screen runs <strong>MiniMax&nbsp;H3</strong> on your
+           own GPU: seconds of video, with synchronised audio, from a sentence — or from two
+           anchor frames, where you give the first and the last and the model fills the middle.
+           Same rule as the text models: the weights are yours, the frames never leave the Machine.</p>
+      </div>
+      <div class="panel">
+        <h3>Serve other people, deliberately</h3>
+        <p>The engine still binds loopback by default. You can now hand it to your phone or a
+           colleague — but only by turning LAN serving on <em>this session</em>, and only with an
+           API key you mint in the app. The key is shown once; the Mac keeps its SHA-256 and
+           nothing else. The engine refuses to open up without one.</p>
+      </div>
+      <div class="panel">
+        <h3>Four more models</h3>
+        <p><strong>Qwen3.8-27B</strong>, now the recommended Qwen — dense, Apache-2.0, 256K context.
+           <strong>Muse Glimmer 30B</strong> from Meta, 30B dense in 17&nbsp;GB, whose hybrid attention
+           keeps a full 128K session near that size too. <strong>MiniMax&nbsp;H3</strong> for video. And
+           <strong>DeepSeek-V4-Pro-0813</strong> — 1.6T&nbsp;parameters, 850&nbsp;GB, listed and honestly
+           priced rather than hidden.</p>
+      </div>
+      <div class="panel">
+        <h3>Two more agents, and your own leaderboards</h3>
+        <p><strong>DeepSeek Harness</strong> (<code>dsh</code>) and <strong>Grok Build</strong> join the
+           one-click wiring. The rankings row became data too — add the leaderboard you actually
+           trust, alongside the ones we shipped.</p>
+      </div>
+    </div>
+  </section>
+
   <section class="sec">
     <div>
       <h2>Every option, in the order you meet them</h2>
@@ -176,11 +221,14 @@
             <span class="sub">Downloaded and SHA-256 verified before it will load.</span>
           </div>
           <ul class="opts">
-            <li><span class="o">DeepSeek-V4-Flash</span><span class="d">267B MoE, two expert recipes</span></li>
+            <li><span class="o">DeepSeek-V4-Flash</span><span class="d">267B MoE, three expert recipes</span></li>
+            <li><span class="o">DeepSeek-V4-Pro-0813<span class="nu">new</span></span><span class="d">1.6T MoE, 850 GB — out-of-core only</span></li>
+            <li><span class="o">Qwen3 · 3.6 · 3.8<span class="nu">new</span></span><span class="d">4B to 32B dense, 35B-A3B, and a 27B with 256K context — now the recommended Qwen</span></li>
+            <li><span class="o">Muse Glimmer 30B<span class="nu">new</span></span><span class="d">Meta, 30B dense in 17 GB</span></li>
+            <li><span class="o">MiniMax H3<span class="nu">new</span></span><span class="d">Text to video, with synchronised audio</span></li>
             <li><span class="o">Laguna S / XS 2.1</span><span class="d">Poolside coding models, 110B and 33B</span></li>
             <li><span class="o">GLM-5.2</span><span class="d">1020B MoE</span></li>
             <li><span class="o">Kimi-K3</span><span class="d">~1500B, out-of-core only</span></li>
-            <li><span class="o">Qwen3 · Qwen3.6</span><span class="d">4B / 8B / 14B / 32B, and 35B-A3B</span></li>
             <li><span class="o">Bring your own</span><span class="d">Any GGUF already on disk</span></li>
           </ul>
         </div>
@@ -220,8 +268,10 @@
           </div>
           <ul class="opts">
             <li><span class="o">Playground</span><span class="d">Prompt, streamed answer with thinking split out, and a speed report</span></li>
-            <li><span class="o">Local API</span><span class="d">OpenAI- and Anthropic-compatible, loopback only</span></li>
+            <li><span class="o">Generate Video<span class="nu">new</span></span><span class="d">A few seconds of video from a description, or from a first and last frame</span></li>
+            <li><span class="o">Local API</span><span class="d">Chat-completions and Anthropic wire formats, loopback by default</span></li>
             <li><span class="o">AI agents</span><span class="d">Wire a coding agent to the local model in one click</span></li>
+            <li><span class="o">Serve others<span class="nu">new</span></span><span class="d">Opt in per session, API key required — off again at every launch</span></li>
           </ul>
         </div>
 
@@ -255,6 +305,7 @@
       <p>Enforced, not promised. Once the engine has loaded weights and bound its port, it asks the kernel to revoke its own networking — irreversibly, for the life of the process.</p>
       <p>Check it while it serves:</p>
       <p><code>lsof -i -a -p &lt;pid&gt;</code></p>
+      <p><strong>1.0.3 adds one door, and it is locked by default.</strong> Serving others binds the LAN instead of loopback — so it needs a key you minted, it is refused without one, and it switches itself off again at the next launch. Nothing you do not turn on this session.</p>
     </div>
 
     <div class="panel">
@@ -262,9 +313,11 @@
       <p>The app writes each agent's config and points it at the local engine.</p>
       <ul>
         <li>Claude Code</li>
-        <li>Codex</li>
         <li>OpenCode</li>
-        <li>Cowork</li>
+        <li>Open Cowork</li>
+        <li>DeepSeek Harness (<code>dsh</code>)<span class="nu">new</span></li>
+        <li>Grok Build<span class="nu">new</span></li>
+        <li>Or your own — name the binary and the wire format</li>
       </ul>
     </div>
 
@@ -272,6 +325,7 @@
       <h3>Numbers you can check</h3>
       <p>Every run reports time to first token, prefill and decode rate — beside the engine that produced them and the model actually served.</p>
       <p>Two prompts: a short chat, and a ~3000-token passage that measures real prefill.</p>
+      <p>Rankings are links, not verdicts — 1.0.3 lets you add the leaderboard you trust beside the ones we shipped.</p>
     </div>
 
     <div class="panel">
@@ -325,6 +379,8 @@
           <li><strong>Qwen3</strong> and <strong>Qwen3.6</strong> — Alibaba, Apache-2.0</li>
           <li><strong>Laguna S / XS 2.1</strong> — Poolside</li>
           <li><strong>Kimi-K3</strong> — Moonshot AI</li>
+          <li><strong>Muse Glimmer 30B</strong> — Meta, Apache-2.0</li>
+          <li><strong>MiniMax H3</strong> — MiniMax</li>
         </ul>
         <p>Each carries its own licence, shown in the app before download.</p>
       </div>
