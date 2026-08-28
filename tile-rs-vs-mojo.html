@@ -69,8 +69,6 @@
 <div class="tbl-wrap"><table><thead><tr><th>engine = ours, same model, 256 decode tokens</th><th>tok/s</th></tr></thead><tbody><tr><td><strong>our matvec</strong></td><td><strong>105.2</strong></td></tr><tr><td>ggml's kernel, lifted</td><td>101.2</td></tr></tbody></table></div>
 <p><strong>0.955 the other way.</strong> Each kernel is about 5% faster inside the engine it was written for, in both directions, with the sign test unanimous both times.</p>
 <p>A kernel and its host are co-designed: moving either across costs roughly the same. Run singly, the first table reads as a deficit and the second as a win, which is why both have to run.</p>
-<p>It also explains a day's worth of failed transplants. We tried moving three individual pieces of ggml's kernel into ours — two rows per threadgroup, four unrolled accumulators, its chunked contiguous access. Flat, 9% worse, and 2.3% worse respectively. <strong>No single piece transfers</strong>, because each is sized to the launch geometry ggml's host chooses.</p>
-<hr>
 <hr>
 <h2>What six days of lifting looks like</h2>
 <p>The point of a generator is that you fix the <em>generator</em>. Every number below came from changing an emitter and re-running, never from editing emitted code. Apple M1 Ultra, strict shapes, GPU clock, each change A/B'd against the previous kernel in the same file with the value check passing on both sides.</p>
