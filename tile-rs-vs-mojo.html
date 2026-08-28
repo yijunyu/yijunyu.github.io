@@ -92,8 +92,7 @@
 <p>The offer is genuine. <strong>Replace our emitted Mojo with kernels you would defend</strong> — hand-written Mojo, MAX graph ops, whatever represents the supported path — and we will run them through the same harness, on the same shapes, on the same machines, and publish the result whichever way it falls. The harness is one script and the kernels are drop-in; see <em>Reproducing</em>.</p>
 <p>We are saying the second half out loud on purpose: <strong>if MAX wins, that number goes up here in the same place, with the same prominence as this one.</strong> An invitation to be measured is worth nothing without it.</p>
 <h2>An invitation</h2>
-<p>Measuring nine days after a 1.0 open-sourcing is not especially fair to Chris Lattner and his team. Nine days is not long.</p>
-<p>So: consider this a challenge, warmly meant. The kernel corpus and the benchmark entries are published at <a href="https://pu-rs.org">pu-rs.org</a>, and the measurement method is described above in enough detail to be argued with — which is the part that matters. If the next Mojo release takes these numbers back, everyone who runs a model on any of this hardware wins, and that is rather the point of doing it in the open.</p>
+<p>The kernel corpus and the benchmark entries are published at <a href="https://pu-rs.org">pu-rs.org</a>. If a kernel here can be beaten — by a better emitter, a better Mojo, or a shape we got wrong — send a pull request to the repository below and the numbers move.</p>
 <hr>
 <h2>Reproducing</h2>
 <p>The Apple comparison is a single script. It ships all sixteen kernels for both backends, checks each one against a host reference before timing anything, and prints the table above with the spread as well as the median:</p>
