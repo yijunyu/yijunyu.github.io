@@ -72,7 +72,7 @@
 <hr>
 <h2>How? Three claims</h2>
 <p><strong>One: the kernels are safe, in three specific senses.</strong></p>
-<ul><li><em>Type safety.</em> No raw pointers, and nothing that needs a runtime check to stay true.</li><li><em>Concurrency safety.</em> No data races, with no synchronisation the programmer has to remember to add.</li><li><em>Resource safety.</em> A kernel cannot allocate more than the buffer it was given. This one is not theoretical — see the section on the four Ascend backends below, where three of four got a hardware capacity limit wrong, each in a different way.</li></ul>
+<ul><li><em>Type safety.</em> No raw pointers, and nothing that needs a runtime check to stay true.</li><li><em>Concurrency safety.</em> No data races, with no synchronisation the programmer has to remember to add.</li><li><em>Resource safety.</em> A kernel cannot allocate more than the buffer it was given. Not theoretical: on other targets in this project, backends that checked a budget they had merely written down — rather than one the type system enforced — got a hardware capacity limit wrong, and the miss surfaced anywhere from the assembler to the device mid-run.</li></ul>
 <p><strong>One and a half: what the language contributes, concretely.</strong></p>
 <p>The safety argument is usually made in the abstract. Two features earn their place in a code generator specifically.</p>
 <p><em>Exhaustive matching turns a refactor into a checklist.</em> Fusing two operators into one kernel means adding a variant to the kernel-type enum, and the compiler then names every site that must handle it — arity, operand types, signature parameters, dispatch — instead of letting the new case fall through a <code>default:</code> and emit a kernel that silently computes the wrong thing.</p>
@@ -82,7 +82,7 @@
 <p><strong>Three: the two directions compose.</strong></p>
 <p><em>Lowering</em> goes from types and invariants to a hardware-affine implementation; it must preserve the safety properties while introducing hardware detail. <em>Lifting</em> goes the other way — from an optimised, target-specific kernel back to types and invariants — and it must re-establish safety. The payoff is what happens when you lift and then lower again to a <em>different</em> target: an optimisation discovered on one backend transfers to the others.</p>
 <p>If you know <em>Journey to the West</em>: tile-rs is the Monkey King. Safety is the golden headband, hardware affinity is the staff that grows to any length, and the lift/lower cycle is his seventy-two transformations. The headband is usually read as a punishment, but it is the thing that makes the rest of him safe to let loose — and wearing it he still goes everywhere, heaven and the dragon king's palace included.</p>
-<p>In practice this has been a magpie exercise. tile-rs borrows from NVIDIA's cuTile, Huawei's PTO and Ascend C, and Mojo, then lifts and lowers repeatedly. Adding safety to those ideas has, repeatedly, also made them faster.</p>
+<p>In practice this has been a magpie exercise: tile-rs borrows from the tile abstractions its neighbours have built, Mojo's included, then lifts and lowers repeatedly. Adding safety to those ideas has, repeatedly, also made them faster.</p>
 <hr>
 <h2>Two objections worth answering</h2>
 <h3>"Rust only draws level with C++, and it cheats with <code>unsafe</code>"</h3>
@@ -93,25 +93,8 @@
 <p>That is the actual division of labour: Python is where the <em>interface</em> is AI-native, and a systems language is where the throughput is. The question is only which systems language, and whether it hands you a compiler that objects before the chip does.</p>
 <p>At minimum: if a large model is going to generate the code, I would rather have a Rust compiler checking it for hazards before it ships.</p>
 <hr>
-<h2>The wider table: five backends, one source</h2>
-<p>The Ascend numbers below deserve a precise reading, because it is easy to misread them as "tile-rs versus Triton". They are not. <strong>Every column is generated from tile-rs.</strong> The question they answer is <em>which backend should tile-rs lower to for this kernel</em>, not <em>whose language is faster</em>.</p>
-<h3>Lines of code</h3>
-<div class="tbl-wrap"><table><thead><tr><th>kernel</th><th>tile-rs</th><th>Ascend C</th><th>PTO</th><th>TileLang</th><th>Triton</th><th>Metal</th><th>Mojo</th></tr></thead><tbody><tr><td>all 16, total</td><td><strong>223</strong></td><td>1276</td><td>1605</td><td>498</td><td>283</td><td>635</td><td>606</td></tr></tbody></table></div>
-<p>tile-rs is the most concise of the seven, and it is the only one a human writes — the rest are emitted. (PTO's 1605 is inflated by two kernels, <code>attn_gqa</code> at 621 lines and <code>argmax</code> at 365, both of which are fully unrolled.)</p>
-<p>Seven of the sixteen kernels, when an AI first generated the equivalent tile-rs operator, <strong>did not compile</strong>. Those compiler errors were real defects, not pedantry; fixing them is what produced the operators measured here.</p>
-<h3>Relative performance, Ascend 910B2, DeepSeek-R1-Distill-Qwen-1.5B</h3>
-<div class="tbl-wrap"><table><thead><tr><th></th><th>tile-rs (best-of)</th><th>Ascend C</th><th>PTO</th><th>TileLang</th><th>Triton</th></tr></thead><tbody><tr><td>total-time ratio</td><td>51.08×</td><td>1.62×</td><td>2.28×</td><td>1.42×</td><td>22.33×</td></tr></tbody></table></div>
-<p><strong>Every one of these numbers needs its caveats stated, not buried.</strong></p>
-<p><em>It is a total-time ratio, not a geometric mean or a median of speedups.</em> So the expensive kernels dominate. Triton reads 22.33× while being fastest on only 5 of the 16 — two kernels carry the whole figure. TileLang makes the same point from the other side: it is fastest on <strong>8 of 16</strong>, more than any other backend, and has the <em>largest</em> total, because its launch path is the leanest on the part while its scans are single-core.</p>
-<p><em>The tile-rs column is a best-of, and therefore theoretical.</em> It takes the fastest generated kernel per row against the slowest. It is achievable in principle — each kernel is compiled independently, so a compiler may pick a different backend for each — but if a deployment requires one backend throughout, or fuses only within a backend, that headroom does not materialise.</p>
-<p><em>Triton and TileLang reach the NPU through their own Ascend C generation.</em> So those two columns measure Ascend C that was generated from tile-rs-generated Triton or TileLang — a longer path, and worth remembering when comparing them to the direct Ascend C column.</p>
-<h3>What the safety argument looks like in practice</h3>
-<p>The most concrete evidence for the "resource safety" claim came from the four Ascend backends. Each has a 192 KB vector unified buffer to respect. Three of the four got it wrong, each differently, and — this is the part that matters — <strong>each was caught at a different distance from the hardware</strong>:</p>
-<div class="tbl-wrap"><table><thead><tr><th>backend</th><th>how the limit was missed</th><th>who caught it</th></tr></thead><tbody><tr><td>PTO</td><td>budget constant set <em>above</em> the hardware's</td><td>the assembler</td></tr><tr><td>Triton</td><td>gated on Triton's representational limit, not the buffer</td><td>the compiler</td></tr><tr><td>TileLang</td><td>no check at all</td><td><strong>the device</strong>, mid-run</td></tr><tr><td>Ascend C</td><td>—</td><td>it asks the hardware</td></tr></tbody></table></div>
-<p>A budget that is merely <em>wrong</em> gets caught by the next tool down. A budget that is <em>absent</em> does not get caught until the chip faults. That ordering is the argument for pushing the constraint into the type system, where it is checked before anything is emitted.</p>
-<hr>
 <h2>Credit where it is due</h2>
-<p>Mojo's abstraction level holds up well on safety, and here is the evidence for that from outside the timing tables. Every kernel in this corpus exists in two readings: the shapes as they were first captured, some of them degenerate and ill-formed, and the same kernels after those shapes were fixed. Ascend C, TileLang, Triton and PTO all emit <em>different code</em> for the two readings — they were sensitive to a malformation they had no business being sensitive to. The Mojo operator is byte-identical across both. It never had to care.</p>
+<p>Mojo's abstraction level holds up well on safety, and here is the evidence for that from outside the timing tables. Every kernel in this corpus exists in two readings: the shapes as they were first captured, some of them degenerate and ill-formed, and the same kernels after those shapes were fixed. Our other backends emit <em>different code</em> for the two readings — they were sensitive to a malformation they had no business being sensitive to. The Mojo operator is byte-identical across both. It never had to care.</p>
 <p>That is a real design win, and hats off to the Modular team for it.</p>
 <hr>
 <h2>The comparison we have not run, and an open offer</h2>
@@ -131,7 +114,7 @@ cd tile-rs-metal/benchmarks/apple-mojo-vs-msl
 </code></pre>
 <p>It needs a Mac with an Apple GPU and Mojo 1.0+; it reports the chip, the OS and the Mojo version alongside the numbers, so a result is self-describing. Dropping different Mojo kernels into <code>kernels/mojo/</code> is all that is needed to run the comparison against something other than our emitter's output.</p>
 <hr>
-<p><em>All Ascend figures: Ascend 910B2, DeepSeek-R1-Distill-Qwen-1.5B, CANN 8.5.2. All Apple figures: M1 Ultra, 128 GB. The sixteen-kernel table is at strict shapes, paired A/B/B/A wall-clock, five rounds, median of per-round ratios. The lifting table is strict shapes on the GPU clock. The fixed-engine numbers are llama.cpp b1-ca3d5a3 built from source, DeepSeek-R1-Distill-Qwen-1.5B f16, tg128 and 256-token decode respectively, ABBA-interleaved six rounds with identical generated tokens on both arms. Every kernel in every table is verified against a host reference in the run that timed it.</em></p>
+<p><em>All figures: Apple M1 Ultra, 128 GB. The sixteen-kernel table is at strict shapes, paired A/B/B/A wall-clock, five rounds, median of per-round ratios. The fixed-engine numbers are llama.cpp b1-ca3d5a3 built from source, DeepSeek-R1-Distill-Qwen-1.5B f16, tg128 and 256-token decode respectively, ABBA-interleaved six rounds with identical generated tokens on both arms. Every kernel in every table is verified against a host reference in the run that timed it.</em></p>
 </article>
     </main>
 
