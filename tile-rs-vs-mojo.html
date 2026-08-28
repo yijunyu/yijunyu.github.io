@@ -102,7 +102,7 @@ git clone https://github.com/yijunyu/tile-rs-metal
 cd tile-rs-metal/benchmarks/apple-mojo-vs-msl
 ./run.sh
 </code></pre>
-<p>It needs a Mac with an Apple GPU and Mojo 1.0+; it reports the chip, the OS and the Mojo version alongside the numbers, so a result is self-describing. Dropping different Mojo kernels into <code>kernels/mojo/</code> is all that is needed to run the comparison against something other than our emitter's output.</p>
+<p>It needs a Mac with an Apple GPU, Rust 1.85 or newer (the crates are edition 2024; these numbers were built with 1.96) and Mojo 1.0+; it reports the chip, the OS and the Mojo version alongside the numbers, so a result is self-describing. Dropping different Mojo kernels into <code>kernels/mojo/</code> is all that is needed to run the comparison against something other than our emitter's output.</p>
 <hr>
 <p><em>All figures: Apple M1 Ultra, 128 GB. The sixteen-kernel table is at strict shapes, paired A/B/B/A wall-clock, five rounds, median of per-round ratios. The fixed-engine numbers are llama.cpp b1-ca3d5a3 built from source, DeepSeek-R1-Distill-Qwen-1.5B f16, tg128 and 256-token decode respectively, ABBA-interleaved six rounds with identical generated tokens on both arms. Every kernel in every table is verified against a host reference in the run that timed it.</em></p>
 </article>
