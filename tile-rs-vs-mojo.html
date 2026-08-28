@@ -85,9 +85,7 @@
 <hr>
 <h2>The comparison we have not run, and an open offer</h2>
 <p>Modular's position is that <strong>MAX</strong>, not the Mojo language surface, is the layer for AI/GPU work, and that is the right distinction: our emitter targets the Mojo language because that is what an emitter can target, and a language-level kernel comparison says nothing about the performance a MAX user would get.</p>
-<p>The offer is genuine. <strong>Replace our emitted Mojo with kernels you would defend</strong> — hand-written Mojo, MAX graph ops, whatever represents the supported path — and we will run them through the same harness, on the same shapes, on the same machines, and publish the result whichever way it falls. The harness is one script and the kernels are drop-in; see <em>Reproducing</em>.</p>
-<p>We are saying the second half out loud on purpose: <strong>if MAX wins, that number goes up here in the same place, with the same prominence as this one.</strong> An invitation to be measured is worth nothing without it.</p>
-<h2>An invitation</h2>
+<p>The offer is genuine. <strong>Replace our emitted Mojo</strong> — with hand-written Mojo, MAX graph ops, whatever represents the supported path — and we will run it through the same harness, on the same shapes, on the same machine, and publish the result whichever way it falls. The harness is one script and the kernels are drop-in; see <em>Reproducing</em>.</p>
 <p>The kernel corpus and the benchmark entries are published at <a href="https://pu-rs.org">pu-rs.org</a>. If a kernel here can be beaten — by a better emitter, a better Mojo, or a shape we got wrong — send a pull request to the repository below and the numbers move.</p>
 <hr>
 <h2>Reproducing</h2>
