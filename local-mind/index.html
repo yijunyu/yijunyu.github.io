@@ -219,35 +219,36 @@
   </header>
 
   <section class="sec newband">
-    <h2>New in 1.0.3</h2>
+    <h2>New in 1.0.4</h2>
     <div class="duo">
       <div class="panel">
-        <h3>Video, from a description</h3>
-        <p>A <strong>Generate Video</strong> screen runs <strong>MiniMax&nbsp;H3</strong> on your
-           own GPU: seconds of video, with synchronised audio, from a sentence — or from two
-           anchor frames, where you give the first and the last and the model fills the middle.
-           Same rule as the text models: the weights are yours, the frames never leave the Machine.</p>
+        <h3>A GLM that fits in memory</h3>
+        <p><strong>GLM-5.3-Flash</strong> — 320B parameters, 18B active per token, 96.5&nbsp;GB.
+           The first GLM this app can hold <em>entirely in memory</em> on a 128&nbsp;GB Mac
+           rather than streaming it from disk: <strong>24&nbsp;tokens/sec</strong> measured on an
+           M1&nbsp;Ultra. <strong>GLM-5.2 is retired</strong> — at 217&nbsp;GB it never fit on a
+           machine that size and only ever streamed. A copy already on your disk still runs.</p>
       </div>
       <div class="panel">
-        <h3>Serve other people, deliberately</h3>
-        <p>The engine still binds loopback by default. You can now hand it to your phone or a
-           colleague — but only by turning LAN serving on <em>this session</em>, and only with an
-           API key you mint in the app. The key is shown once; the Mac keeps its SHA-256 and
-           nothing else. The engine refuses to open up without one.</p>
+        <h3>The fastest big model here</h3>
+        <p><strong>Qwen3.8-Flash-Next</strong> — 125B parameters with 6B active, 78.9&nbsp;GB,
+           hybrid linear and sparse attention. <strong>31&nbsp;tokens/sec</strong> on the same
+           machine, which makes it the quickest of the large models in the catalogue, and the
+           smallest of the three that need a 128&nbsp;GB Mac.</p>
       </div>
       <div class="panel">
-        <h3>Four more models</h3>
-        <p><strong>Qwen3.8-27B</strong>, now the recommended Qwen — dense, Apache-2.0, 256K context.
-           <strong>Muse Glimmer 30B</strong> from Meta, 30B dense in 17&nbsp;GB, whose hybrid attention
-           keeps a full 128K session near that size too. <strong>MiniMax&nbsp;H3</strong> for video. And
-           <strong>DeepSeek-V4-Pro-0813</strong> — 1.6T&nbsp;parameters, 850&nbsp;GB, listed and honestly
-           priced rather than hidden.</p>
+        <h3>Three things that were wrong</h3>
+        <p>Qwen3.8-Flash-Next was listed at roughly <strong>an eighth</strong> of its real speed,
+           its memory-saving modes were shown as unavailable when they are not, and the bundled
+           engine was too old to load it at all. All three are fixed — which is why it appears in
+           this release with a number worth reading.</p>
       </div>
       <div class="panel">
-        <h3>Two more agents, and your own leaderboards</h3>
-        <p><strong>DeepSeek Harness</strong> (<code>dsh</code>) and <strong>Grok Build</strong> join the
-           one-click wiring. The rankings row became data too — add the leaderboard you actually
-           trust, alongside the ones we shipped.</p>
+        <h3>Repeatable answers</h3>
+        <p>Models served by llama.cpp now use <strong>their own prompt format</strong> instead of
+           a substitute, so they behave the way their publisher intended; and a temperature of
+           <strong>0</strong> returns the same answer every time rather than a sampled one. The
+           licence credits now name every model the app can download.</p>
       </div>
     </div>
   </section>
