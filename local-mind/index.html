@@ -536,8 +536,8 @@ sh install --key DS4-… --email you@example.com</div>
     { os: "linux", backend: "cuda",  href: "ds4cuda-zh.html", title: "中文" },
   ];
   const BINS = [
-    { os: "linux", backend: "cuda", name: "ds4-rs-cuda", ok: false,
-      desc: "NVIDIA. The engine behind the GB10 row; not yet built as a standalone binary." },
+    { os: "linux", backend: "cuda", name: "ds4-rs-cuda", ok: true,
+      desc: "NVIDIA, aarch64. A controller, like the other two: it probes the GPU, plans placement and launches the engine. Built and verified on the GB10 in the row above." },
     { os: "linux", backend: "rocm", name: "ds4-rs-amd", ok: true,
       desc: "AMD ROCm, x86_64. A controller: it probes the hardware, plans the split and launches the ROCm engine." },
     { os: "linux", backend: "cann", name: "ds4-rs-ascend", ok: true,
