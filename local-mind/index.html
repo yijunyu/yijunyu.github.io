@@ -350,18 +350,22 @@
 
   <section class="sec" id="linuxsec">
     <h2>The same engine on a Linux accelerator</h2>
-    <p class="lede">The app is macOS only. Some of the machines above are not Macs, so the engine ships separately for them — one binary per accelerator, the same DeepSeek-V4-Flash file, the same OpenAI-compatible port. Only the AMD build is packaged so far; the installer will tell you plainly if you ask it for one that is not.</p>
+    <p class="lede">The app is macOS only. Some of the machines above are not Macs, so the engine ships separately for them — one binary per accelerator, the same DeepSeek-V4-Flash file, the same OpenAI-compatible port. All three are packaged, each for the one architecture that accelerator arrives on: arm64 for NVIDIA GB10 and for Ascend, x86-64 for AMD. Ask for a pairing that does not exist and the installer says which URL was missing and stops.</p>
 
+    <!-- NO-JS FALLBACK ONLY. renderBins() replaces this from the BINS array (~line 539),
+         which is the source of truth; the section is also hidden unless the Linux tab is
+         chosen. Keep the two in step, or a reader with JS and a reader without get
+         different answers about what is downloadable. -->
     <div class="bins">
       <div class="bin"><span class="b-n">ds4-rs-amd</span>
-        <span class="b-d">AMD ROCm. A controller: it probes the hardware, plans the split and launches the ROCm engine. Measured on the Ryzen&nbsp;AI Max+&nbsp;395 row above.</span>
-        <span class="b-s b-yes">available</span></div>
+        <span class="b-d">AMD ROCm. A controller: it probes the hardware, plans the split and launches the ROCm engine. Measured on the Ryzen&nbsp;AI Max+&nbsp;395 row above. The only one of the three whose tarball also carries its licence and notice files.</span>
+        <span class="b-s b-yes">available · x86-64</span></div>
       <div class="bin"><span class="b-n">ds4-rs-ascend</span>
-        <span class="b-d">Huawei Ascend NPU. Ships the standalone server as well as the controller.</span>
-        <span class="b-s b-no">not packaged yet</span></div>
+        <span class="b-d">Huawei Ascend NPU. The controller only — the tarball holds that one binary, not a standalone server.</span>
+        <span class="b-s b-yes">available · arm64</span></div>
       <div class="bin"><span class="b-n">ds4-rs-cuda</span>
-        <span class="b-d">NVIDIA. The engine behind the GB10 row above; not yet built as a standalone binary.</span>
-        <span class="b-s b-no">not packaged yet</span></div>
+        <span class="b-d">NVIDIA. The engine behind the GB10 row above, built for the Grace arm64 host that machine is.</span>
+        <span class="b-s b-yes">available · arm64</span></div>
     </div>
 
     <p class="note" style="margin-top:.9rem">One command. It detects the accelerator, fetches only the matching binary, checks it against a published SHA-256, and installs the key:</p>
