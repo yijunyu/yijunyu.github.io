@@ -151,7 +151,6 @@
 <div class="ev"><span class="chip">K1.1</span><div><strong>The DS4 path is custom AscendC op packages</strong> in <span class="mono">csrc/</span> — DSA sparse attention, lightning indexer, MoE grouped-GEMM+SwiGLU, rms_norm_dynamic_quant — registered as <span class="mono">torch.ops._C_ascend.*</span>. Replaceable units, not a monolith.</div></div>
 <div class="ev"><span class="chip">K1.2</span><div><strong>A no-fork override path is documented upstream</strong>: vLLM's <span class="mono">CustomOp.register_oot</span> + plugin system exists precisely so vendors can substitute optimized kernels — vllm-ascend is itself such a plugin.</div></div>
 <div class="ev"><span class="chip">K1.3</span><div><strong>Our toolchain speaks the same language</strong>: tile-rs emits AscendC C++ and already builds .so kernels with the same <span class="mono">ascendc_library</span> CMake machinery vllm-ascend uses; launches share the same <span class="mono">aclrtStream</span>.</div></div>
-          <p class="src">Verified in vllm-project/vllm-ascend source (csrc/, torch_binding.cpp, CMakeLists), 2026-08-10</p>
         </div>
       </div>
       <div class="kcol">
@@ -164,7 +163,6 @@
 <div class="ev"><span class="chip">K2.2</span><div><strong>The optimisation ladder is proven, kernel by kernel</strong>: matvec 73× via multi-core tiling; batched MoE expert FFN 8.5–10.3×; W4→f16→cube prefill 17.7–139.6× over matvec-per-token; rms_norm at 1.2e-7 error.</div></div>
 <div class="ev"><span class="chip">K2.3</span><div><strong>MoE expert FFN is ~99.7% of DS4 compute mass</strong> (our measurement) — and vllm-ascend computes it in one replaceable custom kernel, <span class="mono">grouped_matmul_swiglu_quant</span>.</div></div>
 <div class="ev"><span class="chip">K2.6</span><div><strong>Measured, not estimated — and we are slower.</strong> Fused bf16 <span class='mono'>rms_norm</span> vs <span class='mono'>npu_add_rms_norm</span>, alternating blocks, correctness re-gated first: M=1 292 vs 68 µs (0.23×), M=16 83 vs 65 (0.78×), M=128 81 vs 41 (0.51×), M=1024 82 vs 46 (0.56×). The w8a8 GEMM chain runs at 0.33–0.40× stock. <strong>The diagnosis is in the shape:</strong> our cost is <em>flat at ~82 µs from M=16 to M=1024</em> while the stock op scales with work — a 64× row increase costing us nothing means fixed per-call overhead dominates, so kernel arithmetic is the wrong lever.</div></div>
-          <p class="src">Measured 2026-07/08, 910B2/910C (dav-c220), CANN 8.5.x — every number oracle-checked on device</p>
         </div>
       </div>
       <div class="kcol">
@@ -177,7 +175,6 @@
 <div class="ev"><span class="chip">K3.1</span><div><strong>Like-for-like inside vLLM-Ascend</strong> — same framework, same model, same box; only the kernel binary differs, both sides checksum-verified.</div></div>
 <div class="ev"><span class="chip">K3.2</span><div><strong>Parity before performance</strong>: no kernel ships unless output is bit-identical or within the op's stated tolerance.</div></div>
 <div class="ev"><span class="chip">K3.4</span><div><strong>Any experiment can kill the claim early</strong> — that is the point: cheap truth before expensive commitment.</div></div>
-          <p class="src">Measurement discipline: fresh-state best-of-N, both-sides A/B</p>
         </div>
       </div>
       </div>
