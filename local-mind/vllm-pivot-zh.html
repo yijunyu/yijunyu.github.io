@@ -148,9 +148,9 @@
         </div>
         <div class="tree-stub"></div>
         <div class="evcard">
-<div class="ev"><span class="chip">K1.1</span><div><strong>DS4 路径由 <span class="mono">csrc/</span> 中的自定义 AscendC 算子包构成</strong>——DSA 稀疏注意力、lightning indexer、MoE grouped-GEMM+SwiGLU、rms_norm_dynamic_quant——以 <span class="mono">torch.ops._C_ascend.*</span> 注册。是可替换单元，不是铁板一块。</div></div>
-<div class="ev"><span class="chip">K1.2</span><div><strong>上游有文档化的免 fork 替换机制</strong>：vLLM 的 <span class="mono">CustomOp.register_oot</span> 与插件体系正是为厂商替换优化内核而设——vllm-ascend 本身就是这样一个插件。</div></div>
-<div class="ev"><span class="chip">K1.3</span><div><strong>工具链同源</strong>：tile-rs 直接产出 AscendC C++，并已用与 vllm-ascend 相同的 <span class="mono">ascendc_library</span> CMake 机制构建 .so 内核；内核启动共用同一 <span class="mono">aclrtStream</span>。</div></div>
+<div class="ev"><span class="chip">K1.1</span><div><strong>DS4 路径由 <span class="mono">csrc/</span> 中的自定义 AscendC 算子包构成</strong></div></div>
+<div class="ev"><span class="chip">K1.2</span><div><strong>上游有文档化的免 fork 替换机制</strong></div></div>
+<div class="ev"><span class="chip">K1.3</span><div><strong>工具链同源</strong></div></div>
         </div>
       </div>
       <div class="kcol">
@@ -160,9 +160,9 @@
         </div>
         <div class="tree-stub"></div>
         <div class="evcard">
-<div class="ev"><span class="chip">K2.2</span><div><strong>优化阶梯已逐内核验证</strong>：matvec 多核切分 73×；批量 MoE 专家 FFN 8.5–10.3×；W4→f16→cube 预填充相对逐 token matvec 17.7–139.6×；rms_norm 误差 1.2e-7。</div></div>
-<div class="ev"><span class="chip">K2.3</span><div><strong>MoE 专家 FFN ≈ DS4 计算量的 99.7%</strong>（我们的实测）——而 vllm-ascend 恰好把它做成了一个可替换的自定义内核 <span class="mono">grouped_matmul_swiglu_quant</span>。</div></div>
-<div class="ev"><span class="chip">K2.6</span><div><strong>实测而非估算——我们更慢。</strong>融合 bf16 <span class='mono'>rms_norm</span> 对比 <span class='mono'>npu_add_rms_norm</span>，交替分组计时，先过正确性门禁：M=1 292 对 68 µs（4.29×），M=16 83 对 65（1.28×），M=128 81 对 41（2.00×），M=1024 82 对 46（1.80×）。w8a8 GEMM 链为原生的 0.33–0.40×。<strong>结论藏在曲线形状里：</strong>从 M=16 到 M=1024，我们的耗时<em>恒定在约 82 µs</em>，而原生算子随计算量增长——行数增加 64 倍对我们毫无代价，说明主导因素是固定的每次调用开销，因此优化算子内部的算术是错误的杠杆。</div></div>
+<div class="ev"><span class="chip">K2.2</span><div><strong>优化阶梯已逐内核验证</strong></div></div>
+<div class="ev"><span class="chip">K2.3</span><div><strong>MoE 专家 FFN ≈ DS4 计算量的 99.7%</strong></div></div>
+<div class="ev"><span class="chip">K2.6</span><div><strong>实测而非估算——我们更慢。</strong></div></div>
         </div>
       </div>
       <div class="kcol">
@@ -172,9 +172,9 @@
         </div>
         <div class="tree-stub"></div>
         <div class="evcard">
-<div class="ev"><span class="chip">K3.1</span><div><strong>在 vLLM-Ascend 内部做同框架对照</strong>——同一框架、同一模型、同一机器；只有内核二进制不同，两侧均经校验和验证。</div></div>
-<div class="ev"><span class="chip">K3.2</span><div><strong>先对齐，再谈性能</strong>：输出若非位一致、又不在算子声明容差内，内核一律不上线。</div></div>
-<div class="ev"><span class="chip">K3.4</span><div><strong>任何一个实验都可以提前否决整个主张</strong>——这正是设计意图：先以低成本获得真相，再做高成本投入。</div></div>
+<div class="ev"><span class="chip">K3.1</span><div><strong>在 vLLM-Ascend 内部做同框架对照</strong></div></div>
+<div class="ev"><span class="chip">K3.2</span><div><strong>先对齐，再谈性能</strong></div></div>
+<div class="ev"><span class="chip">K3.4</span><div><strong>任何一个实验都可以提前否决整个主张</strong></div></div>
         </div>
       </div>
       </div>
