@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>vLLM-Ascend 中的 Rust 内核——实验计划</title>
+<style>
+  :root {
+    --ground: #F5F6F8; --panel: #FFFFFF; --panel-2: #EDEFF2;
+    --ink: #1A1D21; --ink-2: #4A5158; --ink-3: #7A828B;
+    --line: #D8DCE1; --edge: #B8BEC6;
+    --accent: #C4511B; --accent-soft: #F6E3D8;
+    --gate: #2E7D4F; --gate-soft: #DDEDE3;
+    --steel: #4A6B8A; --warn: #9A6B00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #16181C; --panel: #1F2227; --panel-2: #262A30;
+      --ink: #E8EAED; --ink-2: #B3B9C0; --ink-3: #7F868E;
+      --line: #363B42; --edge: #4A5158;
+      --accent: #E06A30; --accent-soft: #3A2418;
+      --gate: #5BB884; --gate-soft: #1D3327;
+      --steel: #7FA3C4; --warn: #D4A23A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #16181C; --panel: #1F2227; --panel-2: #262A30;
+    --ink: #E8EAED; --ink-2: #B3B9C0; --ink-3: #7F868E;
+    --line: #363B42; --edge: #4A5158;
+    --accent: #E06A30; --accent-soft: #3A2418;
+    --gate: #5BB884; --gate-soft: #1D3327;
+    --steel: #7FA3C4; --warn: #D4A23A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ground); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.5; margin: 0; padding: 2rem 1.25rem 4rem;
+  }
+  .poster { max-width: 68rem; margin: 0 auto; display: flex; flex-direction: column; gap: 1.75rem; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+  .eyebrow { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .72rem;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 .5rem; }
+  .chip { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .68rem; font-weight: 700;
+    color: var(--accent); background: var(--accent-soft); border-radius: 3px; padding: .1rem .35rem;
+    letter-spacing: .05em; white-space: nowrap; }
+  .chip.done { color: var(--gate); background: var(--gate-soft); }
+  .layer { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1.25rem; }
+  .rail { border-right: 3px solid var(--accent); padding-right: 1rem; text-align: right; }
+  .rail .tag { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .72rem;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .rail .sub { font-size: .72rem; color: var(--ink-3); margin-top: .2rem; }
+  @media (max-width: 640px) {
+    .layer { grid-template-columns: 1fr; }
+    .rail { border-right: none; border-left: 3px solid var(--accent); text-align: left; padding: 0 0 0 .75rem; }
+  }
+  header h1 { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -.02em;
+    line-height: 1.12; margin: 0; text-wrap: balance; }
+  header .context { color: var(--ink-2); max-width: 46rem; margin-top: .6rem; }
+  header .context strong { color: var(--ink); }
+  header .langswitch { margin-top: .5rem; }
+  header .langswitch a { display: inline-block; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: .72rem; font-weight: 700; color: var(--accent); text-decoration: none;
+    border: 1px solid var(--accent); border-radius: 4px; padding: .1rem .5rem; }
+  header .langswitch a:hover { background: var(--accent-soft); }
+  .answer { background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--accent);
+    border-radius: 6px; padding: 1.5rem 1.75rem; }
+  .answer .chip { float: right; margin-left: 1rem; }
+  .answer p.thesis { font-size: clamp(1.15rem, 2.4vw, 1.5rem); font-weight: 700; letter-spacing: -.01em;
+    line-height: 1.35; margin: 0; text-wrap: balance; }
+  .answer p.thesis em { color: var(--accent); font-style: normal; }
+
+  /* explicit tree edges */
+  .tree-drop { width: 2px; height: 18px; background: var(--edge); margin: 0 auto; }
+  .tree-split { position: relative; height: 18px; margin-bottom: .25rem; }
+  .tree-split::before { content: ""; position: absolute; top: 0; left: 16.666%; right: 16.666%;
+    border-top: 2px solid var(--edge); }
+  .tree-split i { position: absolute; top: 0; width: 2px; height: 18px; background: var(--edge); }
+  .tree-split i:nth-child(1) { left: calc(16.666% - 1px); }
+  .tree-split i:nth-child(2) { left: calc(50% - 1px); }
+  .tree-split i:nth-child(3) { left: calc(83.333% - 1px); }
+  .tree-stub { width: 2px; height: 14px; background: var(--edge); margin: 0 auto; }
+  .edge-label { display: flex; flex-direction: column; align-items: center; gap: .25rem; }
+  @media (max-width: 820px) { .tree-split, .tree-drop { display: none; } }
+
+  .keylines { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  @media (max-width: 820px) { .keylines { grid-template-columns: 1fr; } }
+  .kcol { display: flex; flex-direction: column; }
+  .keyline { background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 1rem 1.15rem; display: flex; flex-direction: column; gap: .5rem; }
+  .keyline h2 { font-size: 1.02rem; font-weight: 800; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+  .keyline .head { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+  .kicker { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .7rem;
+    letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+  .kicker.k1 { color: var(--steel); } .kicker.k2 { color: var(--accent); } .kicker.k3 { color: var(--gate); }
+  .evcard { background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: .9rem 1.05rem; display: flex; flex-direction: column; gap: .55rem; flex: 1; }
+  .evcard .ev { display: grid; grid-template-columns: auto 1fr; gap: .5rem; align-items: start;
+    font-size: .88rem; color: var(--ink-2); }
+  .evcard .ev strong { color: var(--ink); }
+  .evcard .src { font-size: .74rem; color: var(--ink-3); margin-top: auto; }
+
+  .ladder { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.25rem 1.5rem; }
+  .ladder-scroll { overflow-x: auto; }
+  .steps { display: grid; grid-template-columns: repeat(5, minmax(11.5rem, 1fr)); gap: .75rem; min-width: 60rem; }
+  .step { background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px;
+    padding: .85rem .95rem; display: flex; flex-direction: column; gap: .4rem; }
+  .step h3 { font-size: .92rem; font-weight: 700; margin: 0; }
+  .step p { font-size: .82rem; color: var(--ink-2); margin: 0; }
+  .step .gate { margin-top: auto; font-size: .75rem; font-weight: 600; color: var(--gate);
+    background: var(--gate-soft); border-radius: 4px; padding: .25rem .5rem; }
+  .step .chip { align-self: flex-start; }
+
+  .foot { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 820px) { .foot { grid-template-columns: 1fr; } }
+  .foot section { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1rem 1.25rem; }
+  .foot h2 { font-size: .95rem; font-weight: 800; margin: 0 0 .6rem; }
+  .foot .ev { display: grid; grid-template-columns: auto 1fr; gap: .5rem; align-items: start;
+    font-size: .87rem; color: var(--ink-2); margin-bottom: .5rem; }
+  .foot .ev strong { color: var(--ink); }
+  .risk-tag { color: var(--warn); font-weight: 700; }
+  footer.colophon { color: var(--ink-3); font-size: .78rem; text-align: center; }
+</style>
+
+<div class="poster" lang="zh-CN">
+  <header>
+    <p class="eyebrow">进展汇报 · 可信实验室 × 华为计算产品线 · tile-rs × vLLM-Ascend · DeepSeek V4 Flash 0731 · 2026-08-23</p>
+    <h1>在 vLLM-Ascend 中运行 Rust 生成的内核</h1>
+    <p class="context">计算产品线已确定采用 <strong>vLLM-Ascend</strong> 部署 DeepSeek V4 Flash 0731。本页是可信实验室围绕共同目标的协作进展纪要：不另起技术栈，而是让选定的栈更快——用 <strong>tile-rs 从 Rust 编译</strong>出的内核逐类替换 AscendC 算子，每一类都以位一致校验与实测胜出为门槛。</p>
+    <p class="langswitch"><a href="vllm-pivot-en.html">English</a></p>
+  </header>
+
+  <div class="layer">
+    <div class="rail"><div class="tag">结论</div><div class="sub">中心思想</div></div>
+    <div class="answer">
+      <span class="chip">A</span>
+      <p class="thesis">vLLM-Ascend 保留框架，<em>tile-rs 替换算子</em>。<strong>接口已验证</strong>——我们的算子曾在真实模型路径上服务请求，且该覆盖按构造是增量式的：凡未覆盖的调用一律回落到原生实现，每次拒绝仅耗 <strong>0.89&nbsp;µs</strong>。<strong>成败在于速度。</strong>RMSNorm 的每条路径实测均慢于被替换的算子，因此该覆盖现已<em>默认关闭</em>，而非带着开销去委派。当前生效的覆盖是 MoE <span class='mono'>gmm1</span> 算子，在其服务的解码形状上<strong>比原生快 1.17–1.19×</strong>——但对真实服务的普查发现<strong>该形状并不出现</strong>，因此它今天对每一次调用都做了委派。胜势真实存在，但尚不可达；原因见下文实测。</p>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="rail"><div class="tag">论点</div><div class="sub">为何可信</div></div>
+    <div>
+      <div class="tree-drop"></div>
+      <div class="tree-split"><i></i><i></i><i></i></div>
+      <div class="keylines">
+      <div class="kcol">
+        <div class="keyline">
+          <div class="head"><span class="kicker k1">1 · 缝隙存在</span><span class="chip">A ▸ K1</span></div>
+          <h2>vLLM-Ascend 的算子是可替换单元</h2>
+        </div>
+        <div class="tree-stub"></div>
+        <div class="evcard">
+<div class="ev"><span class="chip">K1.1</span><div><strong>DS4 路径由 <span class="mono">csrc/</span> 中的自定义 AscendC 算子包构成</strong>——DSA 稀疏注意力、lightning indexer、MoE grouped-GEMM+SwiGLU、rms_norm_dynamic_quant——以 <span class="mono">torch.ops._C_ascend.*</span> 注册。是可替换单元，不是铁板一块。</div></div>
+<div class="ev"><span class="chip">K1.2</span><div><strong>上游有文档化的免 fork 替换机制</strong>：vLLM 的 <span class="mono">CustomOp.register_oot</span> 与插件体系正是为厂商替换优化内核而设——vllm-ascend 本身就是这样一个插件。</div></div>
+<div class="ev"><span class="chip">K1.3</span><div><strong>工具链同源</strong>：tile-rs 直接产出 AscendC C++，并已用与 vllm-ascend 相同的 <span class="mono">ascendc_library</span> CMake 机制构建 .so 内核；内核启动共用同一 <span class="mono">aclrtStream</span>。</div></div>
+          <p class="src">已于 2026-08-10 在 vllm-project/vllm-ascend 源码中核实（csrc/、torch_binding.cpp、CMakeLists）</p>
+        </div>
+      </div>
+      <div class="kcol">
+        <div class="keyline">
+          <div class="head"><span class="kicker k2">2 · 空间真实</span><span class="chip">A ▸ K2</span></div>
+          <h2>速度已在我们自己的算子上验证——但在 vLLM 的算子上仍落后，且原因已定位</h2>
+        </div>
+        <div class="tree-stub"></div>
+        <div class="evcard">
+<div class="ev"><span class="chip">K2.2</span><div><strong>优化阶梯已逐内核验证</strong>：matvec 多核切分 73×；批量 MoE 专家 FFN 8.5–10.3×；W4→f16→cube 预填充相对逐 token matvec 17.7–139.6×；rms_norm 误差 1.2e-7。</div></div>
+<div class="ev"><span class="chip">K2.3</span><div><strong>MoE 专家 FFN ≈ DS4 计算量的 99.7%</strong>（我们的实测）——而 vllm-ascend 恰好把它做成了一个可替换的自定义内核 <span class="mono">grouped_matmul_swiglu_quant</span>。</div></div>
+<div class="ev"><span class="chip">K2.6</span><div><strong>实测而非估算——我们更慢。</strong>融合 bf16 <span class='mono'>rms_norm</span> 对比 <span class='mono'>npu_add_rms_norm</span>，交替分组计时，先过正确性门禁：M=1 292 对 68 µs（4.29×），M=16 83 对 65（1.28×），M=128 81 对 41（2.00×），M=1024 82 对 46（1.80×）。w8a8 GEMM 链为原生的 0.33–0.40×。<strong>结论藏在曲线形状里：</strong>从 M=16 到 M=1024，我们的耗时<em>恒定在约 82 µs</em>，而原生算子随计算量增长——行数增加 64 倍对我们毫无代价，说明主导因素是固定的每次调用开销，因此优化算子内部的算术是错误的杠杆。</div></div>
+          <p class="src">2026-07/08 实测，910B2/910C (dav-c220)，CANN 8.5.x——每个数字均经设备端 oracle 校验</p>
+        </div>
+      </div>
+      <div class="kcol">
+        <div class="keyline">
+          <div class="head"><span class="kicker k3">3 · 计划有门槛</span><span class="chip">A ▸ K3</span></div>
+          <h2>三个实验，每个都有淘汰判据</h2>
+        </div>
+        <div class="tree-stub"></div>
+        <div class="evcard">
+<div class="ev"><span class="chip">K3.1</span><div><strong>在 vLLM-Ascend 内部做同框架对照</strong>——同一框架、同一模型、同一机器；只有内核二进制不同，两侧均经校验和验证。</div></div>
+<div class="ev"><span class="chip">K3.2</span><div><strong>先对齐，再谈性能</strong>：输出若非位一致、又不在算子声明容差内，内核一律不上线。</div></div>
+<div class="ev"><span class="chip">K3.4</span><div><strong>任何一个实验都可以提前否决整个主张</strong>——这正是设计意图：先以低成本获得真相，再做高成本投入。</div></div>
+          <p class="src">测量纪律：全新状态 best-of-N、双侧 A/B</p>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="rail"><div class="tag">论据</div><div class="sub">实验阶梯</div></div>
+    <div>
+      <div class="edge-label"><div class="tree-drop"></div><span class="chip">K3 ▸ E2–E5</span></div>
+      <div class="ladder">
+        <p class="eyebrow">实验阶梯——K3 的论据；每一步都是下一步的门槛</p>
+        <div class="ladder-scroll">
+          <div class="steps">
+          <div class="step">
+            <span class="chip done">E2 ✓</span>
+            <h3>逐算子 A/B —— 已完成，结论为否</h3>
+            <p>两个主力算子均正确，但均更慢：融合 rms_norm 为原生的 0.23–0.78×，w8a8 GEMM 链为 0.33–0.40×。<strong>以区间报告，因为波动来自原生算子一侧</strong>——我们的耗时稳定，而原生算子波动约 21%。K2.6 的恒定耗时特征使这一结果从死路变为明确目标：消除每次调用的固定开销，而非调优算术。</p>
+            <span class="gate">门槛：至少一类内核打平或更优</span>
+          </div>
+          <div class="step">
+            <span class="chip done">E3 ✓</span>
+            <h3>Tile 搜索重调——已落地</h3>
+            <p>首两级已落地（2026-08-10）：内核内按核分块的行循环（新的 emitter 下沉，113 项测试通过）+ 屏障消除，使 rms_norm 从落后 5.53× 收敛到 <strong>1.25×</strong>，且经对齐门槛——M=4 变体与原版逐位一致。下一步：流水线化串行算子链，再做 w8a8-int8 MoE 专家内核（基于现有 i8 cube 接口）。</p>
+            <span class="gate">门槛已达成：每个 blockDim 均重验对齐</span>
+          </div>
+          <div class="step">
+            <span class="chip done">E4 ✓</span>
+            <h3>端到端 A/B —— 接口已验证，但在当前形状下胜势不可达</h3>
+            <p>一次真实的 DeepSeek-V4-Flash 服务请求已经跑在 tile-rs 内核上（融合 bf16 add_rms_norm：在线引擎上 <strong>5742 次命中 / 727059 行</strong>），而真实服务的普查也关闭了形状问题：gmm1 到来时永远是 32 专家、从不是 16 行，因此按解码形状构建的内核按契约拒绝服务。决定性的后续找到了解码时间的真正去向：<strong>eager</strong> 执行下单次 pass 为 148 ms 墙钟、设备计算不足 1 ms——其余都耗在集合通信上，其 30–70 ms 的等待带是 rank 间主机侧启动漂移（124 µs 平坦的 HCCL 下限与无法复现这些带的算法扫描证明了这一点）。启用 <strong>ACL 图捕获</strong>消除了漂移：同一引擎解码 32 token 仅需 <strong>1.8 秒 = 单流 17.8 tok/s —— 较 eager 提升 4.3×，约为最初实测基线的 4.9×</strong>；厂商融合分发开关在两种形状上再增加经 A/B/A 验证的 +8–11%。</p>
+            <span class="gate">门槛：端到端接口已验证；真实服务形状已实测，本内核并不覆盖</span>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="rail"><div class="tag">条款</div><div class="sub">风险与请求</div></div>
+    <div class="foot">
+      <section>
+        <h2>我们主动列明的风险</h2>
+<div class="ev"><span class="chip">R1</span><div><span class="risk-tag">CANN 版本张力</span>: 支持 DS4 的 vLLM-Ascend (v0.20.2rc1+) 锁定 CANN 9.0.x，而部署机器冻结在 CANN 8.5.2——CANN-9 容器用户态能否运行在 8.5 时代驱动上仍未测试，该风险依然存在。不再是推测的是我们这一侧：一个以 CANN 9.0 构建的 tile-rs 内核在 8.0 运行时上原样运行，只需重建主机侧包装。</div></div>
+<div class="ev"><span class="chip">R2</span><div><span class="risk-tag">量化格式差距</span>: <span class="risk-tag">受阻的是载体，不是内核</span>：我们试过的 DS4-Flash 权重当前都跑不完一次前向——现已三个，横跨两台机器与两套推理栈——且每一例的原因都不在本插件。<strong>w8a8</strong> 可以加载并运行，随后在 vLLM-Ascend 的 DSA 注意力中失败——<span class="mono">npu_transpose_batchmatmul</span> 拒绝 int8 权重（<em>Tensor x2 not implemented for DT_INT8</em>）；在关闭我们覆盖的对照运行中同样失败，据此可知非我方所致。<strong>fp8 0731</strong> 则完全无法初始化：在转换专家权重时抛出 <em>customize_dtype is not supported by the current soc version</em>，该限制由 torch_npu 内部按 SoC 版本判定，而非任何可配置项。<strong>MXFP4</strong> 于 2026-08-29 加入，也是唯一与 vLLM 无关的一例：在一台 910B2 A2 节点上、通过 llama.cpp 自带的 CANN 后端，145&nbsp;GB 权重可跨四张卡加载，随后在 <span class="mono">ggml_cann_rope</span> 中中止——运行时无法为 <span class="mono">aclnnArange</span> 加载 AI&nbsp;Core 核函数二进制（<em>rtsFuncGetByName ErrCode=107000</em>），而该算子在同样这四张卡上单独跑 <span class="mono">test-backend-ops</span> 均通过。三个权重、两套推理栈、两台机器、三种不同的 Ascend 侧算子失败，无一出自我方。<strong>端到端数字正是受阻于此</strong>——下文的算子级结果自身成立。</div></div>
+<div class="ev"><span class="chip">R3</span><div><span class="risk-tag">大批量 GEMM</span>: 在大 batch 预填充形状上胜过原版调优的 grouped-GEMM 尚无证据；可信的切入点是解码/小 M，E2 将如实报告两者。</div></div>
+      </section>
+      <section>
+        <h2>需要产品线配合的事项</h2>
+<div class="ev"><span class="chip">Q1</span><div><strong>访问</strong>: 一台 Atlas 800 A2 节点（或产品线现有 910B2/CANN 8.5.2 机器），按产品线实际方式部署 vLLM-Ascend + DS4-Flash-0731 w8a8。</div></div>
+<div class="ev"><span class="chip">Q2</span><div><strong>参考配置</strong>: 确切的 TP/DP/MTP 服务配置与负载构成，使 E2–E4 测量的就是生产所测量的。</div></div>
+<div class="ev"><span class="chip">Q3</span><div><strong>指定评审人</strong>: 指定一位 Ascend 内核工程师，在读取结果前审查我们的 A/B 方法。</div></div>
+      </section>
+    </div>
+  </div>
+
+  <footer class="colophon">Minto 金字塔：结论先行 (A)，关键论点居中 (K1–K3)，证据在底 (K·x、E2–E4)——每层分支不超过三项。以上数字皆为设备实测；未经验证之处均已注明。本页由 facts.db 生成——单一事实源。所有 × 数值均为我方÷原生：大于 1 表示我方更快，小于 1 表示更慢。</footer>
+</div>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Rust Kernels in vLLM-Ascend — Experiment Plan</title>
+<style>
+  :root {
+    --ground: #F5F6F8; --panel: #FFFFFF; --panel-2: #EDEFF2;
+    --ink: #1A1D21; --ink-2: #4A5158; --ink-3: #7A828B;
+    --line: #D8DCE1; --edge: #B8BEC6;
+    --accent: #C4511B; --accent-soft: #F6E3D8;
+    --gate: #2E7D4F; --gate-soft: #DDEDE3;
+    --steel: #4A6B8A; --warn: #9A6B00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #16181C; --panel: #1F2227; --panel-2: #262A30;
+      --ink: #E8EAED; --ink-2: #B3B9C0; --ink-3: #7F868E;
+      --line: #363B42; --edge: #4A5158;
+      --accent: #E06A30; --accent-soft: #3A2418;
+      --gate: #5BB884; --gate-soft: #1D3327;
+      --steel: #7FA3C4; --warn: #D4A23A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #16181C; --panel: #1F2227; --panel-2: #262A30;
+    --ink: #E8EAED; --ink-2: #B3B9C0; --ink-3: #7F868E;
+    --line: #363B42; --edge: #4A5158;
+    --accent: #E06A30; --accent-soft: #3A2418;
+    --gate: #5BB884; --gate-soft: #1D3327;
+    --steel: #7FA3C4; --warn: #D4A23A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ground); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.5; margin: 0; padding: 2rem 1.25rem 4rem;
+  }
+  .poster { max-width: 68rem; margin: 0 auto; display: flex; flex-direction: column; gap: 1.75rem; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+  .eyebrow { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .72rem;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 .5rem; }
+  .chip { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .68rem; font-weight: 700;
+    color: var(--accent); background: var(--accent-soft); border-radius: 3px; padding: .1rem .35rem;
+    letter-spacing: .05em; white-space: nowrap; }
+  .chip.done { color: var(--gate); background: var(--gate-soft); }
+  .layer { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1.25rem; }
+  .rail { border-right: 3px solid var(--accent); padding-right: 1rem; text-align: right; }
+  .rail .tag { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .72rem;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .rail .sub { font-size: .72rem; color: var(--ink-3); margin-top: .2rem; }
+  @media (max-width: 640px) {
+    .layer { grid-template-columns: 1fr; }
+    .rail { border-right: none; border-left: 3px solid var(--accent); text-align: left; padding: 0 0 0 .75rem; }
+  }
+  header h1 { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -.02em;
+    line-height: 1.12; margin: 0; text-wrap: balance; }
+  header .context { color: var(--ink-2); max-width: 46rem; margin-top: .6rem; }
+  header .context strong { color: var(--ink); }
+  header .langswitch { margin-top: .5rem; }
+  header .langswitch a { display: inline-block; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: .72rem; font-weight: 700; color: var(--accent); text-decoration: none;
+    border: 1px solid var(--accent); border-radius: 4px; padding: .1rem .5rem; }
+  header .langswitch a:hover { background: var(--accent-soft); }
+  .answer { background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--accent);
+    border-radius: 6px; padding: 1.5rem 1.75rem; }
+  .answer .chip { float: right; margin-left: 1rem; }
+  .answer p.thesis { font-size: clamp(1.15rem, 2.4vw, 1.5rem); font-weight: 700; letter-spacing: -.01em;
+    line-height: 1.35; margin: 0; text-wrap: balance; }
+  .answer p.thesis em { color: var(--accent); font-style: normal; }
+
+  /* explicit tree edges */
+  .tree-drop { width: 2px; height: 18px; background: var(--edge); margin: 0 auto; }
+  .tree-split { position: relative; height: 18px; margin-bottom: .25rem; }
+  .tree-split::before { content: ""; position: absolute; top: 0; left: 16.666%; right: 16.666%;
+    border-top: 2px solid var(--edge); }
+  .tree-split i { position: absolute; top: 0; width: 2px; height: 18px; background: var(--edge); }
+  .tree-split i:nth-child(1) { left: calc(16.666% - 1px); }
+  .tree-split i:nth-child(2) { left: calc(50% - 1px); }
+  .tree-split i:nth-child(3) { left: calc(83.333% - 1px); }
+  .tree-stub { width: 2px; height: 14px; background: var(--edge); margin: 0 auto; }
+  .edge-label { display: flex; flex-direction: column; align-items: center; gap: .25rem; }
+  @media (max-width: 820px) { .tree-split, .tree-drop { display: none; } }
+
+  .keylines { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  @media (max-width: 820px) { .keylines { grid-template-columns: 1fr; } }
+  .kcol { display: flex; flex-direction: column; }
+  .keyline { background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: 1rem 1.15rem; display: flex; flex-direction: column; gap: .5rem; }
+  .keyline h2 { font-size: 1.02rem; font-weight: 800; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+  .keyline .head { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+  .kicker { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .7rem;
+    letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+  .kicker.k1 { color: var(--steel); } .kicker.k2 { color: var(--accent); } .kicker.k3 { color: var(--gate); }
+  .evcard { background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: .9rem 1.05rem; display: flex; flex-direction: column; gap: .55rem; flex: 1; }
+  .evcard .ev { display: grid; grid-template-columns: auto 1fr; gap: .5rem; align-items: start;
+    font-size: .88rem; color: var(--ink-2); }
+  .evcard .ev strong { color: var(--ink); }
+  .evcard .src { font-size: .74rem; color: var(--ink-3); margin-top: auto; }
+
+  .ladder { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.25rem 1.5rem; }
+  .ladder-scroll { overflow-x: auto; }
+  .steps { display: grid; grid-template-columns: repeat(5, minmax(11.5rem, 1fr)); gap: .75rem; min-width: 60rem; }
+  .step { background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px;
+    padding: .85rem .95rem; display: flex; flex-direction: column; gap: .4rem; }
+  .step h3 { font-size: .92rem; font-weight: 700; margin: 0; }
+  .step p { font-size: .82rem; color: var(--ink-2); margin: 0; }
+  .step .gate { margin-top: auto; font-size: .75rem; font-weight: 600; color: var(--gate);
+    background: var(--gate-soft); border-radius: 4px; padding: .25rem .5rem; }
+  .step .chip { align-self: flex-start; }
+
+  .foot { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 820px) { .foot { grid-template-columns: 1fr; } }
+  .foot section { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1rem 1.25rem; }
+  .foot h2 { font-size: .95rem; font-weight: 800; margin: 0 0 .6rem; }
+  .foot .ev { display: grid; grid-template-columns: auto 1fr; gap: .5rem; align-items: start;
+    font-size: .87rem; color: var(--ink-2); margin-bottom: .5rem; }
+  .foot .ev strong { color: var(--ink); }
+  .risk-tag { color: var(--warn); font-weight: 700; }
+  footer.colophon { color: var(--ink-3); font-size: .78rem; text-align: center; }
+</style>
+
+<div class="poster" lang="en">
+  <header>
+    <p class="eyebrow">Progress update · Trustworthiness Lab × Compute product line · tile-rs × vLLM-Ascend · DeepSeek V4 Flash 0731 · 2026-08-23</p>
+    <h1>Rust-generated kernels inside vLLM-Ascend</h1>
+    <p class="context">The Compute product line has standardised on <strong>vLLM-Ascend</strong> for DeepSeek V4 Flash 0731. This is the Trustworthiness Lab's progress note toward the shared goal: not a different stack, but making the chosen stack faster — swapping individual AscendC kernels for kernels <strong>compiled from Rust by tile-rs</strong>, one op class at a time, each gated on bit-parity and a measured win.</p>
+    <p class="langswitch"><a href="vllm-pivot-zh.html">中文</a></p>
+  </header>
+
+  <div class="layer">
+    <div class="rail"><div class="tag">Answer</div><div class="sub">governing thought</div></div>
+    <div class="answer">
+      <span class="chip">A</span>
+      <p class="thesis">vLLM-Ascend keeps the framework; <em>tile-rs replaces kernels</em>. <strong>The seam is proven</strong> — our kernels have served a live model path, and the override is additive by construction: anything it does not cover falls through to stock, at <strong>0.89&nbsp;µs</strong> per declined call. <strong>Speed is where it stands or falls.</strong> On RMSNorm every path measured slower than the operator it replaces, so that override now ships <em>default-off</em> rather than delegating at a cost. The operative override is the MoE <span class='mono'>gmm1</span> op, <strong>1.17–1.19× faster than stock</strong> at the decode shape it serves — but a census of real serving found <strong>that shape does not occur</strong>, so today it delegates every call. The win is real and not yet reachable; the measurements below say why.</p>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="rail"><div class="tag">Key lines</div><div class="sub">why believe it</div></div>
+    <div>
+      <div class="tree-drop"></div>
+      <div class="tree-split"><i></i><i></i><i></i></div>
+      <div class="keylines">
+      <div class="kcol">
+        <div class="keyline">
+          <div class="head"><span class="kicker k1">1 · The seam exists</span><span class="chip">A ▸ K1</span></div>
+          <h2>vLLM-Ascend&#x27;s kernels are replaceable units</h2>
+        </div>
+        <div class="tree-stub"></div>
+        <div class="evcard">
+<div class="ev"><span class="chip">K1.1</span><div><strong>The DS4 path is custom AscendC op packages</strong> in <span class="mono">csrc/</span> — DSA sparse attention, lightning indexer, MoE grouped-GEMM+SwiGLU, rms_norm_dynamic_quant — registered as <span class="mono">torch.ops._C_ascend.*</span>. Replaceable units, not a monolith.</div></div>
+<div class="ev"><span class="chip">K1.2</span><div><strong>A no-fork override path is documented upstream</strong>: vLLM's <span class="mono">CustomOp.register_oot</span> + plugin system exists precisely so vendors can substitute optimized kernels — vllm-ascend is itself such a plugin.</div></div>
+<div class="ev"><span class="chip">K1.3</span><div><strong>Our toolchain speaks the same language</strong>: tile-rs emits AscendC C++ and already builds .so kernels with the same <span class="mono">ascendc_library</span> CMake machinery vllm-ascend uses; launches share the same <span class="mono">aclrtStream</span>.</div></div>
+          <p class="src">Verified in vllm-project/vllm-ascend source (csrc/, torch_binding.cpp, CMakeLists), 2026-08-10</p>
+        </div>
+      </div>
+      <div class="kcol">
+        <div class="keyline">
+          <div class="head"><span class="kicker k2">2 · The headroom is real</span><span class="chip">A ▸ K2</span></div>
+          <h2>Speed is proven on our own kernels — on vLLM&#x27;s ops we are behind, and the cause is named</h2>
+        </div>
+        <div class="tree-stub"></div>
+        <div class="evcard">
+<div class="ev"><span class="chip">K2.2</span><div><strong>The optimisation ladder is proven, kernel by kernel</strong>: matvec 73× via multi-core tiling; batched MoE expert FFN 8.5–10.3×; W4→f16→cube prefill 17.7–139.6× over matvec-per-token; rms_norm at 1.2e-7 error.</div></div>
+<div class="ev"><span class="chip">K2.3</span><div><strong>MoE expert FFN is ~99.7% of DS4 compute mass</strong> (our measurement) — and vllm-ascend computes it in one replaceable custom kernel, <span class="mono">grouped_matmul_swiglu_quant</span>.</div></div>
+<div class="ev"><span class="chip">K2.6</span><div><strong>Measured, not estimated — and we are slower.</strong> Fused bf16 <span class='mono'>rms_norm</span> vs <span class='mono'>npu_add_rms_norm</span>, alternating blocks, correctness re-gated first: M=1 292 vs 68 µs (0.23×), M=16 83 vs 65 (0.78×), M=128 81 vs 41 (0.51×), M=1024 82 vs 46 (0.56×). The w8a8 GEMM chain runs at 0.33–0.40× stock. <strong>The diagnosis is in the shape:</strong> our cost is <em>flat at ~82 µs from M=16 to M=1024</em> while the stock op scales with work — a 64× row increase costing us nothing means fixed per-call overhead dominates, so kernel arithmetic is the wrong lever.</div></div>
+          <p class="src">Measured 2026-07/08, 910B2/910C (dav-c220), CANN 8.5.x — every number oracle-checked on device</p>
+        </div>
+      </div>
+      <div class="kcol">
+        <div class="keyline">
+          <div class="head"><span class="kicker k3">3 · The plan is gated</span><span class="chip">A ▸ K3</span></div>
+          <h2>Three experiments, each with a kill criterion</h2>
+        </div>
+        <div class="tree-stub"></div>
+        <div class="evcard">
+<div class="ev"><span class="chip">K3.1</span><div><strong>Like-for-like inside vLLM-Ascend</strong> — same framework, same model, same box; only the kernel binary differs, both sides checksum-verified.</div></div>
+<div class="ev"><span class="chip">K3.2</span><div><strong>Parity before performance</strong>: no kernel ships unless output is bit-identical or within the op's stated tolerance.</div></div>
+<div class="ev"><span class="chip">K3.4</span><div><strong>Any experiment can kill the claim early</strong> — that is the point: cheap truth before expensive commitment.</div></div>
+          <p class="src">Measurement discipline: fresh-state best-of-N, both-sides A/B</p>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="rail"><div class="tag">Support</div><div class="sub">the experiments</div></div>
+    <div>
+      <div class="edge-label"><div class="tree-drop"></div><span class="chip">K3 ▸ E2–E5</span></div>
+      <div class="ladder">
+        <p class="eyebrow">Experiment ladder — the support of K3; each step gates the next</p>
+        <div class="ladder-scroll">
+          <div class="steps">
+          <div class="step">
+            <span class="chip done">E2 ✓</span>
+            <h3>Per-kernel A/B — done, and the answer is negative</h3>
+            <p>Both headline kernels are correct and both are slower: fused rms_norm 0.23–0.78× stock, w8a8 GEMM chain 0.33–0.40×. <strong>Reported as a range, because the stock arm is what moves</strong> — our timings are stable while stock varies ~21%. The flat-cost signature (K2.6) turns this from a dead end into a named target: remove per-call overhead, do not tune the arithmetic.</p>
+            <span class="gate">Gate: ≥1 kernel class at parity or better</span>
+          </div>
+          <div class="step">
+            <span class="chip done">E3 ✓</span>
+            <h3>Tile-search retune — landed</h3>
+            <p>Two kernels retuned, both parity-gated first. rms_norm: block-partitioned row loop + barrier elision, 5.53× → <strong>1.25×</strong>, now bit-identical to stock. The <strong>w8a8 MoE kernel gains 7.08× from blockDim alone</strong> (128.8µs → 18.2µs), saturating exactly at N/Nb = 8 blocks as the partitioning predicts. Correctness re-gated at <em>every</em> blockDim — identical error at 1, 2, 4, 8, 16, which also proves the partition is disjoint.</p>
+            <span class="gate">Gate met: parity re-checked at every blockDim</span>
+          </div>
+          <div class="step">
+            <span class="chip done">E4 ✓</span>
+            <h3>End-to-end A/B — seam proven, and the win is not reachable at today&#x27;s shapes</h3>
+            <p>A served DeepSeek-V4-Flash request has gone through a tile-rs kernel (fused bf16 add_rms_norm: <strong>5742 hits / 727059 rows</strong> on a live engine), and the census of real serving closed the shape question: gmm1 arrives at 32 experts and never 16 rows, so the decode-shaped kernel declines by contract. The decisive follow-up found where decode time actually goes. Under <strong>eager</strong> execution the pass was 148 ms wall with &lt;1 ms of device compute — the rest sat in collectives whose 30–70 ms wait bands were host-side launch drift between ranks, proven by a 124 µs flat HCCL floor and an algorithm sweep that could not reproduce them. Enabling <strong>ACL graph capture</strong> removed the drift: the same engine decoded 32 tokens in <strong>1.8 s = 17.8 tok/s single-stream — 4.3× eager and ≈4.9× the originally measured stock baseline</strong> — with the vendor fused-dispatch flag adding a further verified +8–11% at both shapes.</p>
+            <span class="gate">Gate: seam proven end-to-end; the served shape is now measured, and this kernel does not cover it</span>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="rail"><div class="tag">Terms</div><div class="sub">risks &amp; asks</div></div>
+    <div class="foot">
+      <section>
+        <h2>Risks we name up front</h2>
+<div class="ev"><span class="chip">R1</span><div><span class="risk-tag">CANN version tension</span>: DS4-capable vLLM-Ascend (v0.20.2rc1+) pins CANN 9.0.x while the deployment box is frozen at CANN 8.5.2 — whether the CANN-9 <em>container userland</em> runs on an 8.5-era driver is still untested, and that risk stands. What is no longer speculation is our side of it: a 9.0-built tile-rs kernel ran unmodified on an 8.0 runtime, with only the host wrapper rebuilt.</div></div>
+<div class="ev"><span class="chip">R2</span><div><span class="risk-tag">Quant format gap</span>: <span class="risk-tag">Vehicle blocked, not the kernels</span>: no DS4-Flash checkpoint we have tried completes a forward pass — three now, across two boxes and two serving stacks — and in every case the cause sits outside this plugin. <strong>w8a8</strong> loads and runs, then fails inside vLLM-Ascend's DSA attention — <span class="mono">npu_transpose_batchmatmul</span> rejecting an int8 weight (<em>Tensor x2 not implemented for DT_INT8</em>); a control run with our override disabled fails identically, which is how we know it is not ours. <strong>fp8 0731</strong> does not initialise at all: <em>customize_dtype is not supported by the current soc version</em>, raised while casting expert weights, and gated on SoC version inside torch_npu rather than by anything configurable. <strong>MXFP4</strong> was added on 2026-08-29 and is the one that is not vLLM's: on a 910B2 A2 node, through llama.cpp's own CANN backend, the 145&nbsp;GB checkpoint loads across four cards and then aborts in <span class="mono">ggml_cann_rope</span> — the runtime cannot load the AI&nbsp;Core kernel for <span class="mono">aclnnArange</span> (<em>rtsFuncGetByName ErrCode=107000</em>), although that operator passes <span class="mono">test-backend-ops</span> standalone on all four of those cards. Three checkpoints, two stacks, two boxes, three different Ascend-side operator failures and none of them ours. <strong>This is what blocks the end-to-end number</strong> — the op-level results below stand on their own.</div></div>
+<div class="ev"><span class="chip">R3</span><div><span class="risk-tag">Large-batch GEMM</span>: Beating the stock tuned grouped-GEMM at big prefill shapes is not yet evidenced; the credible opening is decode / small-M, and E2 reports both honestly.</div></div>
+      </section>
+      <section>
+        <h2>What we need from the product line</h2>
+<div class="ev"><span class="chip">Q1</span><div><strong>Access</strong>: One Atlas 800 A2 node (or the product line's existing 910B2/CANN 8.5.2 box) with vLLM-Ascend + DS4-Flash-0731 w8a8 deployed as the product line runs it.</div></div>
+<div class="ev"><span class="chip">Q2</span><div><strong>Reference config</strong>: The exact TP/DP/MTP serving configuration and workload mix, so E2–E4 measure what production measures.</div></div>
+<div class="ev"><span class="chip">Q3</span><div><strong>A named reviewer</strong>: One Ascend kernel engineer to check our A/B methodology before results are read.</div></div>
+      </section>
+    </div>
+  </div>
+
+  <footer class="colophon">Minto Pyramid: answer first (A), key lines beneath (K1–K3), evidence at the base (K·x, E2–E4) — at most three branches at every split. Every number above is measured on device; anything unverified is marked as such. This page is a generated view of facts.db — the single source of truth. Every ×-figure is ours divided by stock: above 1 we are faster, below 1 we are slower.</footer>
+</div>
