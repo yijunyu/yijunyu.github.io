@@ -192,19 +192,16 @@
           <div class="step">
             <span class="chip done">E2 ✓</span>
             <h3>Per-kernel A/B — done, and the answer is negative</h3>
-            <p>Both headline kernels are correct and both are slower: fused rms_norm 0.23–0.78× stock, w8a8 GEMM chain 0.33–0.40×. <strong>Reported as a range, because the stock arm is what moves</strong> — our timings are stable while stock varies ~21%. The flat-cost signature (K2.6) turns this from a dead end into a named target: remove per-call overhead, do not tune the arithmetic.</p>
             <span class="gate">Gate: ≥1 kernel class at parity or better</span>
           </div>
           <div class="step">
             <span class="chip done">E3 ✓</span>
             <h3>Tile-search retune — landed</h3>
-            <p>Two kernels retuned, both parity-gated first. rms_norm: block-partitioned row loop + barrier elision, 5.53× → <strong>1.25×</strong>, now bit-identical to stock. The <strong>w8a8 MoE kernel gains 7.08× from blockDim alone</strong> (128.8µs → 18.2µs), saturating exactly at N/Nb = 8 blocks as the partitioning predicts. Correctness re-gated at <em>every</em> blockDim — identical error at 1, 2, 4, 8, 16, which also proves the partition is disjoint.</p>
             <span class="gate">Gate met: parity re-checked at every blockDim</span>
           </div>
           <div class="step">
             <span class="chip done">E4 ✓</span>
             <h3>End-to-end A/B — seam proven, and the win is not reachable at today&#x27;s shapes</h3>
-            <p>A served DeepSeek-V4-Flash request has gone through a tile-rs kernel (fused bf16 add_rms_norm: <strong>5742 hits / 727059 rows</strong> on a live engine), and the census of real serving closed the shape question: gmm1 arrives at 32 experts and never 16 rows, so the decode-shaped kernel declines by contract. The decisive follow-up found where decode time actually goes. Under <strong>eager</strong> execution the pass was 148 ms wall with &lt;1 ms of device compute — the rest sat in collectives whose 30–70 ms wait bands were host-side launch drift between ranks, proven by a 124 µs flat HCCL floor and an algorithm sweep that could not reproduce them. Enabling <strong>ACL graph capture</strong> removed the drift: the same engine decoded 32 tokens in <strong>1.8 s = 17.8 tok/s single-stream — 4.3× eager and ≈4.9× the originally measured stock baseline</strong> — with the vendor fused-dispatch flag adding a further verified +8–11% at both shapes.</p>
             <span class="gate">Gate: seam proven end-to-end; the served shape is now measured, and this kernel does not cover it</span>
           </div>
           </div>
@@ -218,15 +215,11 @@
     <div class="foot">
       <section>
         <h2>Risks we name up front</h2>
-<div class="ev"><span class="chip">R1</span><div><span class="risk-tag">CANN version tension</span>: DS4-capable vLLM-Ascend (v0.20.2rc1+) pins CANN 9.0.x while the deployment box is frozen at CANN 8.5.2 — whether the CANN-9 <em>container userland</em> runs on an 8.5-era driver is still untested, and that risk stands. What is no longer speculation is our side of it: a 9.0-built tile-rs kernel ran unmodified on an 8.0 runtime, with only the host wrapper rebuilt.</div></div>
-<div class="ev"><span class="chip">R2</span><div><span class="risk-tag">Quant format gap</span>: <span class="risk-tag">Vehicle blocked, not the kernels</span>: no DS4-Flash checkpoint we have tried completes a forward pass — three now, across two boxes and two serving stacks — and in every case the cause sits outside this plugin. <strong>w8a8</strong> loads and runs, then fails inside vLLM-Ascend's DSA attention — <span class="mono">npu_transpose_batchmatmul</span> rejecting an int8 weight (<em>Tensor x2 not implemented for DT_INT8</em>); a control run with our override disabled fails identically, which is how we know it is not ours. <strong>fp8 0731</strong> does not initialise at all: <em>customize_dtype is not supported by the current soc version</em>, raised while casting expert weights, and gated on SoC version inside torch_npu rather than by anything configurable. <strong>MXFP4</strong> was added on 2026-08-29 and is the one that is not vLLM's: on a 910B2 A2 node, through llama.cpp's own CANN backend, the 145&nbsp;GB checkpoint loads across four cards and then aborts in <span class="mono">ggml_cann_rope</span> — the runtime cannot load the AI&nbsp;Core kernel for <span class="mono">aclnnArange</span> (<em>rtsFuncGetByName ErrCode=107000</em>), although that operator passes <span class="mono">test-backend-ops</span> standalone on all four of those cards. Three checkpoints, two stacks, two boxes, three different Ascend-side operator failures and none of them ours. <strong>This is what blocks the end-to-end number</strong> — the op-level results below stand on their own.</div></div>
-<div class="ev"><span class="chip">R3</span><div><span class="risk-tag">Large-batch GEMM</span>: Beating the stock tuned grouped-GEMM at big prefill shapes is not yet evidenced; the credible opening is decode / small-M, and E2 reports both honestly.</div></div>
+<div class="ev"><span class="chip">R1</span><div><span class="risk-tag">CANN version tension</span></div></div>
+<div class="ev"><span class="chip">R2</span><div><span class="risk-tag">Quant format gap</span></div></div>
+<div class="ev"><span class="chip">R3</span><div><span class="risk-tag">Large-batch GEMM</span></div></div>
       </section>
-      <section>
-        <h2>What we need</h2>
-<div class="ev"><span class="chip">Q1</span><div><strong>Access</strong>: One Atlas 800 A2 node with vLLM-Ascend + DS4-Flash-0731 w8a8 deployed.</div></div>
-<div class="ev"><span class="chip">Q2</span><div><strong>Reference config</strong>: The exact TP/DP/MTP serving configuration and workload mix, so E2–E4 measure what production measures.</div></div>
-      </section>
+      
     </div>
   </div>
 

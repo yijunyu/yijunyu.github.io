@@ -192,19 +192,16 @@
           <div class="step">
             <span class="chip done">E2 ✓</span>
             <h3>逐算子 A/B —— 已完成，结论为否</h3>
-            <p>两个主力算子均正确，但均更慢：融合 rms_norm 为原生的 0.23–0.78×，w8a8 GEMM 链为 0.33–0.40×。<strong>以区间报告，因为波动来自原生算子一侧</strong>——我们的耗时稳定，而原生算子波动约 21%。K2.6 的恒定耗时特征使这一结果从死路变为明确目标：消除每次调用的固定开销，而非调优算术。</p>
             <span class="gate">门槛：至少一类内核打平或更优</span>
           </div>
           <div class="step">
             <span class="chip done">E3 ✓</span>
             <h3>Tile 搜索重调——已落地</h3>
-            <p>首两级已落地（2026-08-10）：内核内按核分块的行循环（新的 emitter 下沉，113 项测试通过）+ 屏障消除，使 rms_norm 从落后 5.53× 收敛到 <strong>1.25×</strong>，且经对齐门槛——M=4 变体与原版逐位一致。下一步：流水线化串行算子链，再做 w8a8-int8 MoE 专家内核（基于现有 i8 cube 接口）。</p>
             <span class="gate">门槛已达成：每个 blockDim 均重验对齐</span>
           </div>
           <div class="step">
             <span class="chip done">E4 ✓</span>
             <h3>端到端 A/B —— 接口已验证，但在当前形状下胜势不可达</h3>
-            <p>一次真实的 DeepSeek-V4-Flash 服务请求已经跑在 tile-rs 内核上（融合 bf16 add_rms_norm：在线引擎上 <strong>5742 次命中 / 727059 行</strong>），而真实服务的普查也关闭了形状问题：gmm1 到来时永远是 32 专家、从不是 16 行，因此按解码形状构建的内核按契约拒绝服务。决定性的后续找到了解码时间的真正去向：<strong>eager</strong> 执行下单次 pass 为 148 ms 墙钟、设备计算不足 1 ms——其余都耗在集合通信上，其 30–70 ms 的等待带是 rank 间主机侧启动漂移（124 µs 平坦的 HCCL 下限与无法复现这些带的算法扫描证明了这一点）。启用 <strong>ACL 图捕获</strong>消除了漂移：同一引擎解码 32 token 仅需 <strong>1.8 秒 = 单流 17.8 tok/s —— 较 eager 提升 4.3×，约为最初实测基线的 4.9×</strong>；厂商融合分发开关在两种形状上再增加经 A/B/A 验证的 +8–11%。</p>
             <span class="gate">门槛：端到端接口已验证；真实服务形状已实测，本内核并不覆盖</span>
           </div>
           </div>
@@ -218,15 +215,11 @@
     <div class="foot">
       <section>
         <h2>我们主动列明的风险</h2>
-<div class="ev"><span class="chip">R1</span><div><span class="risk-tag">CANN 版本张力</span>: 支持 DS4 的 vLLM-Ascend (v0.20.2rc1+) 锁定 CANN 9.0.x，而部署机器冻结在 CANN 8.5.2——CANN-9 容器用户态能否运行在 8.5 时代驱动上仍未测试，该风险依然存在。不再是推测的是我们这一侧：一个以 CANN 9.0 构建的 tile-rs 内核在 8.0 运行时上原样运行，只需重建主机侧包装。</div></div>
-<div class="ev"><span class="chip">R2</span><div><span class="risk-tag">量化格式差距</span>: <span class="risk-tag">受阻的是载体，不是内核</span>：我们试过的 DS4-Flash 权重当前都跑不完一次前向——现已三个，横跨两台机器与两套推理栈——且每一例的原因都不在本插件。<strong>w8a8</strong> 可以加载并运行，随后在 vLLM-Ascend 的 DSA 注意力中失败——<span class="mono">npu_transpose_batchmatmul</span> 拒绝 int8 权重（<em>Tensor x2 not implemented for DT_INT8</em>）；在关闭我们覆盖的对照运行中同样失败，据此可知非我方所致。<strong>fp8 0731</strong> 则完全无法初始化：在转换专家权重时抛出 <em>customize_dtype is not supported by the current soc version</em>，该限制由 torch_npu 内部按 SoC 版本判定，而非任何可配置项。<strong>MXFP4</strong> 于 2026-08-29 加入，也是唯一与 vLLM 无关的一例：在一台 910B2 A2 节点上、通过 llama.cpp 自带的 CANN 后端，145&nbsp;GB 权重可跨四张卡加载，随后在 <span class="mono">ggml_cann_rope</span> 中中止——运行时无法为 <span class="mono">aclnnArange</span> 加载 AI&nbsp;Core 核函数二进制（<em>rtsFuncGetByName ErrCode=107000</em>），而该算子在同样这四张卡上单独跑 <span class="mono">test-backend-ops</span> 均通过。三个权重、两套推理栈、两台机器、三种不同的 Ascend 侧算子失败，无一出自我方。<strong>端到端数字正是受阻于此</strong>——下文的算子级结果自身成立。</div></div>
-<div class="ev"><span class="chip">R3</span><div><span class="risk-tag">大批量 GEMM</span>: 在大 batch 预填充形状上胜过原版调优的 grouped-GEMM 尚无证据；可信的切入点是解码/小 M，E2 将如实报告两者。</div></div>
+<div class="ev"><span class="chip">R1</span><div><span class="risk-tag">CANN 版本张力</span></div></div>
+<div class="ev"><span class="chip">R2</span><div><span class="risk-tag">量化格式差距</span></div></div>
+<div class="ev"><span class="chip">R3</span><div><span class="risk-tag">大批量 GEMM</span></div></div>
       </section>
-      <section>
-        <h2>需要配合的事项</h2>
-<div class="ev"><span class="chip">Q1</span><div><strong>访问</strong>: 一台 Atlas 800 A2 节点，部署 vLLM-Ascend + DS4-Flash-0731 w8a8。</div></div>
-<div class="ev"><span class="chip">Q2</span><div><strong>参考配置</strong>: 确切的 TP/DP/MTP 服务配置与负载构成，使 E2–E4 测量的就是生产所测量的。</div></div>
-      </section>
+      
     </div>
   </div>
 
