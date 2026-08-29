@@ -539,9 +539,9 @@ sh install --key DS4-… --email you@example.com</div>
     { os: "linux", backend: "cuda", name: "ds4-rs-cuda", ok: false,
       desc: "NVIDIA. The engine behind the GB10 row; not yet built as a standalone binary." },
     { os: "linux", backend: "rocm", name: "ds4-rs-amd", ok: true,
-      desc: "AMD ROCm. A controller: it probes the hardware, plans the split and launches the ROCm engine." },
-    { os: "linux", backend: "cann", name: "ds4-rs-ascend", ok: false,
-      desc: "Huawei Ascend NPU. Ships the standalone server as well as the controller." },
+      desc: "AMD ROCm, x86_64. A controller: it probes the hardware, plans the split and launches the ROCm engine." },
+    { os: "linux", backend: "cann", name: "ds4-rs-ascend", ok: true,
+      desc: "Huawei Ascend NPU, aarch64. A controller, like the AMD one: ds4-server does not build for this backend yet." },
   ];
   let curOS = "mac", curBE = "metal";
 
