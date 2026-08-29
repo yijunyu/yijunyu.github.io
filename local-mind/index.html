@@ -94,7 +94,12 @@
 
   .tabrow{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem .9rem;
           justify-content:space-between;}
-  .tabs{display:flex;flex-wrap:wrap;gap:.35rem;}
+  /* The tabs take the whole first line, so the price and the bind note always
+     wrap below them. Without this the row is space-between across all three,
+     and whichever price happens to be SHORT enough to still fit -- the M4 mini
+     is the shortest -- gets stranded between the tabs and the bind note
+     instead of sitting under the machine it belongs to. */
+  .tabs{display:flex;flex-wrap:wrap;gap:.35rem;flex:1 1 100%;}
   .tabs button{font-family:var(--mono);font-size:var(--step);letter-spacing:.06em;
                color:var(--ink-2);background:var(--panel);cursor:pointer;
                border:1px solid var(--rule);border-radius:2px;padding:.42rem .7rem;
@@ -134,7 +139,7 @@
        padding:.08rem .3rem;border-radius:2px;color:var(--ink);}
 
   .mast-store{display:flex;flex-direction:column;gap:.3rem;align-items:flex-start;}
-  .qr{width:clamp(112px,13vw,144px);height:auto;display:block;
+  .qr{width:clamp(84px,9vw,104px);height:auto;display:block;
       background:#FFF;padding:8px;border-radius:2px;border:1px solid var(--rule-2);
       margin-bottom:.35rem;}
   .qr path{fill:#000;}
@@ -142,6 +147,24 @@
   .s-where{font-family:var(--mono);font-size:var(--step);letter-spacing:.1em;
            text-transform:uppercase;color:var(--ink-3);}
   .s-url{font-family:var(--mono);font-size:var(--step);color:var(--ink-3);}
+
+  /* The Linux binaries, one key. A status chip per row because only some of
+     them are packaged yet, and a download link that 404s is worse than an
+     honest "not yet". */
+  .bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        gap:.5rem;margin:.9rem 0 0;}
+  .bin{background:var(--panel-2);border-radius:2px;padding:.6rem .7rem;
+       display:flex;flex-direction:column;gap:.12rem;}
+  .bin .b-n{font-family:var(--mono);font-size:.82rem;color:var(--ink);}
+  .bin .b-d{font-size:.76rem;color:var(--ink-2);line-height:1.4;}
+  .b-s{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;
+       text-transform:uppercase;align-self:flex-start;border-radius:2px;
+       padding:.05rem .3rem;margin-top:.15rem;}
+  .b-yes{color:var(--resident);border:1px solid var(--resident);}
+  .b-no{color:var(--ink-3);border:1px solid var(--rule-2);}
+  .cmd{font-family:var(--mono);font-size:.78rem;background:var(--panel-2);
+       border:1px solid var(--rule);border-radius:2px;padding:.6rem .7rem;
+       overflow-x:auto;white-space:pre;margin:.7rem 0 0;color:var(--ink);}
 </style>
 </head>
 <body>
@@ -297,6 +320,34 @@
       </table>
     </div>
     <p class="note" id="tablenote"></p>
+  </section>
+
+  <section class="sec">
+    <h2>The same engine on a Linux accelerator</h2>
+    <p class="lede">The app is macOS only. Some of the machines above are not Macs, so the engine ships separately for them — one binary per accelerator, the same DeepSeek-V4-Flash file, the same OpenAI-compatible port. Only the AMD build is packaged so far; the installer will tell you plainly if you ask it for one that is not.</p>
+
+    <div class="bins">
+      <div class="bin"><span class="b-n">ds4-rs-amd</span>
+        <span class="b-d">AMD ROCm. A controller: it probes the hardware, plans the split and launches the ROCm engine. Measured on the Ryzen&nbsp;AI Max+&nbsp;395 row above.</span>
+        <span class="b-s b-yes">available</span></div>
+      <div class="bin"><span class="b-n">ds4-rs-ascend</span>
+        <span class="b-d">Huawei Ascend NPU. Ships the standalone server as well as the controller.</span>
+        <span class="b-s b-no">not packaged yet</span></div>
+      <div class="bin"><span class="b-n">ds4-rs-cuda</span>
+        <span class="b-d">NVIDIA. The engine behind the GB10 row above; not yet built as a standalone binary.</span>
+        <span class="b-s b-no">not packaged yet</span></div>
+    </div>
+
+    <p class="note" style="margin-top:.9rem">One command. It detects the accelerator, fetches only the matching binary, checks it against a published SHA-256, and installs the key:</p>
+    <div class="cmd">curl -fsSL https://peria.ai/install | sh -s -- --key DS4-… --email you@example.com</div>
+    <p class="note" style="margin-top:.5rem">Without a key it installs and runs the unlicensed path, so you can try it before buying one.</p>
+
+    <p class="note" style="margin-top:.7rem">Piping a script into a shell asks you to trust what you cannot read, which is the opposite of everything else on this page. The same install, verifiable:</p>
+    <div class="cmd">curl -fsSLO https://peria.ai/install
+shasum -a 256 install    # must match the value published at peria.ai/install.sha256
+sh install --key DS4-… --email you@example.com</div>
+
+    <p class="note" style="margin-top:.9rem"><strong>One key, every binary.</strong> The licence carries an expiry and the address it was issued to, and nothing else — there is no per-binary entitlement, so a key bought for one accelerator works on the others as they ship. It is checked offline against a public key compiled into the binary: no network is consulted, so it works on an air-gapped machine, and it stops working the day after it expires without needing to phone home. Keys come from <a href="https://peria.ai">peria.ai</a>, emailed on purchase.</p>
   </section>
 
   <div class="duo">
