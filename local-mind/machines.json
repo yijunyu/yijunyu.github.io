@@ -181,7 +181,7 @@
       "id": "gb10",
       "label": "DGX Spark · GB10 · 128 GB",
       "price": "$4,699 · NVIDIA list, Feb 2026",
-      "note": "Not a Local Mind machine — the app is macOS only. This is the same DeepSeek-V4-Flash file on an NVIDIA GB10 Grace&nbsp;Blackwell desktop through the reference CUDA engine, so the model and the quantisation are comparable to the Mac rows even though the engine is not. Measured August 2026 as an A/B/B/A sequence, three repetitions per arm, GPU clock sampled throughout (2405–2535&nbsp;MHz); the repetitions spanned 0.06&nbsp;tok/s. The weights sit in unified memory rather than streaming, which is why an 87&nbsp;GB model reports a resident rate on a 128&nbsp;GB box.",
+      "note": "The same DeepSeek-V4-Flash file on an NVIDIA GB10 Grace&nbsp;Blackwell desktop through the reference CUDA engine, so the model and the quantisation are comparable to the Mac rows even though the engine is not. Measured August 2026 as an A/B/B/A sequence, three repetitions per arm, GPU clock sampled throughout (2405–2535&nbsp;MHz); the repetitions spanned 0.06&nbsp;tok/s. The weights sit in unified memory rather than streaming, which is why an 87&nbsp;GB model reports a resident rate on a 128&nbsp;GB box.",
       "rows": [
         {
           "name": "DeepSeek-V4-Flash",
