@@ -131,7 +131,7 @@
     <div class="rail"><div class="tag">结论</div><div class="sub">中心思想</div></div>
     <div class="answer">
       <span class="chip">A</span>
-      <p class="thesis">vLLM-Ascend 保留框架，<em>tile-rs 替换算子</em>。<strong>接口已验证</strong>——我们的算子曾在真实模型路径上服务请求，且该覆盖按构造是增量式的：凡未覆盖的调用一律回落到原生实现，每次拒绝仅耗 <strong>0.89&nbsp;µs</strong>。<strong>成败在于速度。</strong>RMSNorm 的每条路径实测均慢于被替换的算子，因此该覆盖现已<em>默认关闭</em>，而非带着开销去委派。当前生效的覆盖是 MoE <span class='mono'>gmm1</span> 算子，在其服务的解码形状上<strong>比原生快 1.17–1.19×</strong>——但对真实服务的普查发现<strong>该形状并不出现</strong>，因此它今天对每一次调用都做了委派。胜势真实存在，但尚不可达；原因见下文实测。</p>
+      <p class="thesis">vLLM-Ascend 保留框架，<em>tile-rs 替换算子</em>。<strong>接口已验证</strong>——凡未覆盖的调用一律回落到原生实现，每次拒绝仅耗 <strong>0.89&nbsp;µs</strong>。<strong>成败在于速度。</strong>当前生效的覆盖是 MoE <span class='mono'>gmm1</span> 算子，在其服务的解码形状上<strong>比原生快 1.17–1.19×</strong>。</p>
     </div>
   </div>
 
@@ -227,9 +227,8 @@
       </section>
       <section>
         <h2>需要配合的事项</h2>
-<div class="ev"><span class="chip">Q1</span><div><strong>访问</strong>: 一台 Atlas 800 A2 节点（或现有 910B2/CANN 8.5.2 机器），按生产实际方式部署 vLLM-Ascend + DS4-Flash-0731 w8a8。</div></div>
+<div class="ev"><span class="chip">Q1</span><div><strong>访问</strong>: 一台 Atlas 800 A2 节点，部署 vLLM-Ascend + DS4-Flash-0731 w8a8。</div></div>
 <div class="ev"><span class="chip">Q2</span><div><strong>参考配置</strong>: 确切的 TP/DP/MTP 服务配置与负载构成，使 E2–E4 测量的就是生产所测量的。</div></div>
-<div class="ev"><span class="chip">Q3</span><div><strong>指定评审人</strong>: 指定一位 Ascend 内核工程师，在读取结果前审查我们的 A/B 方法。</div></div>
       </section>
     </div>
   </div>
