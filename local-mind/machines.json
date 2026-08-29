@@ -221,7 +221,7 @@
       "price": null,
       "os": "linux",
       "backend": "cann",
-      "note": "",
+      "note": "Not a Local Mind machine — the app is macOS only. A Huawei Atlas A2 server: eight Ascend 910B2 cards, 64&nbsp;GB HBM each, 512&nbsp;GB in total, confirmed from <code>npu-smi</code> on the box (8 chips, 65536&nbsp;MB per chip, all reporting healthy). <strong>DeepSeek-V4-Flash has not been measured here, and the attempt is worth recording.</strong> The <code>ds4-rs-ascend</code> controller is built and published for this hardware and installs on it. To get a decode rate, llama.cpp b10360 was built with the CANN backend on the box and the MXFP4 checkpoint (145&nbsp;GB) was loaded across four 910B2 cards — then decode aborted inside <code>ggml_cann_rope</code>, the runtime failing to load the AI&nbsp;Core kernel for <code>aclnnArange</code> (<code>rtsFuncGetByName ErrCode=107000</code>). That operator passes <code>test-backend-ops</code> standalone on all four cards, so it is not a dead card or a missing operator package. Until it is resolved the row says 'not measured' rather than borrowing a number from another machine. The residency column reads GPU because 87&nbsp;GB fits into 512&nbsp;GB many times over — an arithmetic claim about capacity, not a measurement of speed. No price is shown: A2 systems sell through configuration-dependent channels with no list figure to cite, and every other price on this page names a source, so the field is left empty until there is something to point at.",
       "rows": [
         {
           "name": "DeepSeek-V4-Flash",
