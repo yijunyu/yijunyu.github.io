@@ -121,9 +121,9 @@
 
 <div class="poster" lang="zh-CN">
   <header>
-    <p class="eyebrow">进展汇报 · 可信实验室 × 华为计算产品线 · tile-rs × vLLM-Ascend · DeepSeek V4 Flash 0731 · 2026-08-23</p>
+    <p class="eyebrow">tile-rs × vLLM-Ascend · DeepSeek V4 Flash 0731 · 2026-08-23</p>
     <h1>在 vLLM-Ascend 中运行 Rust 生成的内核</h1>
-    <p class="context">计算产品线已确定采用 <strong>vLLM-Ascend</strong> 部署 DeepSeek V4 Flash 0731。本页是可信实验室围绕共同目标的协作进展纪要：不另起技术栈，而是让选定的栈更快——用 <strong>tile-rs 从 Rust 编译</strong>出的内核逐类替换 AscendC 算子，每一类都以位一致校验与实测胜出为门槛。</p>
+    <p class="context">用 <strong>tile-rs 从 Rust 编译</strong>出的内核在 vLLM-Ascend 中逐类替换 AscendC 算子，每一类都以位一致校验与实测胜出为门槛。</p>
     <p class="langswitch"><a href="vllm-pivot-en.html">English</a></p>
   </header>
 
@@ -226,8 +226,8 @@
 <div class="ev"><span class="chip">R3</span><div><span class="risk-tag">大批量 GEMM</span>: 在大 batch 预填充形状上胜过原版调优的 grouped-GEMM 尚无证据；可信的切入点是解码/小 M，E2 将如实报告两者。</div></div>
       </section>
       <section>
-        <h2>需要产品线配合的事项</h2>
-<div class="ev"><span class="chip">Q1</span><div><strong>访问</strong>: 一台 Atlas 800 A2 节点（或产品线现有 910B2/CANN 8.5.2 机器），按产品线实际方式部署 vLLM-Ascend + DS4-Flash-0731 w8a8。</div></div>
+        <h2>需要配合的事项</h2>
+<div class="ev"><span class="chip">Q1</span><div><strong>访问</strong>: 一台 Atlas 800 A2 节点（或现有 910B2/CANN 8.5.2 机器），按生产实际方式部署 vLLM-Ascend + DS4-Flash-0731 w8a8。</div></div>
 <div class="ev"><span class="chip">Q2</span><div><strong>参考配置</strong>: 确切的 TP/DP/MTP 服务配置与负载构成，使 E2–E4 测量的就是生产所测量的。</div></div>
 <div class="ev"><span class="chip">Q3</span><div><strong>指定评审人</strong>: 指定一位 Ascend 内核工程师，在读取结果前审查我们的 A/B 方法。</div></div>
       </section>

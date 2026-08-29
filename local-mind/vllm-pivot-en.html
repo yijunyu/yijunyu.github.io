@@ -121,9 +121,9 @@
 
 <div class="poster" lang="en">
   <header>
-    <p class="eyebrow">Progress update · Trustworthiness Lab × Compute product line · tile-rs × vLLM-Ascend · DeepSeek V4 Flash 0731 · 2026-08-23</p>
+    <p class="eyebrow">tile-rs × vLLM-Ascend · DeepSeek V4 Flash 0731 · 2026-08-23</p>
     <h1>Rust-generated kernels inside vLLM-Ascend</h1>
-    <p class="context">The Compute product line has standardised on <strong>vLLM-Ascend</strong> for DeepSeek V4 Flash 0731. This is the Trustworthiness Lab's progress note toward the shared goal: not a different stack, but making the chosen stack faster — swapping individual AscendC kernels for kernels <strong>compiled from Rust by tile-rs</strong>, one op class at a time, each gated on bit-parity and a measured win.</p>
+    <p class="context">Inside vLLM-Ascend, individual AscendC kernels are swapped for kernels <strong>compiled from Rust by tile-rs</strong>, one op class at a time, each gated on bit-parity and a measured win.</p>
     <p class="langswitch"><a href="vllm-pivot-zh.html">中文</a></p>
   </header>
 
@@ -226,8 +226,8 @@
 <div class="ev"><span class="chip">R3</span><div><span class="risk-tag">Large-batch GEMM</span>: Beating the stock tuned grouped-GEMM at big prefill shapes is not yet evidenced; the credible opening is decode / small-M, and E2 reports both honestly.</div></div>
       </section>
       <section>
-        <h2>What we need from the product line</h2>
-<div class="ev"><span class="chip">Q1</span><div><strong>Access</strong>: One Atlas 800 A2 node (or the product line's existing 910B2/CANN 8.5.2 box) with vLLM-Ascend + DS4-Flash-0731 w8a8 deployed as the product line runs it.</div></div>
+        <h2>What we need</h2>
+<div class="ev"><span class="chip">Q1</span><div><strong>Access</strong>: One Atlas 800 A2 node (or an existing 910B2/CANN 8.5.2 box) with vLLM-Ascend + DS4-Flash-0731 w8a8 deployed as it is run in production.</div></div>
 <div class="ev"><span class="chip">Q2</span><div><strong>Reference config</strong>: The exact TP/DP/MTP serving configuration and workload mix, so E2–E4 measure what production measures.</div></div>
 <div class="ev"><span class="chip">Q3</span><div><strong>A named reviewer</strong>: One Ascend kernel engineer to check our A/B methodology before results are read.</div></div>
       </section>
