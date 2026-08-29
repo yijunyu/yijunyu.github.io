@@ -148,6 +148,28 @@
            text-transform:uppercase;color:var(--ink-3);}
   .s-url{font-family:var(--mono);font-size:var(--step);color:var(--ink-3);}
 
+  /* Platform tabs. Two rows that gate each other: an OS choice disables the
+     accelerators it cannot run, rather than hiding them -- "not on this OS" is
+     information, and a tab that vanishes teaches the reader nothing. */
+  .platrow{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem .5rem;}
+  .ptabs{display:flex;flex-wrap:wrap;gap:.25rem;}
+  .psep{color:var(--ink-3);}
+  .ptabs button{font-family:var(--mono);font-size:var(--step);letter-spacing:.1em;
+                text-transform:uppercase;cursor:pointer;color:var(--ink-3);
+                background:none;border:1px solid transparent;border-radius:2px;
+                padding:.18rem .42rem;line-height:1.3;}
+  .ptabs button:hover:not([aria-disabled="true"]){color:var(--ink);}
+  .ptabs button[aria-selected="true"]{color:var(--ink);border-color:var(--rule-2);
+                                      background:var(--panel);}
+  /* Disabled reads as unavailable, not as merely unselected. */
+  .ptabs button[aria-disabled="true"]{opacity:.32;cursor:not-allowed;
+                                      text-decoration:line-through;}
+  .postlist{margin:.5rem 0 0;font-family:var(--mono);font-size:.82rem;
+            display:flex;flex-wrap:wrap;gap:.3rem .6rem;}
+  .postlist a{color:var(--resident);text-decoration:none;}
+  .postlist a:hover{text-decoration:underline;}
+  .postlist .none{color:var(--ink-3);}
+
   /* The Linux binaries, one key. A status chip per row because only some of
      them are packaged yet, and a download link that 404s is worse than an
      honest "not yet". */
@@ -173,13 +195,15 @@
 
   <header class="mast">
     <div class="mast-copy">
-      <div class="eyebrow">macOS · Apple silicon · version 1.0.3</div>
+      <div class="platrow">
+        <div class="ptabs" id="ostabs" role="tablist" aria-label="Operating system"></div>
+        <span class="psep">·</span>
+        <div class="ptabs" id="betabs" role="tablist" aria-label="Accelerator"></div>
+        <span class="eyebrow" style="margin-left:auto">version 1.0.3</span>
+      </div>
       <h1>Local&nbsp;Mind</h1>
       <p class="thesis">Large models run on the Machine in front of you. Once a model is serving, the engine cannot open a network connection — the prompt has nowhere else to go.</p>
-      <p style="margin:.5rem 0 0;font-family:var(--mono);font-size:.82rem">
-        <a href="ds4cuda-en.html" style="color:var(--resident);text-decoration:none;font-weight:700">ds4-rs-cuda vs. ds4.c — GB10 A/B progress</a>
-        &nbsp;·&nbsp;<a href="ds4cuda-zh.html" style="color:var(--resident);text-decoration:none">中文</a>
-      </p>
+      <p class="postlist" id="postlist"></p>
     </div>
     <aside class="mast-store">
       <a href="https://apps.apple.com/app/id6793161102" aria-label="Local Mind for Private AI on the Mac App Store">
@@ -250,7 +274,8 @@
             <li><span class="o">Muse Glimmer 30B<span class="nu">new</span></span><span class="d">Meta, 30B dense in 17 GB</span></li>
             <li><span class="o">MiniMax H3<span class="nu">new</span></span><span class="d">Text to video, with synchronised audio</span></li>
             <li><span class="o">Laguna S / XS 2.1</span><span class="d">Poolside coding models, 110B and 33B</span></li>
-            <li><span class="o">GLM-5.2</span><span class="d">1020B MoE</span></li>
+            <li><span class="o">GLM-5.3-Flash<span class="nu">new</span></span><span class="d">320B MoE, 18B active &mdash; the first GLM that fits in memory on a 128 GB Mac</span></li>
+            <li><span class="o">Qwen3.8-Flash-Next<span class="nu">new</span></span><span class="d">125B MoE, 6B active &mdash; hybrid linear and sparse attention</span></li>
             <li><span class="o">Kimi-K3</span><span class="d">~1500B, out-of-core only</span></li>
             <li><span class="o">Bring your own</span><span class="d">Any GGUF already on disk</span></li>
           </ul>
@@ -322,7 +347,7 @@
     <p class="note" id="tablenote"></p>
   </section>
 
-  <section class="sec">
+  <section class="sec" id="linuxsec">
     <h2>The same engine on a Linux accelerator</h2>
     <p class="lede">The app is macOS only. Some of the machines above are not Macs, so the engine ships separately for them — one binary per accelerator, the same DeepSeek-V4-Flash file, the same OpenAI-compatible port. Only the AMD build is packaged so far; the installer will tell you plainly if you ask it for one that is not.</p>
 
@@ -426,8 +451,9 @@ sh install --key DS4-… --email you@example.com</div>
         <h3>Models</h3>
         <ul>
           <li><strong>DeepSeek-V4-Flash</strong> — DeepSeek</li>
-          <li><strong>GLM-5.2</strong> — Zhipu AI</li>
+          <li><strong>GLM-5.3-Flash</strong> — Z.ai (Zhipu), MIT</li>
           <li><strong>Qwen3</strong> and <strong>Qwen3.6</strong> — Alibaba, Apache-2.0</li>
+          <li><strong>Qwen3.8-Flash-Next</strong> — Alibaba, Qwen community licence</li>
           <li><strong>Laguna S / XS 2.1</strong> — Poolside</li>
           <li><strong>Kimi-K3</strong> — Moonshot AI</li>
           <li><strong>Muse Glimmer 30B</strong> — Meta, Apache-2.0</li>
@@ -460,8 +486,17 @@ sh install --key DS4-… --email you@example.com</div>
   let BOXES = [];
 
   function render(i) {
-    const b = BOXES[i];
-    if (!b) return;
+    const shown = machinesFor(curOS, curBE);
+    const b = shown[i];
+    if (!b) {
+      // Supported, but nothing measured on it yet. Say which, rather than
+      // showing an empty table that reads as "runs nothing".
+      const be = BACKENDS.find(x => x.id === curBE);
+      rowsEl.innerHTML = `<tr><td colspan="4" class="na">no ${be ? be.label : ""} measurements published yet</td></tr>`;
+      priceEl.textContent = "";
+      noteEl.textContent = `Nothing has been measured on ${be ? be.label : "this backend"} yet. The backend is supported; the numbers are not published because they have not been taken.`;
+      return;
+    }
     rowsEl.innerHTML = b.rows.map(r => {
       const runs = (r.modes && r.modes.length)
         ? r.modes.map(m => `<span class="pill ${PILL[m][0]}">${PILL[m][1]}</span>`).join(" ")
@@ -479,9 +514,120 @@ sh install --key DS4-… --email you@example.com</div>
     [...tabsEl.children].forEach((t, n) => t.setAttribute("aria-selected", String(n === i)));
   }
 
+  // ---- platform state -----------------------------------------------------
+  // Two axes. The OS gates the accelerators; the pair gates the machine tabs,
+  // the posts and the downloads. Everything below reads from one place so the
+  // three lists cannot drift out of step with the tabs.
+  const OSES = [
+    { id: "mac",   label: "macOS" },
+    { id: "linux", label: "Linux" },
+  ];
+  const BACKENDS = [
+    { id: "metal", label: "Metal",  os: "mac"   },
+    { id: "cuda",  label: "CUDA",   os: "linux" },
+    { id: "rocm",  label: "ROCm",   os: "linux" },
+    { id: "cann",  label: "CANN",   os: "linux" },
+  ];
+  const POSTS = [
+    { os: "mac",   backend: "metal", href: "../tile-rs-vs-mojo.html",
+      title: "tile-rs on Apple GPU: our Metal backend against our Mojo backend" },
+    { os: "linux", backend: "cuda",  href: "ds4cuda-en.html", lead: true,
+      title: "ds4-rs-cuda vs. ds4.c — GB10 A/B progress" },
+    { os: "linux", backend: "cuda",  href: "ds4cuda-zh.html", title: "中文" },
+  ];
+  const BINS = [
+    { os: "linux", backend: "cuda", name: "ds4-rs-cuda", ok: false,
+      desc: "NVIDIA. The engine behind the GB10 row; not yet built as a standalone binary." },
+    { os: "linux", backend: "rocm", name: "ds4-rs-amd", ok: true,
+      desc: "AMD ROCm. A controller: it probes the hardware, plans the split and launches the ROCm engine." },
+    { os: "linux", backend: "cann", name: "ds4-rs-ascend", ok: false,
+      desc: "Huawei Ascend NPU. Ships the standalone server as well as the controller." },
+  ];
+  let curOS = "mac", curBE = "metal";
+
+  const osTabsEl = document.getElementById("ostabs");
+  const beTabsEl = document.getElementById("betabs");
+  const postEl   = document.getElementById("postlist");
+  const binsEl   = document.querySelector(".bins");
+  const linuxSec = document.getElementById("linuxsec");
+
+  function machinesFor(os, be) {
+    return BOXES.filter(b => b.os === os && b.backend === be);
+  }
+  // A backend is offerable if it belongs to this OS at all. Whether it has a
+  // measured machine is a separate question, answered in the tab's title.
+  function beEnabled(be) { return be.os === curOS; }
+
+  function renderPlatform() {
+    osTabsEl.innerHTML = "";
+    OSES.forEach(o => {
+      const t = document.createElement("button");
+      t.type = "button"; t.setAttribute("role", "tab");
+      t.textContent = o.label;
+      t.setAttribute("aria-selected", String(o.id === curOS));
+      t.addEventListener("click", () => selectOS(o.id));
+      osTabsEl.appendChild(t);
+    });
+    beTabsEl.innerHTML = "";
+    BACKENDS.forEach(b => {
+      const on = beEnabled(b);
+      const has = machinesFor(b.os, b.id).length > 0;
+      const t = document.createElement("button");
+      t.type = "button"; t.setAttribute("role", "tab");
+      t.textContent = b.label;
+      t.setAttribute("aria-selected", String(on && b.id === curBE));
+      if (!on) {
+        t.setAttribute("aria-disabled", "true");
+        t.title = `${b.label} does not run on ${OSES.find(o => o.id === curOS).label}`;
+      } else {
+        t.title = has ? `${b.label} — measured` : `${b.label} — supported, no measurement published yet`;
+        t.addEventListener("click", () => { curBE = b.id; renderAll(); });
+      }
+      beTabsEl.appendChild(t);
+    });
+  }
+
+  function selectOS(os) {
+    if (os === curOS) return;
+    curOS = os;
+    // Land on this OS's first backend that actually has a machine, so switching
+    // OS never drops the reader onto an empty table.
+    const mine = BACKENDS.filter(b => b.os === os);
+    const withRows = mine.find(b => machinesFor(os, b.id).length > 0);
+    curBE = (withRows || mine[0]).id;
+    renderAll();
+  }
+
+  function renderPosts() {
+    const ps = POSTS.filter(p => p.os === curOS && p.backend === curBE);
+    postEl.innerHTML = ps.length
+      ? ps.map(p => `<a href="${p.href}"${p.lead ? ' style="font-weight:700"' : ""}>${p.title}</a>`).join("")
+      : `<span class="none">no write-up for this combination yet</span>`;
+  }
+
+  function renderBins() {
+    if (!binsEl || !linuxSec) return;
+    // The download section is about Linux binaries; on macOS the answer is the
+    // App Store app in the masthead, so the whole section stands down.
+    linuxSec.hidden = curOS !== "linux";
+    const bs = BINS.filter(b => b.os === curOS && b.backend === curBE);
+    binsEl.innerHTML = bs.map(b => `<div class="bin"><span class="b-n">${b.name}</span>`
+      + `<span class="b-d">${b.desc}</span>`
+      + `<span class="b-s ${b.ok ? "b-yes" : "b-no"}">${b.ok ? "available" : "not packaged yet"}</span></div>`).join("");
+  }
+
+  function renderAll() {
+    renderPlatform();
+    renderPosts();
+    renderBins();
+    buildTabs();
+    render(0);
+  }
+
   function buildTabs() {
     tabsEl.innerHTML = "";
-    BOXES.forEach((b, i) => {
+    const shown = machinesFor(curOS, curBE);
+    shown.forEach((b, i) => {
       const t = document.createElement("button");
       t.type = "button"; t.setAttribute("role", "tab");
       t.setAttribute("aria-controls", "modeltable");
@@ -491,7 +637,7 @@ sh install --key DS4-… --email you@example.com</div>
         const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
         if (!d) return;
         e.preventDefault();
-        const n = (i + d + BOXES.length) % BOXES.length;
+        const n = (i + d + shown.length) % shown.length;
         render(n); tabsEl.children[n].focus();
       });
       tabsEl.appendChild(t);
@@ -500,7 +646,7 @@ sh install --key DS4-… --email you@example.com</div>
 
   fetch("machines.json", { cache: "no-cache" })
     .then(r => { if (!r.ok) throw new Error(`machines.json: HTTP ${r.status}`); return r.json(); })
-    .then(data => { BOXES = data.boxes || []; buildTabs(); render(0); })
+    .then(data => { BOXES = data.boxes || []; renderAll(); })
     .catch(err => {
       // Say so plainly. An empty table would read as a product that runs
       // nothing, which is worse than admitting the data did not load.
