@@ -118,6 +118,24 @@
   th,td{text-align:left;padding:.62rem .9rem;border-bottom:1px solid var(--rule);}
   thead th{font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;
            color:var(--ink-3);font-weight:400;background:var(--panel-2);}
+  /* Sortable headers. The button carries the padding so the whole cell is the
+     hit target, and it is a real <button> so keyboard and screen readers get
+     the behaviour for free; aria-sort on the th is what actually announces it. */
+  thead th.sortable{padding:0;}
+  thead th.sortable .sortbtn{font:inherit;letter-spacing:inherit;text-transform:inherit;
+           color:inherit;background:none;border:0;width:100%;text-align:left;
+           padding:.62rem .9rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;}
+  thead th.sortable .sortbtn:hover{color:var(--ink);background:var(--rule);}
+  thead th.sortable .sortbtn:focus-visible{outline:2px solid var(--resident);outline-offset:-2px;}
+  thead th[aria-sort="ascending"] .sortbtn,
+  thead th[aria-sort="descending"] .sortbtn{color:var(--ink);}
+  /* The arrow occupies its slot even when inactive, so nothing shifts on click. */
+  .sarrow{font-size:.85em;line-height:1;opacity:0;}
+  th[aria-sort="ascending"] .sarrow,th[aria-sort="descending"] .sarrow{opacity:1;}
+  th[aria-sort="ascending"] .sarrow::after{content:"\2191";}
+  th[aria-sort="descending"] .sarrow::after{content:"\2193";}
+  th[aria-sort="none"] .sarrow::after{content:"\2195";}
+  thead th.sortable .sortbtn:hover .sarrow{opacity:.45;}
   tbody tr:last-child td{border-bottom:0;}
   td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;}
   td.fam{font-weight:590;}
@@ -340,7 +358,12 @@
     <div class="tscroll">
       <table id="modeltable">
         <thead>
-          <tr><th scope="col">Model</th><th scope="col">Size</th><th scope="col">Runs as</th><th scope="col">Decode</th></tr>
+          <tr>
+            <th scope="col" class="sortable" data-sort="model"  aria-sort="none"><button type="button" class="sortbtn">Model<span class="sarrow" aria-hidden="true"></span></button></th>
+            <th scope="col" class="sortable" data-sort="size"   aria-sort="none"><button type="button" class="sortbtn">Size<span class="sarrow" aria-hidden="true"></span></button></th>
+            <th scope="col" class="sortable" data-sort="runs"   aria-sort="none"><button type="button" class="sortbtn">Runs as<span class="sarrow" aria-hidden="true"></span></button></th>
+            <th scope="col" class="sortable" data-sort="decode" aria-sort="none"><button type="button" class="sortbtn">Decode<span class="sarrow" aria-hidden="true"></span></button></th>
+          </tr>
         </thead>
         <tbody id="modelrows"></tbody>
       </table>
@@ -487,19 +510,92 @@ sh install --key DS4-… --email you@example.com</div>
   const tabsEl = document.querySelector(".tabs");
   let BOXES = [];
 
+  // ---- column sorting -----------------------------------------------------
+  // Every column sorts on a PARSED value, never on the rendered text. Sorting
+  // "594.0 GB" and "2 GB" as strings puts the 594 first; sorting "8.5 tok/s"
+  // lexically puts it above "62.3". The rendered string stays the thing the
+  // reader sees, and the sort reads the number behind it.
+  const MODE_RANK = { gpu: 3, hyb: 2, ssd: 1 };
+
+  function sizeGB(v) {
+    const m = String(v || "").match(/([\d.]+)\s*(TB|GB|MB)?/i);
+    if (!m) return null;
+    const n = parseFloat(m[1]);
+    const u = (m[2] || "GB").toUpperCase();
+    return u === "TB" ? n * 1000 : u === "MB" ? n / 1000 : n;
+  }
+  function rateNum(v) {
+    if (!v) return null;                       // null decode = NOT MEASURED
+    const m = String(v).match(/[\d.]+/);
+    return m ? parseFloat(m[0]) : null;
+  }
+  // "Runs as" ranks by the BEST mode available, so fully resident sorts above
+  // streaming above does-not-fit — the order a reader means by "how well".
+  function runsRank(modes) {
+    return (modes && modes.length) ? Math.max(...modes.map(m => MODE_RANK[m] || 0)) : 0;
+  }
+
+  // dir is the direction the FIRST click on that column applies: names read
+  // A-Z, but rates and capability read best-first, which is what a reader
+  // wants to see when they reach for them.
+  const SORTS = {
+    model:  { first:  1, get: r => (r.name || "").toLowerCase() },
+    size:   { first:  1, get: r => sizeGB(r.size) },
+    runs:   { first: -1, get: r => runsRank(r.modes) },
+    decode: { first: -1, get: r => rateNum(r.decode) },
+  };
+  let sortCol = null, sortDir = 1, curBox = 0;
+
+  function sortRows(rows) {
+    if (!sortCol || !SORTS[sortCol]) return rows;
+    const get = SORTS[sortCol].get;
+    return rows.slice().sort((a, b) => {
+      const av = get(a), bv = get(b);
+      // An absent value is not a small one. "not measured" sinks to the bottom
+      // in BOTH directions rather than posing as 0 (slowest) or as the fastest
+      // when reversed — the distinction this table exists to keep.
+      const an = av === null || av === undefined || Number.isNaN(av);
+      const bn = bv === null || bv === undefined || Number.isNaN(bv);
+      if (an || bn) return an && bn ? 0 : an ? 1 : -1;
+      if (typeof av === "string") return sortDir * av.localeCompare(bv);
+      return sortDir * (av - bv);
+    });
+  }
+
+  function wireSortHeaders() {
+    document.querySelectorAll("#modeltable th.sortable").forEach(th => {
+      const col = th.dataset.sort;
+      th.querySelector(".sortbtn").addEventListener("click", () => {
+        sortDir = (sortCol === col) ? -sortDir : SORTS[col].first;
+        sortCol = col;
+        render(curBox);
+      });
+    });
+  }
+
+  function paintSortHeaders() {
+    document.querySelectorAll("#modeltable th.sortable").forEach(th => {
+      th.setAttribute("aria-sort",
+        th.dataset.sort !== sortCol ? "none" : sortDir === 1 ? "ascending" : "descending");
+    });
+  }
+
   function render(i) {
+    curBox = i;
     const shown = machinesFor(curOS, curBE);
     const b = shown[i];
     if (!b) {
       // Supported, but nothing measured on it yet. Say which, rather than
       // showing an empty table that reads as "runs nothing".
       const be = BACKENDS.find(x => x.id === curBE);
+      paintSortHeaders();
       rowsEl.innerHTML = `<tr><td colspan="4" class="na">no ${be ? be.label : ""} measurements published yet</td></tr>`;
       priceEl.textContent = "";
       noteEl.textContent = `Nothing has been measured on ${be ? be.label : "this backend"} yet. The backend is supported; the numbers are not published because they have not been taken.`;
       return;
     }
-    rowsEl.innerHTML = b.rows.map(r => {
+    paintSortHeaders();
+    rowsEl.innerHTML = sortRows(b.rows).map(r => {
       const runs = (r.modes && r.modes.length)
         ? r.modes.map(m => `<span class="pill ${PILL[m][0]}">${PILL[m][1]}</span>`).join(" ")
         : `<span class="na">does not fit</span>`;
@@ -648,7 +744,7 @@ sh install --key DS4-… --email you@example.com</div>
 
   fetch("machines.json", { cache: "no-cache" })
     .then(r => { if (!r.ok) throw new Error(`machines.json: HTTP ${r.status}`); return r.json(); })
-    .then(data => { BOXES = data.boxes || []; renderAll(); })
+    .then(data => { BOXES = data.boxes || []; wireSortHeaders(); renderAll(); })
     .catch(err => {
       // Say so plainly. An empty table would read as a product that runs
       // nothing, which is worse than admitting the data did not load.
