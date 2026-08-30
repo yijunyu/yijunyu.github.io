@@ -23,7 +23,7 @@
       "id": "m1u",
       "label": "M1 Ultra · 64-core GPU · 128 GB",
       "price": "from $3,999 at launch · discontinued, used market",
-      "note": "Decode is short-context and measured on this machine, each model on the engine the app picks for it &mdash; and they are not the same engine. <strong>Muse Glimmer 30B</strong> is measured by a different tool and is a mean rather than a median, so it is not strictly comparable with the rows above it. <strong>GLM-5.3-Flash</strong> is quoted short-context; the same model measures 17.6 at a 9,600-token prompt. <strong>Kimi-K3</strong>'s out-of-core rate is carried over and has not been verified here. Sizes are the real download; residency is computed from that size against this machine's memory and disk.",
+      "note": "Decode is short-context and measured on this machine, each model on the engine the app picks for it &mdash; and they are not the same engine. <strong>Muse Glimmer 30B</strong> is measured by a different tool and is a mean rather than a median, so it is not strictly comparable with the rows above it. <strong>GLM-5.3-Flash</strong> is quoted short-context, and its decode is a trough rather than a slope: ~14 just under 4k, where the engine's full-attention window ends, then back to ~17.8 from 8k out to 32k. <strong>Kimi-K3</strong>'s out-of-core rate is carried over and has not been verified here. Sizes are the real download; residency is computed from that size against this machine's memory and disk.",
       "rows": [
         {
           "name": "Muse Glimmer 30B",
