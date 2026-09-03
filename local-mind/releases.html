@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Local Mind — release history</title>
+<meta name="description" content="Every release note for Local Mind for Private AI, kept as it was written at the time: 1.0.5, 1.0.4, 1.0.3 and 1.0.2.">
+<style>
+  html{color-scheme:light dark}
+  :root {
+    --ground:#E9ECEA; --panel:#F5F8F6; --panel-2:#DFE4E1;
+    --ink:#0F1412; --ink-2:#4C554F; --ink-3:#77817A;
+    --rule:#C6CEC8; --rule-2:#AEB8B1;
+    --resident:#0B8E83; --stream:#B54B24; --hybrid:#966D12;
+    --resident-bg:#D6ECE9; --stream-bg:#F4DED5; --hybrid-bg:#F0E6CC;
+    --display:ui-serif,"New York","Iowan Old Style",Georgia,serif;
+    --body:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+    --step:clamp(.72rem,.68rem + .2vw,.8rem);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0C100E; --panel:#141917; --panel-2:#1D2422;
+      --ink:#E9EEEB; --ink-2:#97A19A; --ink-3:#6E7871;
+      --rule:#242C28; --rule-2:#333C37;
+      --resident:#2FD3C3; --stream:#F0794A; --hybrid:#E0AC34;
+      --resident-bg:#0E2B29; --stream-bg:#2E1710; --hybrid-bg:#2A2109;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);
+       font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{text-wrap:balance;margin:0;}
+  p{margin:0;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--resident);outline-offset:3px;border-radius:2px;}
+  .wrap{max-width:1120px;margin:0 auto;
+        padding:clamp(1.5rem,4vw,4rem) clamp(1rem,3vw,2rem) 4rem;
+        display:flex;flex-direction:column;gap:clamp(2.5rem,5vw,4rem);}
+  .eyebrow{font-family:var(--mono);font-size:var(--step);letter-spacing:.14em;
+           text-transform:uppercase;color:var(--ink-3);}
+
+  .mast{border-bottom:1px solid var(--rule);padding-bottom:clamp(1.5rem,3vw,2.5rem);
+        display:flex;flex-direction:column;gap:1.15rem;}
+  .mast h1{font-family:var(--display);font-weight:500;letter-spacing:-.02em;
+           font-size:clamp(2.2rem,1.4rem + 3.4vw,4rem);line-height:1;}
+  .mast .thesis{font-family:var(--display);font-size:clamp(1.05rem,.95rem + .6vw,1.45rem);
+                line-height:1.35;color:var(--ink-2);max-width:46ch;font-style:italic;}
+  .backrow{display:flex;gap:1rem;align-items:baseline;flex-wrap:wrap;}
+  .backrow a{font-family:var(--mono);font-size:var(--step);letter-spacing:.06em;
+             color:var(--resident);text-decoration:none;border-bottom:1px solid transparent;}
+  .backrow a:hover{border-bottom-color:var(--resident);}
+
+  /* A release is a dated entry in a sequence, so it is numbered by its version
+     and ordered newest first — the ordering carries real information. */
+  .rel{display:grid;grid-template-columns:minmax(0,7.5rem) minmax(0,1fr);
+       gap:clamp(1rem,3vw,2.5rem);align-items:start;
+       border-top:1px solid var(--rule);padding-top:clamp(1.25rem,2.5vw,2rem);}
+  @media (max-width:720px){ .rel{grid-template-columns:minmax(0,1fr);gap:1rem;} }
+  .relhead{display:flex;flex-direction:column;gap:.3rem;position:sticky;top:1rem;}
+  @media (max-width:720px){ .relhead{position:static;} }
+  .relhead .v{font-family:var(--display);font-size:clamp(1.6rem,1.2rem + 1.4vw,2.3rem);
+              font-weight:500;letter-spacing:-.01em;line-height:1;}
+  .relhead .when{font-family:var(--mono);font-size:var(--step);color:var(--ink-3);
+                 letter-spacing:.06em;}
+  .relhead .src{font-family:var(--mono);font-size:calc(var(--step) - .04rem);
+                color:var(--ink-3);line-height:1.4;max-width:14ch;}
+  .relbody{display:flex;flex-direction:column;gap:1rem;min-width:0;}
+  .lede{color:var(--ink-2);max-width:62ch;}
+
+  .duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:.85rem;}
+  .panel{background:var(--panel);border:1px solid var(--rule);border-radius:3px;
+         padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.45rem;}
+  .panel h3{font-size:.95rem;font-weight:600;letter-spacing:-.01em;}
+  .panel p{color:var(--ink-2);}
+  .panel code{font-family:var(--mono);font-size:.85em;
+              background:var(--panel-2);padding:.1em .35em;border-radius:2px;}
+
+  .storecopy{background:var(--panel);border:1px solid var(--rule);border-radius:3px;
+             padding:1rem 1.1rem;}
+  .storecopy h3{font-size:.95rem;font-weight:600;margin-bottom:.5rem;}
+  .storecopy ul{margin:0;padding-left:1.1rem;color:var(--ink-2);}
+  .storecopy li{margin:.3rem 0;}
+  .storecopy ul ul{margin:.25rem 0;}
+
+  footer{border-top:1px solid var(--rule);padding-top:1.25rem;color:var(--ink-3);
+         font-family:var(--mono);font-size:var(--step);line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="mast">
+    <span class="eyebrow">Local Mind for Private AI · release history</span>
+    <h1>Every release, as it was written</h1>
+    <p class="thesis">The front page carries only the newest release. These are the notes each
+       version shipped with, kept here unchanged rather than overwritten by the one after it.</p>
+    <p class="backrow">
+      <a href="./">← Back to the poster</a>
+      <a href="https://apps.apple.com/app/id6793161102">Mac App Store</a>
+    </p>
+  </header>
+
+  <section class="rel">
+    <div class="relhead">
+      <span class="v">1.0.5</span>
+      <span class="when">Sep 2026</span>
+      <span class="src">poster band</span>
+    </div>
+    <div class="relbody">
+      <p class="lede">The release that gave the app eyes. A vision checkpoint, the engine work that
+         let it ship without costing another model its speed, and a plain account of which
+         hardware it has actually been run on.</p>
+      <div class="duo">
+        <div class="panel">
+          <h3>Show it a picture</h3>
+          <p><strong>DeepSeek V4 Flash Vision-Exp</strong> answers questions about an image you
+             attach in the Playground. It arrives as one catalogue entry carrying two files —
+             the model and a separate <strong>encoder</strong> that the model refuses to run
+             without — <strong>81.6&nbsp;GiB</strong> together, resident on a 128&nbsp;GB Mac.
+             The attach control stays hidden unless the model being served can actually see, so
+             the app never offers a picture the engine would only refuse.</p>
+        </div>
+        <div class="panel">
+          <h3>Images encode three times faster</h3>
+          <p>A new attention kernel reads its tiles straight from device memory instead of staging
+             them. Encoding the same image takes <strong>0.398&nbsp;s</strong> against
+             <strong>1.243&nbsp;s</strong> — <strong>3.12×</strong>, measured in the engine the
+             app actually ships rather than in a patch alongside it. On by default.</p>
+        </div>
+        <div class="panel">
+          <h3>One engine, and GLM keeps its speed</h3>
+          <p>Vision needed a newer engine, and that engine served <strong>GLM-5.3-Flash</strong>
+             too — where it cost <strong>44.6%</strong> of prefill on prompts under 4096 tokens.
+             A 2048-token prompt would have gone from about 10.7&nbsp;s to 19.3&nbsp;s before the
+             first word. One line restores the path GLM had: <strong>194.5&nbsp;t/s</strong>, all
+             of it back, with vision untouched. Both models are served by a single engine.</p>
+        </div>
+        <div class="panel">
+          <h3>Where it has been run</h3>
+          <p>Vision is measured in full on <strong>Metal</strong>, and verified on
+             <strong>ROCm</strong> on real gfx1151 hardware — the two give word-for-word identical
+             answers. <strong>CUDA has not been run at all</strong>, not even compiled, because the
+             only toolchain within reach rejects the architecture it needs. Said here rather than
+             discovered later.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rel">
+    <div class="relhead">
+      <span class="v">1.0.4</span>
+      <span class="when">Aug 2026</span>
+      <span class="src">poster band</span>
+    </div>
+    <div class="relbody">
+      <div class="duo">
+        <div class="panel">
+          <h3>A GLM that fits in memory</h3>
+          <p><strong>GLM-5.3-Flash</strong> — 320B parameters, 18B active per token, 96.5&nbsp;GB.
+             The first GLM this app can hold <em>entirely in memory</em> on a 128&nbsp;GB Mac
+             rather than streaming it from disk: <strong>24&nbsp;tokens/sec</strong> measured on an
+             M1&nbsp;Ultra. <strong>GLM-5.2 is retired</strong> — at 217&nbsp;GB it never fit on a
+             machine that size and only ever streamed. A copy already on your disk still runs.</p>
+        </div>
+        <div class="panel">
+          <h3>The fastest big model here</h3>
+          <p><strong>Qwen3.8-Flash-Next</strong> — 125B parameters with 6B active, 78.9&nbsp;GB,
+             hybrid linear and sparse attention. <strong>31&nbsp;tokens/sec</strong> on the same
+             machine, which makes it the quickest of the large models in the catalogue, and the
+             smallest of the three that need a 128&nbsp;GB Mac.</p>
+        </div>
+        <div class="panel">
+          <h3>Three things that were wrong</h3>
+          <p>Qwen3.8-Flash-Next was listed at roughly <strong>an eighth</strong> of its real speed,
+             its memory-saving modes were shown as unavailable when they are not, and the bundled
+             engine was too old to load it at all. All three are fixed — which is why it appears in
+             this release with a number worth reading.</p>
+        </div>
+        <div class="panel">
+          <h3>Repeatable answers</h3>
+          <p>Models served by llama.cpp now use <strong>their own prompt format</strong> instead of
+             a substitute, so they behave the way their publisher intended; and a temperature of
+             <strong>0</strong> returns the same answer every time rather than a sampled one. The
+             licence credits now name every model the app can download.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rel">
+    <div class="relhead">
+      <span class="v">1.0.3</span>
+      <span class="when">Aug 2026</span>
+      <span class="src">poster band</span>
+    </div>
+    <div class="relbody">
+      <div class="duo">
+        <div class="panel">
+          <h3>Video, from a description</h3>
+          <p>A <strong>Generate Video</strong> screen runs <strong>MiniMax&nbsp;H3</strong> on your
+             own GPU: seconds of video, with synchronised audio, from a sentence — or from two
+             anchor frames, where you give the first and the last and the model fills the middle.
+             Same rule as the text models: the weights are yours, the frames never leave the Machine.</p>
+        </div>
+        <div class="panel">
+          <h3>Serve other people, deliberately</h3>
+          <p>The engine still binds loopback by default. You can now hand it to your phone or a
+             colleague — but only by turning LAN serving on <em>this session</em>, and only with an
+             API key you mint in the app. The key is shown once; the Mac keeps its SHA-256 and
+             nothing else. The engine refuses to open up without one.</p>
+        </div>
+        <div class="panel">
+          <h3>Four more models</h3>
+          <p><strong>Qwen3.8-27B</strong>, now the recommended Qwen — dense, Apache-2.0, 256K context.
+             <strong>Muse Glimmer 30B</strong> from Meta, 30B dense in 17&nbsp;GB, whose hybrid attention
+             keeps a full 128K session near that size too. <strong>MiniMax&nbsp;H3</strong> for video. And
+             <strong>DeepSeek-V4-Pro-0813</strong> — 1.6T&nbsp;parameters, 850&nbsp;GB, listed and honestly
+             priced rather than hidden.</p>
+        </div>
+        <div class="panel">
+          <h3>Two more agents, and your own leaderboards</h3>
+          <p><strong>DeepSeek Harness</strong> (<code>dsh</code>) and <strong>Grok Build</strong> join the
+             one-click wiring. The rankings row became data too — add the leaderboard you actually
+             trust, alongside the ones we shipped.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rel">
+    <div class="relhead">
+      <span class="v">1.0.2</span>
+      <span class="when">Aug 2026</span>
+      <span class="src">store copy — this release predates the poster band</span>
+    </div>
+    <div class="relbody">
+      <p class="lede">1.0.2 shipped before the front page carried a release band, so there is no
+         poster copy to keep. What it shipped with is the App Store text, reproduced as written.</p>
+      <div class="storecopy">
+        <h3>What's New</h3>
+        <ul>
+          <li><strong>New models</strong>
+            <ul>
+              <li>DeepSeek V4 Flash (0731) with Q4_K experts — a faster, higher-quality variant of
+                  the flagship, now selectable from the model catalog.</li>
+              <li>DeepSeek V4 Flash MXFP4 — the full 145 GB flagship for high-memory Macs.</li>
+            </ul>
+          </li>
+          <li><strong>Faster</strong>
+            <ul>
+              <li>Long prompts on the MXFP4 flagship process up to 3.6× faster.</li>
+              <li>Streaming models decode faster and more smoothly.</li>
+            </ul>
+          </li>
+          <li><strong>More reliable</strong>
+            <ul>
+              <li>The app now verifies that the model you selected is the one actually serving
+                  before it reports ready — no more answers from the wrong model after a quick
+                  switch.</li>
+              <li>Stopping the engine works reliably again.</li>
+              <li>API and agent clients no longer time out while a long prompt is being processed.</li>
+            </ul>
+          </li>
+          <li><strong>Under the hood</strong>
+            <ul>
+              <li>Tuning updates can now be delivered signed and verified, and are always safe to
+                  ignore.</li>
+              <li>A more complete Chinese interface — every new screen from this release is fully
+                  localized.</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Notes are kept as each version shipped them. Where a release predates the front page's
+    release band, its App&nbsp;Store text stands in, and the entry says so.
+  </footer>
+
+</div>
+
+</body>
+</html>

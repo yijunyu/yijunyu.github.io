@@ -217,7 +217,7 @@
         <div class="ptabs" id="ostabs" role="tablist" aria-label="Operating system"></div>
         <span class="psep">·</span>
         <div class="ptabs" id="betabs" role="tablist" aria-label="Accelerator"></div>
-        <span class="eyebrow" style="margin-left:auto">version 1.0.4</span>
+        <span class="eyebrow" style="margin-left:auto">version 1.0.5</span>
       </div>
       <h1>Local&nbsp;Mind</h1>
       <p class="thesis">Large models run on the Machine in front of you. Once a model is serving, the engine cannot open a network connection — the prompt has nowhere else to go.</p>
@@ -237,38 +237,44 @@
   </header>
 
   <section class="sec newband">
-    <h2>New in 1.0.4</h2>
+    <h2>New in 1.0.5</h2>
     <div class="duo">
       <div class="panel">
-        <h3>A GLM that fits in memory</h3>
-        <p><strong>GLM-5.3-Flash</strong> — 320B parameters, 18B active per token, 96.5&nbsp;GB.
-           The first GLM this app can hold <em>entirely in memory</em> on a 128&nbsp;GB Mac
-           rather than streaming it from disk: <strong>24&nbsp;tokens/sec</strong> measured on an
-           M1&nbsp;Ultra. <strong>GLM-5.2 is retired</strong> — at 217&nbsp;GB it never fit on a
-           machine that size and only ever streamed. A copy already on your disk still runs.</p>
+        <h3>Show it a picture</h3>
+        <p><strong>DeepSeek V4 Flash Vision-Exp</strong> answers questions about an image you
+           attach in the Playground. It arrives as one catalogue entry carrying two files — the
+           model and a separate <strong>encoder</strong> it refuses to run without —
+           <strong>81.6&nbsp;GiB</strong> together, held in memory on a 128&nbsp;GB Mac. The
+           attach control stays hidden unless the model being served can actually see, so the app
+           never offers you a picture the engine would only refuse.</p>
       </div>
       <div class="panel">
-        <h3>The fastest big model here</h3>
-        <p><strong>Qwen3.8-Flash-Next</strong> — 125B parameters with 6B active, 78.9&nbsp;GB,
-           hybrid linear and sparse attention. <strong>31&nbsp;tokens/sec</strong> on the same
-           machine, which makes it the quickest of the large models in the catalogue, and the
-           smallest of the three that need a 128&nbsp;GB Mac.</p>
+        <h3>Images encode three times faster</h3>
+        <p>A new attention kernel reads its tiles straight from device memory instead of staging
+           them first. The same image encodes in <strong>0.398&nbsp;s</strong> against
+           <strong>1.243&nbsp;s</strong> — <strong>3.12&times;</strong>, measured in the engine the
+           app actually ships. On by default.</p>
       </div>
       <div class="panel">
-        <h3>Three things that were wrong</h3>
-        <p>Qwen3.8-Flash-Next was listed at roughly <strong>an eighth</strong> of its real speed,
-           its memory-saving modes were shown as unavailable when they are not, and the bundled
-           engine was too old to load it at all. All three are fixed — which is why it appears in
-           this release with a number worth reading.</p>
+        <h3>One engine, and GLM keeps its speed</h3>
+        <p>Seeing needed a newer engine, and the same engine serves <strong>GLM-5.3-Flash</strong>
+           — where it cost <strong>44.6%</strong> of prefill on prompts under 4096 tokens. A
+           2048-token prompt would have gone from about 10.7&nbsp;s to 19.3&nbsp;s before the first
+           word appeared. One line restores the path GLM had: <strong>194.5&nbsp;t/s</strong>, all
+           of it back, with vision untouched.</p>
       </div>
       <div class="panel">
-        <h3>Repeatable answers</h3>
-        <p>Models served by llama.cpp now use <strong>their own prompt format</strong> instead of
-           a substitute, so they behave the way their publisher intended; and a temperature of
-           <strong>0</strong> returns the same answer every time rather than a sampled one. The
-           licence credits now name every model the app can download.</p>
+        <h3>Where it has been run</h3>
+        <p>Vision is measured in full on <strong>Metal</strong> and verified on
+           <strong>ROCm</strong> on real gfx1151 hardware — word-for-word identical answers across
+           the two. <strong>CUDA has not been run</strong>, not even compiled, because the only
+           toolchain within reach rejects the architecture it needs. Better said here than found
+           later.</p>
       </div>
     </div>
+    <p class="lede" style="margin-top:.85rem">
+      Earlier releases are kept in full: <a href="releases.html">1.0.4, 1.0.3 and 1.0.2</a>.
+    </p>
   </section>
 
   <section class="sec">
@@ -295,6 +301,7 @@
             <li><span class="o">Laguna S / XS 2.1</span><span class="d">Poolside coding models, 110B and 33B</span></li>
             <li><span class="o">GLM-5.3-Flash<span class="nu">new</span></span><span class="d">320B MoE, 18B active &mdash; the first GLM that fits in memory on a 128 GB Mac</span></li>
             <li><span class="o">Qwen3.8-Flash-Next<span class="nu">new</span></span><span class="d">125B MoE, 6B active &mdash; hybrid linear and sparse attention</span></li>
+            <li><span class="o">DeepSeek-V4-Flash Vision-Exp<span class="nu">new</span></span><span class="d">Sees images &mdash; model plus its encoder, 81.6 GiB together</span></li>
             <li><span class="o">Kimi-K3</span><span class="d">~1500B, out-of-core only</span></li>
             <li><span class="o">Bring your own</span><span class="d">Any GGUF already on disk</span></li>
           </ul>
