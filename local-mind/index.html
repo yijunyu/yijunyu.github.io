@@ -217,7 +217,7 @@
         <div class="ptabs" id="ostabs" role="tablist" aria-label="Operating system"></div>
         <span class="psep">·</span>
         <div class="ptabs" id="betabs" role="tablist" aria-label="Accelerator"></div>
-        <span class="eyebrow" style="margin-left:auto">version 1.0.5</span>
+        <span class="eyebrow" style="margin-left:auto">version 1.0.6</span>
       </div>
       <h1>Local&nbsp;Mind</h1>
       <p class="thesis">Large models run on the Machine in front of you. Once a model is serving, the engine cannot open a network connection — the prompt has nowhere else to go.</p>
@@ -237,43 +237,43 @@
   </header>
 
   <section class="sec newband">
-    <h2>New in 1.0.5</h2>
+    <h2>New in 1.0.6</h2>
     <div class="duo">
       <div class="panel">
-        <h3>Show it a picture</h3>
-        <p><strong>DeepSeek V4 Flash Vision-Exp</strong> answers questions about an image you
-           attach in the Playground. It arrives as one catalogue entry carrying two files — the
-           model and a separate <strong>encoder</strong> it refuses to run without —
-           <strong>81.6&nbsp;GiB</strong> together, held in memory on a 128&nbsp;GB Mac. The
-           attach control stays hidden unless the model being served can actually see, so the app
-           never offers you a picture the engine would only refuse.</p>
+        <h3>The first model you can buy</h3>
+        <p><strong>DeepSeek V4.1 Flash</strong> is unlocked by a one-time purchase in the app.
+           Everything else in the catalogue stays free, and the weights themselves are MIT and
+           free to fetch; what the purchase buys is the app's support for them — the verified
+           download, the streaming setup, and an engine that can run the architecture at all.
+           It unlocks on every Mac signed in to your Apple Account, with <strong>Restore</strong>
+           beside the Unlock button.</p>
       </div>
       <div class="panel">
-        <h3>Images encode three times faster</h3>
-        <p>A new attention kernel reads its tiles straight from device memory instead of staging
-           them first. The same image encodes in <strong>0.398&nbsp;s</strong> against
-           <strong>1.243&nbsp;s</strong> — <strong>3.12&times;</strong>, measured in the engine the
-           app actually ships. On by default.</p>
+        <h3>A 366&nbsp;GB model on a 128&nbsp;GB Mac</h3>
+        <p>Only about <strong>152&nbsp;GiB</strong> of that file is weights. The rest is a table
+           the engine reads <em>a row at a time</em> from the file, never holding it in memory, so
+           the model runs on a machine far smaller than its download. On this M1 Ultra, with the
+           file on the internal SSD: <strong>2.9&nbsp;tok/s</strong> decode and
+           <strong>70&nbsp;t/s</strong> prefill. The drive is part of the claim — the same file on
+           an external USB SSD decodes at <strong>0.54&nbsp;tok/s</strong>.</p>
       </div>
       <div class="panel">
-        <h3>One engine, and GLM keeps its speed</h3>
-        <p>Seeing needed a newer engine, and the same engine serves <strong>GLM-5.3-Flash</strong>
-           — where it cost <strong>44.6%</strong> of prefill on prompts under 4096 tokens. A
-           2048-token prompt would have gone from about 10.7&nbsp;s to 19.3&nbsp;s before the first
-           word appeared. One line restores the path GLM had: <strong>194.5&nbsp;t/s</strong>, all
-           of it back, with vision untouched.</p>
+        <h3>The list now sizes a model by what must be in memory</h3>
+        <p>A model whose table stays on disk was being judged by its download, which made a
+           366&nbsp;GB file look impossible on any Mac and offered no way to run it. The model
+           list now separates the two: what you download, and what has to fit. Without that
+           distinction this release would have had nothing to sell.</p>
       </div>
       <div class="panel">
-        <h3>Where it has been run</h3>
-        <p>Vision is measured in full on <strong>Metal</strong> and verified on
-           <strong>ROCm</strong> on real gfx1151 hardware — word-for-word identical answers across
-           the two. <strong>CUDA has not been run</strong>, not even compiled, because the only
-           toolchain within reach rejects the architecture it needs. Better said here than found
-           later.</p>
+        <h3>Modes that could never work are no longer offered</h3>
+        <p>Some models run only on the reference engine, which has no CPU-expert path and will not
+           stream them from SSD. The app used to offer those modes anyway, and picking one meant
+           a model that simply refused to load. Each row now offers only what its own engine can
+           actually do, and says why the others are missing.</p>
       </div>
     </div>
     <p class="lede" style="margin-top:.85rem">
-      Earlier releases are kept in full: <a href="releases.html">1.0.4, 1.0.3 and 1.0.2</a>.
+      Earlier releases are kept in full: <a href="releases.html">1.0.5, 1.0.4, 1.0.3 and 1.0.2</a>.
     </p>
   </section>
 
