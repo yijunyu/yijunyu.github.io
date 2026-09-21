@@ -73,6 +73,9 @@
   .nu{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;
       text-transform:uppercase;color:var(--resident);border:1px solid var(--resident);
       border-radius:2px;padding:0 .28rem;margin-left:.4rem;vertical-align:.08em;}
+  .pd{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;
+      text-transform:uppercase;color:var(--hybrid);border:1px solid var(--hybrid);
+      border-radius:2px;padding:0 .28rem;margin-left:.4rem;vertical-align:.08em;}
   .newband{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
            padding:clamp(1.25rem,3vw,2rem) 0;}
   .newband h2{font-size:clamp(1.3rem,1.1rem + .8vw,1.7rem);}
@@ -217,7 +220,7 @@
         <div class="ptabs" id="ostabs" role="tablist" aria-label="Operating system"></div>
         <span class="psep">·</span>
         <div class="ptabs" id="betabs" role="tablist" aria-label="Accelerator"></div>
-        <span class="eyebrow" style="margin-left:auto">version 1.0.6</span>
+        <span class="eyebrow" style="margin-left:auto">version 1.0.7</span>
       </div>
       <h1>Local&nbsp;Mind</h1>
       <p class="thesis">Large models run on the Machine in front of you. Once a model is serving, the engine cannot open a network connection — the prompt has nowhere else to go.</p>
@@ -237,43 +240,47 @@
   </header>
 
   <section class="sec newband">
-    <h2>New in 1.0.6</h2>
+    <h2>New in 1.0.7</h2>
     <div class="duo">
       <div class="panel">
-        <h3>The first model you can buy</h3>
-        <p><strong>DeepSeek V4.1 Flash</strong> is unlocked by a one-time purchase in the app.
-           Everything else in the catalogue stays free, and the weights themselves are MIT and
-           free to fetch; what the purchase buys is the app's support for them — the verified
-           download, the streaming setup, and an engine that can run the architecture at all.
-           It unlocks on every Mac signed in to your Apple Account, with <strong>Restore</strong>
-           beside the Unlock button.</p>
+        <h3>A second model, in the purchase you already own</h3>
+        <p><strong>Qwen3.8-Flash-Next</strong> joins the same one-time purchase as DeepSeek V4.1
+           Flash rather than arriving as a second thing to buy. If you bought the purchase in
+           1.0.6, this model is already yours; there is nothing to buy again and nothing to
+           restore. It runs with <strong>multi-token prediction</strong>, where the model drafts
+           several tokens and then checks them in one pass.</p>
       </div>
       <div class="panel">
-        <h3>A 366&nbsp;GB model on a 128&nbsp;GB Mac</h3>
-        <p>Only about <strong>152&nbsp;GiB</strong> of that file is weights. The rest is a table
-           the engine reads <em>a row at a time</em> from the file, never holding it in memory, so
-           the model runs on a machine far smaller than its download. On this M1 Ultra, with the
-           file on the internal SSD: <strong>2.9&nbsp;tok/s</strong> decode and
-           <strong>70&nbsp;t/s</strong> prefill. The drive is part of the claim — the same file on
-           an external USB SSD decodes at <strong>0.54&nbsp;tok/s</strong>.</p>
+        <h3>147&nbsp;GB on disk, about 45&nbsp;GiB in memory</h3>
+        <p>The same split that made V4.1 possible. Most of this file is a per-layer embedding
+           table — <strong>95&nbsp;GiB</strong> of it — read a row at a time and never held in
+           memory, so what has to fit is roughly <strong>45&nbsp;GiB</strong> and not 147. On this
+           M1 Ultra it is fully GPU-resident at <strong>43.7&nbsp;tok/s</strong> decode and
+           <strong>510&nbsp;t/s</strong> prefill, measured on open prose with 71.7% of drafts
+           accepted. Code runs faster, 47&ndash;51&nbsp;tok/s; the slower figure is the published one.</p>
       </div>
       <div class="panel">
-        <h3>The list now sizes a model by what must be in memory</h3>
-        <p>A model whose table stays on disk was being judged by its download, which made a
-           366&nbsp;GB file look impossible on any Mac and offered no way to run it. The model
-           list now separates the two: what you download, and what has to fit. Without that
-           distinction this release would have had nothing to sell.</p>
+        <h3>It fits a 64&nbsp;GB Mac. It is not fast there.</h3>
+        <p>A claim of 50&ndash;60&nbsp;tok/s on a 64&nbsp;GB Mac is why this was measured on one. It
+           <strong>fits</strong>, at exactly <strong>43.19&nbsp;GiB</strong> planned. The claim is
+           <strong>not reproduced</strong>: on a real M2 Max the best figure is
+           <strong>28&nbsp;tok/s</strong>, on code, and plain decode is 16&ndash;23. That machine
+           gives about 60% of the Ultra's decode and 45% of its prefill, which tracks memory
+           bandwidth, and it accepts drafts at the same 71.7% — so the shortfall is the hardware,
+           not the drafting. Published as a range, because this laptop lost 28% across a run.</p>
       </div>
       <div class="panel">
-        <h3>Modes that could never work are no longer offered</h3>
-        <p>Some models run only on the reference engine, which has no CPU-expert path and will not
-           stream them from SSD. The app used to offer those modes anyway, and picking one meant
-           a model that simply refused to load. Each row now offers only what its own engine can
-           actually do, and says why the others are missing.</p>
+        <h3>The engine underneath, and what it does not yet change</h3>
+        <p>Every kernel this architecture needs is now generated by our own compiler and verified
+           against the reference engine — <strong>bit-identical</strong> logits across 2,200
+           positions, prefill, drafting, batched sessions and image embeddings — and it is ahead:
+           <strong>+4.8&ndash;8.4%</strong> decode, <strong>+79%</strong> serving eight chats at
+           once. Stated plainly: the app still runs this model on the reference engine, so none of
+           that margin is in the rate above yet. It is the engine, ready, not a number you have.</p>
       </div>
     </div>
     <p class="lede" style="margin-top:.85rem">
-      Earlier releases are kept in full: <a href="releases.html">1.0.5, 1.0.4, 1.0.3 and 1.0.2</a>.
+      Earlier releases are kept in full: <a href="releases.html">1.0.6, 1.0.5, 1.0.4, 1.0.3 and 1.0.2</a>.
     </p>
   </section>
 
@@ -302,6 +309,8 @@
             <li><span class="o">GLM-5.3-Flash<span class="nu">new</span></span><span class="d">320B MoE, 18B active &mdash; the first GLM that fits in memory on a 128 GB Mac</span></li>
             <li><span class="o">Qwen3.8-Flash-Next<span class="nu">new</span></span><span class="d">125B MoE, 6B active &mdash; hybrid linear and sparse attention</span></li>
             <li><span class="o">DeepSeek-V4-Flash Vision-Exp<span class="nu">new</span></span><span class="d">Sees images &mdash; model plus its encoder, 81.6 GiB together</span></li>
+            <li><span class="o">DeepSeek-V4.1-Flash<span class="pd">purchase</span></span><span class="d">763B MoE, 366 GB &mdash; only ~152 GiB of it is weights</span></li>
+            <li><span class="o">Qwen3.8-Flash-Next MTP<span class="pd">purchase</span></span><span class="d">The same 125B, drafting several tokens at a time &mdash; 147 GB, ~45 GiB resident</span></li>
             <li><span class="o">Kimi-K3</span><span class="d">~1500B, out-of-core only</span></li>
             <li><span class="o">Bring your own</span><span class="d">Any GGUF already on disk</span></li>
           </ul>
@@ -483,6 +492,7 @@ sh install --key DS4-… --email you@example.com</div>
         <h3>Models</h3>
         <ul>
           <li><strong>DeepSeek-V4-Flash</strong> — DeepSeek</li>
+          <li><strong>DeepSeek-V4.1-Flash</strong> — DeepSeek, MIT</li>
           <li><strong>GLM-5.3-Flash</strong> — Z.ai (Zhipu), MIT</li>
           <li><strong>Qwen3</strong> and <strong>Qwen3.6</strong> — Alibaba, Apache-2.0</li>
           <li><strong>Qwen3.8-Flash-Next</strong> — Alibaba, Qwen community licence</li>

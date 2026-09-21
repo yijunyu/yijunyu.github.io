@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Local Mind — release history</title>
-<meta name="description" content="Every release note for Local Mind for Private AI, kept as it was written at the time: 1.0.5, 1.0.4, 1.0.3 and 1.0.2.">
+<meta name="description" content="Every release note for Local Mind for Private AI, kept as it was written at the time: 1.0.6, 1.0.5, 1.0.4, 1.0.3 and 1.0.2.">
 <style>
   html{color-scheme:light dark}
   :root {
@@ -101,6 +101,53 @@
       <a href="https://apps.apple.com/app/id6793161102">Mac App Store</a>
     </p>
   </header>
+
+  <section class="rel">
+    <div class="relhead">
+      <span class="v">1.0.6</span>
+      <span class="when">Sep 2026</span>
+      <span class="src">poster band</span>
+    </div>
+    <div class="relbody">
+      <p class="lede">The release that gave the app something to sell, and the release that had to
+         learn the difference between what a model weighs on disk and what has to fit in
+         memory before it could sell anything.</p>
+      <div class="duo">
+        <div class="panel">
+          <h3>The first model you can buy</h3>
+          <p><strong>DeepSeek V4.1 Flash</strong> is unlocked by a one-time purchase in the app.
+             Everything else in the catalogue stays free, and the weights themselves are MIT and
+             free to fetch; what the purchase buys is the app's support for them — the verified
+             download, the streaming setup, and an engine that can run the architecture at all.
+             It unlocks on every Mac signed in to your Apple Account, with <strong>Restore</strong>
+             beside the Unlock button.</p>
+        </div>
+        <div class="panel">
+          <h3>A 366&nbsp;GB model on a 128&nbsp;GB Mac</h3>
+          <p>Only about <strong>152&nbsp;GiB</strong> of that file is weights. The rest is a table
+             the engine reads <em>a row at a time</em> from the file, never holding it in memory, so
+             the model runs on a machine far smaller than its download. On this M1 Ultra, with the
+             file on the internal SSD: <strong>2.9&nbsp;tok/s</strong> decode and
+             <strong>70&nbsp;t/s</strong> prefill. The drive is part of the claim — the same file on
+             an external USB SSD decodes at <strong>0.54&nbsp;tok/s</strong>.</p>
+        </div>
+        <div class="panel">
+          <h3>The list now sizes a model by what must be in memory</h3>
+          <p>A model whose table stays on disk was being judged by its download, which made a
+             366&nbsp;GB file look impossible on any Mac and offered no way to run it. The model
+             list now separates the two: what you download, and what has to fit. Without that
+             distinction this release would have had nothing to sell.</p>
+        </div>
+        <div class="panel">
+          <h3>Modes that could never work are no longer offered</h3>
+          <p>Some models run only on the reference engine, which has no CPU-expert path and will not
+             stream them from SSD. The app used to offer those modes anyway, and picking one meant
+             a model that simply refused to load. Each row now offers only what its own engine can
+             actually do, and says why the others are missing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section class="rel">
     <div class="relhead">
