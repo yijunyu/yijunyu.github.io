@@ -252,7 +252,7 @@
       "id": "amd395",
       "label": "Bosgame M5 · Ryzen AI Max+ 395 · 128 GB",
       "price": "£3,099 · Bosgame M5, paid Aug 2026",
-      "note": "The same DeepSeek-V4-Flash file as the DGX Spark row, on a Bosgame M5 mini-PC (AMD Ryzen AI Max+&nbsp;395 &ldquo;Strix Halo&rdquo;, 128&nbsp;GB) through the reference ROCm engine. The weights sit in unified memory rather than streaming, which is why an 87&nbsp;GB model reports a resident rate on a 128&nbsp;GB box. The figure is the out-of-the-box power governor. Re-measured 2026-10-04 on the PR #992 build (<code>/data/ds4-main</code>): 14.7, consistent with the August 15.0; V4.1 re-measured 2026-10-04 at 12.1 with the pr4 engine's resident/missing MoE split (<code>DS4_ROCM_SELECTED_SPLIT=1</code>), up from the 8.66-9.44 August figure on the older build. The price is what was paid, not a list figure. 2026-10-04: four more Local Mind models were pulled onto this box and measured with llama.cpp's llama-bench (<code>build 3173a56</code>, ROCm backend on the Radeon 8060S) at <code>tg128, r=3</code>: Qwen3-4B 67.0, Qwen3-8B 38.2, Qwen3.6-35B-A3B 56.1 (MoE), Muse Glimmer 30B 11.5. These are the same instrument and token count (128 generated) used for the M1 Ultra's llama.cpp llama-bench rows, so the two columns are directly comparable.",
+      "note": "The same DeepSeek-V4-Flash file as the DGX Spark row, on a Bosgame M5 mini-PC (AMD Ryzen AI Max+&nbsp;395 &ldquo;Strix Halo&rdquo;, 128&nbsp;GB) through the reference ROCm engine. The weights sit in unified memory rather than streaming, which is why an 87&nbsp;GB model reports a resident rate on a 128&nbsp;GB box. The figure is the out-of-the-box power governor. Re-measured 2026-10-04 on the PR #992 build (<code>/data/ds4-main</code>): 14.7, consistent with the August 15.0; V4.1 re-measured 2026-10-04 at 12.1 with the pr4 engine's resident/missing MoE split (<code>DS4_ROCM_SELECTED_SPLIT=1</code>), up from the 8.66-9.44 August figure on the older build. The price is what was paid, not a list figure. 2026-10-04: four more Local Mind models were pulled onto this box and measured with llama.cpp's llama-bench (<code>build 3173a56</code>, ROCm backend on the Radeon 8060S) at <code>tg128, r=3</code>: Qwen3-4B 67.0, Qwen3-8B 38.2, Qwen3.6-35B-A3B 56.1 (MoE), Muse Glimmer 30B 11.5. These are the same instrument and token count (128 generated) used for the M1 Ultra's llama.cpp llama-bench rows, so the two columns are directly comparable. 2026-10-04 (later): Qwen3-14B 22.1 and Laguna-XS-2.1 60.1, same llama-bench instrument.",
       "rows": [
         {
           "name": "DeepSeek-V4-Flash",
@@ -307,6 +307,24 @@
             "gpu"
           ],
           "decode": "11.5 tok/s"
+        },
+        {
+          "name": "Qwen3-14B",
+          "params": "14B dense",
+          "size": "8.4 GB",
+          "modes": [
+            "gpu"
+          ],
+          "decode": "22.1 tok/s"
+        },
+        {
+          "name": "Laguna-XS-2.1",
+          "params": "33B MoE",
+          "size": "19.3 GB",
+          "modes": [
+            "gpu"
+          ],
+          "decode": "60.1 tok/s"
         }
       ],
       "os": "linux",
