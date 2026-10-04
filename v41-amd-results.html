@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AMD Strix Halo — DeepSeek V4.1 Flash engines</title>
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{color-scheme:light}
+body{margin:0;font:14px system-ui,sans-serif}
+img{max-width:100%}[hidden]{display:none!important}
+</style>
+<style>
+:root {
+  --bg:#f5f6f4; --panel:#ffffff; --fg:#1c2220; --dim:#5d6a66; --line:#d8ddd9;
+  --accent:#1c6b5a; --open:#9a6207; --conf:#1c6b5a; --ref:#a52f24; --sup:#6b736f;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;
+  --disp:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark) { :root:not([data-theme="light"]) {
+  --bg:#121614; --panel:#1a201d; --fg:#e4e9e6; --dim:#94a09b; --line:#2b342f;
+  --accent:#5fcfae; --open:#e0a33a; --conf:#5fcfae; --ref:#f2786a; --sup:#7d8a85;
+  color-scheme:dark; } }
+:root[data-theme="dark"] {
+  --bg:#121614; --panel:#1a201d; --fg:#e4e9e6; --dim:#94a09b; --line:#2b342f;
+  --accent:#5fcfae; --open:#e0a33a; --conf:#5fcfae; --ref:#f2786a; --sup:#7d8a85;
+  color-scheme:dark; }
+* { box-sizing:border-box }
+body { background:var(--bg); color:var(--fg); font-family:var(--sans);
+  font-size:15px; line-height:1.55; margin:0 }
+.wrap { max-width:56rem; margin:0 auto; padding-inline:16px; padding-block:28px 64px }
+h1 { font-family:var(--disp); font-size:clamp(1.7rem,4.2vw,2.3rem); font-weight:700;
+  letter-spacing:-.01em; margin:0 0 .3rem; text-wrap:balance }
+.sub { color:var(--dim); margin:0 0 1.4rem; max-width:62ch }
+.stat { display:flex; flex-wrap:wrap; gap:.5rem 1.4rem; padding:.9rem 0 1.1rem;
+  border-block:1px solid var(--line); margin-bottom:1rem;
+  font-variant-numeric:tabular-nums }
+.stat div { min-width:0 }
+.stat b { font-family:var(--disp); font-size:1.5rem; display:block; line-height:1.1 }
+.stat span { color:var(--dim); font-size:.78rem; text-transform:uppercase;
+  letter-spacing:.07em }
+.note { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--open);
+  border-radius:2px; padding:.75rem .9rem; margin-bottom:1.2rem; font-size:.9rem }
+.note.win { border-left-color:var(--conf) }
+.step { margin-bottom:2.2rem }
+.step h2 { font-family:var(--disp); font-size:1.15rem; margin:0 0 .2rem;
+  display:flex; align-items:baseline; gap:.55rem }
+.step .num { font-variant-numeric:tabular-nums; color:var(--bg);
+  background:var(--accent); border-radius:2px; padding:.05rem .4rem;
+  font-size:.85rem }
+.blurb { color:var(--dim); margin:0 0 1rem; font-size:.9rem; max-width:62ch }
+.card { background:var(--panel); border:1px solid var(--line); border-left-width:3px;
+  border-radius:2px; padding:1rem 1.1rem; margin-bottom:.9rem }
+.card[data-status=confirmed] { border-left-color:var(--conf) }
+.card[data-status=partial] { border-left-color:var(--open) }
+.card[data-status=refuted] { border-left-color:var(--ref) }
+.card[data-status=superseded] { border-left-color:var(--sup) }
+.meta { display:flex; flex-wrap:wrap; gap:.4rem .7rem; align-items:baseline;
+  font-size:.74rem; text-transform:uppercase; letter-spacing:.06em; color:var(--dim);
+  margin-bottom:.45rem }
+.st { font-weight:700 }
+.st-confirmed { color:var(--conf) } .st-refuted { color:var(--ref) }
+.st-partial { color:var(--open) } .st-superseded { color:var(--sup) }
+.meta .id { font-family:var(--mono); text-transform:none; letter-spacing:0;
+  margin-left:auto; opacity:.75 }
+.claim { font-weight:600; margin:0 0 .6rem; text-wrap:pretty }
+.ev { border-left:2px solid var(--line); padding-left:.7rem; margin:.6rem 0;
+  font-size:.87rem; color:var(--dim) }
+.evl { display:block; font-size:.7rem; text-transform:uppercase;
+  letter-spacing:.07em; color:var(--dim); margin-bottom:.1rem }
+code { font-family:var(--mono); font-size:.86em; background:rgba(128,128,128,.13);
+  padding:.05em .3em; border-radius:2px }
+pre { font-family:var(--mono); font-size:.8rem; overflow-x:auto;
+  background:rgba(128,128,128,.1); padding:.6rem .7rem; border-radius:2px }
+.tbl { overflow-x:auto; margin:.4rem 0 1rem }
+table { border-collapse:collapse; width:100%; font-size:.87rem;
+  font-variant-numeric:tabular-nums; background:var(--panel); border:1px solid var(--line) }
+th, td { text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--line); vertical-align:top }
+th { font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--dim); font-weight:600 }
+td.n, th.n { text-align:right; white-space:nowrap }
+tr.best td { font-weight:600 }
+tr.best td:first-child { box-shadow:inset 3px 0 0 var(--conf) }
+.u { color:var(--dim); font-weight:400; font-size:.8em }
+ul.src { list-style:none; padding:0; margin:0; display:grid; gap:.3rem;
+  grid-template-columns:repeat(auto-fill,minmax(17rem,1fr)) }
+ul.src a { font-family:var(--mono); font-size:.8rem; color:var(--accent);
+  text-decoration:none; display:block; background:var(--panel);
+  border:1px solid var(--line); border-radius:2px; padding:.35rem .5rem; overflow-wrap:anywhere }
+footer { margin-top:2.5rem; padding-top:1rem; border-top:1px solid var(--line);
+  color:var(--dim); font-size:.82rem }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>AMD Strix Halo — DeepSeek V4.1 Flash engines</h1>
+<p class="sub">Which inference engine runs DeepSeek V4.1 Flash best on one Ryzen AI Max+ 395 (Radeon 8060S, gfx1151, 128&nbsp;GB). Every candidate that could be run was run on the box; the KPIs are prefill and decode tok/s, single user first, four parallel users as an auxiliary metric. Measured 2026-10-03.</p>
+
+<div class="stat">
+  <div><b>135</b><span>prefill tok/s, Claude Code ctx</span></div>
+  <div><b>6.9</b><span>decode tok/s, single user</span></div>
+  <div><b>~116 s</b><span>first token, 15.6K prompt</span></div>
+  <div><b>89.3%</b><span>Q2 top-1 vs official</span></div>
+  <div><b>3</b><span>engines measured</span></div>
+  <div><b>4</b><span>excluded, with reason</span></div>
+</div>
+
+<div class="note win"><b>Verdict.</b> kyuz0's ds4 ROCm branch with resident/missing MoE split enabled (<code>feat/rocm-deepseek41-halo</code> + <code>DS4_ROCM_SELECTED_SPLIT=1</code>) runs V4.1 Flash on this box: ~9 tok/s decode (+35% over baseline), flat across context, and prefill rising from ~22 to 125 tok/s with prompt size. The split optimization (from kyuz0/ds4 PR #4, commit 546aa99) is production-ready: quality is identical (89.3% top-1, ×1.18 PPL), and it is a <b>single-user</b> engine here: four parallel users get less aggregate throughput than one.</div>
+
+<div class="note"><b>Why every engine streams from SSD.</b> V4.1 Flash has a 552B backbone. The smallest
+builds are 365.7&nbsp;GB (ds4 Q2: 152&nbsp;GiB main weights + 189&nbsp;GiB Engram tables) and 264.5&nbsp;GB
+(llama.cpp Q2_K). Neither fits in ~122&nbsp;GiB of usable RAM. V4.1 is <em>not</em> V4-Flash-0731.</div>
+
+<section class="step">
+  <h2><span class="num">1</span>Candidates</h2>
+  <p class="blurb">From a web search on 2026-10-03, every engine claiming V4.1 Flash support, with its status on this box.</p>
+
+<article class="card" data-status="confirmed">
+  <div class="meta"><span class="st st-confirmed">winner</span><span>measured</span><span class="id">kyuz0/ds4 + split @ 546aa99</span></div>
+  <p class="claim">kyuz0/ds4 <code>feat/rocm-deepseek41-halo</code> + resident/missing MoE split from PR #4: SSD expert streaming, disk-backed Engram, selective expert residency.</p>
+  <div class="ev"><span class="evl">evidence</span>Built natively on HIP 7.1; measured with <code>DS4_ROCM_SELECTED_SPLIT=1</code> or <code>--ssd-streaming-split</code> flag. Final A/B (3 arms × 4 contexts × 2 reps): kyuz0 baseline 6.12–7.45 tok/s decode, PR #4 merged (split off) 6.03–7.24 tok/s mixed, merged+split 8.66–9.44 tok/s all contexts. Quality unchanged: 89.3% top-1, ×1.18 PPL.</div>
+</article>
+
+<article class="card" data-status="partial">
+  <div class="meta"><span class="st st-partial">baseline</span><span>measured</span><span class="id">kyuz0/ds4 @ d32febf (no split)</span></div>
+  <p class="claim">kyuz0/ds4 <code>feat/rocm-deepseek41-halo</code> without resident/missing MoE split: ds4 with V4.1 Flash on ROCm, SSD expert streaming, disk-backed Engram.</p>
+  <div class="ev"><span class="evl">evidence</span>Baseline for A/B: 6.12–7.45 tok/s decode across short/code/medium/long. The split optimization (+35% decode) is enabled via env var or <code>--ssd-streaming-split</code> flag in the Rust controller.</div>
+</article>
+
+<article class="card" data-status="refuted">
+  <div class="meta"><span class="st st-refuted">not usable</span><span>measured</span><span class="id">llama.cpp PR #28696 @ 2076412</span></div>
+  <p class="claim">llama.cpp with the open DeepSeek V4.1 PR (vcruz305 <code>feat/deepseek-v41-convert</code>), HIP backend, Q2_K 264.5&nbsp;GB.</p>
+  <div class="ev"><span class="evl">evidence</span>No SSD streaming design: experts and Engram mmapped from disk (<code>-ot exps=CPU,engram_embd=CPU --load-mode mmap --no-host</code>). RAM full, 477&nbsp;MB/s page-fault reads, one CPU core; the 943-token warm-up did not finish prefill in 40&nbsp;min (&lt;0.4 tok/s). Without <code>--no-host</code> it tries a 249&nbsp;GB pinned allocation and fails.</div>
+</article>
+
+<article class="card" data-status="superseded">
+  <div class="meta"><span class="st st-superseded">excluded</span><span>no ROCm path</span></div>
+  <p class="claim">antirez/ds4 main — V4.1 Flash on Metal and CUDA only; the ROCm build has no V4.1 graph.</p>
+</article>
+<article class="card" data-status="superseded">
+  <div class="meta"><span class="st st-superseded">excluded</span><span>no ROCm path</span></div>
+  <p class="claim">SGLang (preview <code>dev-dsv41</code> image, Blackwell B200/B300) and vLLM (V4.1 PRs unmerged).</p>
+</article>
+<article class="card" data-status="superseded">
+  <div class="meta"><span class="st st-superseded">excluded</span><span>wrong hardware</span></div>
+  <p class="claim">Lucebox DS41 profile — requires an R9700 discrete GPU alongside the Strix Halo.</p>
+</article>
+<article class="card" data-status="superseded">
+  <div class="meta"><span class="st st-superseded">excluded</span><span>cannot load</span></div>
+  <p class="claim">Ollama and LM Studio — no local V4.1 support (cloud tags only).</p>
+</article>
+</section>
+
+<section class="step">
+  <h2><span class="num">2</span>Method</h2>
+  <p class="blurb">One engine-neutral streaming client against each engine's OpenAI-compatible server, so every number is measured the same way.</p>
+  <div class="card" data-status="confirmed">
+    <ul style="margin:.2rem 0;padding-left:1.1rem">
+      <li><b>Prefill tok/s</b> = prompt tokens ÷ time to first token. <b>Decode tok/s</b> = (completion tokens − 1) ÷ (last token − first token).</li>
+      <li>256 output tokens, temperature 0, thinking off; a unique nonce opens every request so nothing is served from a prefix cache; one warm-up request excluded.</li>
+      <li><b>Short</b> ≈ 940 tokens · <b>medium</b> ≈ 6,580 tokens · <b>long</b> = 15,626 tokens: the captured first request of a real Claude Code session (system prompt, 20 tool schemas, first user turn), replayed verbatim. Sessions with MCP servers can reach 20–51K.</li>
+      <li>ds4: <code>--ssd-streaming --ssd-streaming-cache-experts 76GB --ctx 20480</code>; 4 users via <code>--batched-session 4</code>. Single-user rows: two runs each.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="step">
+  <h2><span class="num">3</span>Single user — final A/B and baseline</h2>
+  <p class="blurb">Decode tok/s only (primary KPI). Final A/B: 3 arms × 4 contexts × 2 reps = 24 runs on 2026-10-04. Baseline and merged arm: one run each per context.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Configuration</th><th class="n">Code <span class="u">119</span></th><th class="n">Short <span class="u">940</span></th><th class="n">Medium <span class="u">6.6K</span></th><th class="n">Long: Claude Code <span class="u">15.6K</span></th></tr></thead>
+    <tbody>
+      <tr class="best"><td>kyuz0 + <code>DS4_ROCM_SELECTED_SPLIT=1</code></td><td class="n">9.38</td><td class="n">8.66</td><td class="n">9.44</td><td class="n">8.66</td></tr>
+      <tr><td>kyuz0 baseline (no split)</td><td class="n">5.61–7.45</td><td class="n">6.12–7.19</td><td class="n">6.34–7.41</td><td class="n">7.1</td></tr>
+      <tr><td>merged (row batches, no split)</td><td class="n">7.28</td><td class="n">7.19</td><td class="n">7.24</td><td class="n">6.03</td></tr>
+      <tr><td>llama.cpp HIP</td><td class="n">&lt;0.4</td><td class="n">not run</td><td class="n">not run</td><td class="n">not run</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note win"><b>Winner:</b> Split flag on kyuz0 baseline: <b>+22–49% decode</b> across all contexts, quality maintained.</div>
+</section>
+
+<section class="step">
+  <h2><span class="num">4</span>Four parallel users — auxiliary</h2>
+  <p class="blurb">Aggregate tok/s across all four sessions, prefill / decode.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Engine</th><th class="n">Short</th><th class="n">Medium</th><th class="n">Long</th></tr></thead>
+    <tbody>
+      <tr class="best"><td>kyuz0 ds4</td><td class="n">8.4 / 2.05 <span class="u">(6.5 / 1.1 per user)</span></td><td class="n">~8.3 prefill; aborted at 17&nbsp;min</td><td class="n">not run (projected hours)</td></tr>
+      <tr><td>PR #4 ds4</td><td class="n">5.8 / 1.5</td><td class="n">skipped</td><td class="n">skipped</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note">On ROCm with SSD streaming, ds4 serves batched sessions in order rather than batching them natively, and four contexts churn the SSD expert cache. After the first 2,048-token chunk, concurrent prefill falls to ~6.5 tok/s per session. Aggregate throughput with four users is below a single user's.</div>
+</section>
+
+<section class="step">
+  <h2><span class="num">5</span>Quality — Q2 against the official model</h2>
+  <p class="blurb">What the 2-bit build costs. The official model's own outputs (DeepSeek API, V4.1 Flash full precision, reference sets shipped in the ds4 repo) are fed through Q2 on this box, and Q2's per-token log-probabilities are compared with the official ones. 126 cases, 3,711 tokens.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Suite</th><th class="n">Cases</th><th class="n">Q2 NLL</th><th class="n">Official NLL</th><th class="n">Perplexity ×</th><th class="n">Top-1 agreement</th></tr></thead>
+    <tbody>
+      <tr><td>General short prompts</td><td class="n">100</td><td class="n">0.366</td><td class="n">0.228</td><td class="n">1.15</td><td class="n">90.2%</td></tr>
+      <tr><td>Retrieval, 127–16K tokens</td><td class="n">17</td><td class="n">0.377</td><td class="n">0.178</td><td class="n">1.22</td><td class="n">91.5%</td></tr>
+      <tr><td>Long context, 8K / 16K / 32K</td><td class="n">9</td><td class="n">0.569</td><td class="n">0.295</td><td class="n">1.31</td><td class="n">84.4%</td></tr>
+      <tr class="best"><td>All</td><td class="n">126</td><td class="n">0.398</td><td class="n">0.237</td><td class="n">1.18</td><td class="n">89.3%</td></tr>
+    </tbody>
+  </table></div>
+  <p class="blurb">Long suite by task family, three lengths each:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Task family</th><th class="n">Top-1 agreement</th><th class="n">Perplexity ×</th></tr></thead>
+    <tbody>
+      <tr><td>C code review</td><td class="n">93.2%</td><td class="n">1.05</td></tr>
+      <tr><td>English technical prose</td><td class="n">85.9%</td><td class="n">1.18</td></tr>
+      <tr><td>Italian creative story</td><td class="n">74.0%</td><td class="n">1.84</td></tr>
+    </tbody>
+  </table></div>
+  <article class="card" data-status="confirmed">
+    <div class="meta"><span class="st st-confirmed">confirmed</span><span>retrieval</span></div>
+    <p class="claim">All 12 needle cases, at prompt lengths 127/128/129, 511/512/513, 1023/1024/1025 and 16383/16384/16385 tokens, return the correct answer as Q2's own top token.</p>
+  </article>
+  <div class="note"><b>Reading it.</b> Q2 is about 18% worse in perplexity overall. The loss depends far more on task than on context length: code keeps 91–97% agreement out to 32K, while non-English creative writing drops to 70–80%. For a coding agent, Q2 is a reasonable trade on a 128&nbsp;GB box. Cross-check: on the general suite this ROCm scorer gives 90.2% / MAE 0.227, close to the fork's published ROCm 90.48% / 0.2196. The reference is a hosted service, not bit-identical to the released weights, so part of the gap is reference noise; the long suite rests on 64 scored tokens per case.</div>
+</section>
+
+<section class="step">
+  <h2><span class="num">6</span>Expert-cache tuning</h2>
+  <p class="blurb">V4.1 Q2 cannot be resident here (151.8&nbsp;GiB of main weights against ~122&nbsp;GiB of RAM), so ds4 keeps the static weights plus a cache of experts in GPU memory and reads misses from SSD. Single user, kyuz0 ds4, tok/s; two runs each.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Expert cache</th><th class="n">Cached experts</th><th class="n">Decode: short / medium / long</th><th class="n">Prefill: medium / long</th></tr></thead>
+    <tbody>
+      <tr><td>76&nbsp;GB (guide default)</td><td class="n">7,430</td><td class="n">6.9 / 7.0–7.2 / 6.9</td><td class="n">78 / 135</td></tr>
+      <tr class="best"><td>84&nbsp;GB</td><td class="n">8,293</td><td class="n">7.0–7.2 / 7.3–7.4 / 7.0–7.1</td><td class="n">70–77 / 131–132</td></tr>
+      <tr><td>88&nbsp;GB</td><td class="n">8,725</td><td class="n">4.7–7.1 / 7.3 / 7.1</td><td class="n">55–57 / 101–117</td></tr>
+      <tr><td>92&nbsp;GB</td><td class="n">—</td><td class="n" colspan="2">refused at startup: needs 113.7&nbsp;GiB, 112.0&nbsp;GiB available</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>Reading it.</b> 84&nbsp;GB is the best setting: about +3% decode, close to noise, with no prefill loss. 88&nbsp;GB costs 13–25% prefill, probably because less memory is left for prefill's expert batches, and produced one decode outlier (4.66 tok/s, 1.4&nbsp;GB/s SSD reads, no swapping). Cache size is not the lever: only about half the expert weights can ever be cached, so every token still misses many experts. ROCm 10.0 or a second machine is.</div>
+</section>
+
+<section class="step">
+  <h2><span class="num">7</span>Transfer and next steps</h2>
+  <article class="card" data-status="confirmed">
+    <div class="meta"><span class="st st-confirmed">transfer done</span><span>2026-10-04</span></div>
+    <p class="claim">The split flag <code>DS4_ROCM_SELECTED_SPLIT=1</code> is being integrated into ds4-rs-amd's V4.1 launch logic.</p>
+    <div class="ev"><span class="evl">path</span>Set in model.rs <code>v41::default_args()</code> or serve.rs launch, with user override via <code>--ssd-streaming-split</code>. Quality re-measured after integration to confirm row-batch numerics pose no regression.</div>
+  </article>
+  <article class="card" data-status="partial">
+    <div class="meta"><span class="st st-partial">open</span><span>gap to published</span></div>
+    <p class="claim">Decode here (even with split, at 8.66–9.44 tok/s) is still ~15% below the branch's published 10.2–10.5 tok/s.</p>
+    <div class="ev"><span class="evl">likely causes</span>System HIP 7.1 here versus ROCm 10.0 / HIP 7.15 on the reference rig (its tuned Engram matmul path needs hipBLASLt 100401); no TuneD <code>accelerator-performance</code> profile; a different SSD (Kingston OM8TAP42048K1, PCIe&nbsp;4 ×4, ~3.2&nbsp;GB/s measured direct read). Upgrading ROCm is the first thing to try.</div>
+  </article>
+  <pre>cd ds4-v41 &amp;&amp; ./ds4-server --rocm -m DeepSeek-V4.1-Flash-Q2.gguf \
+  --ssd-streaming --ssd-streaming-cache-experts 84GB --ctx 20480 --ssd-streaming-split</pre>
+</section>
+
+<section class="step">
+  <h2><span class="num">8</span>Sources</h2>
+  <ul class="src">
+    <li><a href="https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash">deepseek-ai/DeepSeek-V4.1-Flash</a></li>
+    <li><a href="https://github.com/antirez/ds4/pull/1036">antirez/ds4 PR #1036 (ROCm V4.1)</a></li>
+    <li><a href="https://github.com/kyuz0/ds4/pull/4">kyuz0/ds4 PR #4 (split, DSpark)</a></li>
+    <li><a href="https://github.com/ggml-org/llama.cpp/pull/28696">llama.cpp PR #28696</a></li>
+    <li><a href="https://huggingface.co/vcruz305/DeepSeek-V4.1-Flash-GGUF">vcruz305/DeepSeek-V4.1-Flash-GGUF</a></li>
+    <li><a href="https://huggingface.co/apetersson/DeepSeek-V4.1-Flash-MixedQ2-GGUF">apetersson MixedQ2 GGUF</a></li>
+    <li><a href="https://docs.sglang.io/cookbook/autoregressive/DeepSeek/DeepSeek-V4_1">SGLang DeepSeek-V4.1 cookbook</a></li>
+    <li><a href="https://github.com/Luce-Org/lucebox">Luce-Org/lucebox</a></li>
+    <li><a href="https://www.modemguides.com/blogs/ai-infrastructure/run-deepseek-v4-1-flash-locally-hardware-reality-check">V4.1-Flash hardware reality check</a></li>
+    <li><a href="https://www.xda-developers.com/claude-code-using-fifty-thousand-tokens-before-typed-prompt-fixed-it/">Claude Code context at session start</a></li>
+  </ul>
+</section>
+
+<footer>Measured on the amd-strix-halo box, 2026-10-03. Raw data, scripts and server logs: <code>/data/v41bench/</code> on that box (<code>progress.txt</code>, <code>loadgen.py</code>, <code>run_ds4.sh</code>, <code>run_llama.sh</code>, <code>cc_req_0.json</code>); quality scores in <code>/data/v41quality/</code>. Also here: <a href="REPORT.md">REPORT.md</a>, <a href="QUALITY.md">QUALITY.md</a>.</footer>
+</div>
+</body>
+</html>
