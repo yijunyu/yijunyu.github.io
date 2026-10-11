@@ -282,8 +282,7 @@
       </div>
       <div class="panel">
         <h3>512 fewer GPU dispatches a token, and the throughput goal now met</h3>
-        <p>A decode step of Ternary Bonsai&nbsp;2 issued <strong>1171 separate GPU dispatches</strong>. Nine kernel pairs are now fused into one each, taking the step to <strong>659</strong> &mdash; <strong>bit-identical</strong>: all 248320 logits match as bit patterns, each fusion alone and all nine together.</p>
-        <p>On an M1&nbsp;Ultra 128&nbsp;GB, twelve whole-process runs &mdash; six fused, six not, interleaved &mdash; give <strong>+12.9%</strong>, and the fused rate, 33.46&nbsp;tok/s at a 256-token prompt, now clears the 32.0 goal this work was aimed at, against this same session's own control. Still <strong>not in build&nbsp;77 or any shipped build</strong>.</p>
+        <p>A decode step of Ternary Bonsai&nbsp;2 issued <strong>1171 separate GPU dispatches</strong>; nine kernel pairs are now fused into one each, taking it to <strong>659</strong>, <strong>bit-identical</strong> &mdash; all 248320 logits match as bit patterns. On an M1&nbsp;Ultra 128&nbsp;GB, twelve interleaved whole-process runs (six fused, six not) measure <strong>+12.9%</strong> against this session's own control, and the fused rate, 33.46&nbsp;tok/s at a 256-token prompt, clears the 32.0 goal this work was aimed at. Still <strong>not in build&nbsp;77 or any shipped build</strong>.</p>
       </div>
     </div>
     <p class="lede" style="margin-top:.85rem">
