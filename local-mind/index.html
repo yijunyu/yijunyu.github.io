@@ -220,7 +220,7 @@
         <div class="ptabs" id="ostabs" role="tablist" aria-label="Operating system"></div>
         <span class="psep">·</span>
         <div class="ptabs" id="betabs" role="tablist" aria-label="Accelerator"></div>
-        <span class="eyebrow" style="margin-left:auto">1.0.8 · Mac App Store</span>
+        <span class="eyebrow" style="margin-left:auto">1.0.9 · TestFlight · 1.0.8 on the Mac App Store</span>
       </div>
       <h1>Local&nbsp;Mind</h1>
       <p class="thesis">Large models run on the Machine in front of you. Once a model is serving, the engine cannot open a network connection — the prompt has nowhere else to go. <strong>Hybrid Mind is the second use case:</strong> keep that engine and put a cloud API beside it, under one endpoint, with a priority between them — so a model you host and a model you rent answer the same agents, and you can always tell which one did.</p>
@@ -240,29 +240,49 @@
   </header>
 
   <section class="sec newband">
-    <h2>New in 1.0.8</h2>
-    <p class="lede">Local judgments powered by jev-rs. Version 1.0.8, build 75, is released on the
-       Mac App Store.</p>
+    <h2>New in 1.0.9</h2>
+    <p class="lede">MLX checkpoints in the picker, and Hybrid Mind. Version 1.0.9, build 77, is
+       uploaded and on <strong>TestFlight internal testing</strong>; the App&nbsp;Store version
+       record is prepared and no build is submitted for review yet, so
+       <strong>1.0.8 is still the released version</strong>. TestFlight is not the App&nbsp;Store,
+       and this band says so rather than implying otherwise.</p>
     <div class="duo">
       <div class="panel">
-        <h3>Typed answers in the Judgments tab</h3>
-        <p>Ask the local model yes-or-no questions, choose among named options, or rate text on an ordered scale. The Judgments tab shows the answers and their probability distributions.</p>
+        <h3>Serve MLX checkpoints, not only a single file</h3>
+        <p>Until now every model in the picker was one <code>.gguf</code>. Five catalogue models are also published as MLX checkpoints — a folder with a <code>config.json</code>, <code>safetensors</code> shards and a tokenizer — and the mlx engine reads that format. Where a model exists in both, the row carries a switch: GGUF runs on this app's own engines, MLX runs on <code>mlx-server</code>. The choice is remembered per model.</p>
+        <p>Each checkpoint is catalogued <em>per file</em>, with the publisher's own byte size and checksum, because a directory has no single artefact to verify. Nothing is fetched that the engine does not read — no model card, no licence text, no helper scripts — and an interrupted download resumes from the file it was missing.</p>
       </div>
       <div class="panel">
-        <h3>One message, several questions</h3>
-        <p>Paste a customer message and ask which team should handle it, how urgent it is, and whether the customer threatens to leave. Define your own questions and labels to use the same workflow for your own text.</p>
+        <h3>The five checkpoints, and whose records they are</h3>
+        <p>Gemma&nbsp;4&nbsp;26B&nbsp;A4B (15.6&nbsp;GB), Ternary Bonsai&nbsp;2&nbsp;27B (8.6&nbsp;GB), Qwen3.8-27B 4-bit MTP (16.1&nbsp;GB), Laguna&nbsp;XS&nbsp;2.1 NVFP4 (21.6&nbsp;GB) and Qwen3.8-Flash-Next 4-bit MTP (113.2&nbsp;GB, published by TensorFold).</p>
+        <p>These are the reference checkpoints the finished <strong>MLX.fast</strong> optimisation tracks pinned. Two tracks published records — 453.1% over a serial control for Bonsai&nbsp;2, 111% composite for Qwen3.8-Flash-Next — measured by that competition, on its hardware, against its own control. <strong>The winners were the submitted engines, not the models.</strong> What this release adds is a verified download and a way to serve the weights those engines were tuned against.</p>
+        <p>And it does <strong>not</strong> serve them with a winning engine, which was measured rather than assumed: the Bonsai&nbsp;2 track's winning tree, at the submission holding that record, decoded <strong>10.0&ndash;10.4&nbsp;tok/s</strong> against the stock MLX engine's <strong>30.7&ndash;35.3</strong> on the same checkpoint, three repetitions each, greedy, on an M1&nbsp;Ultra 128&nbsp;GB. Its advantage is speculative decoding driven by a pinned drafter the serving binary will not load, so what is reachable is the slower target-only path.</p>
       </div>
       <div class="panel">
-        <h3>Zero generated output tokens</h3>
-        <p>The engine scores answer labels from the model’s next-token distribution, with no generated response text. Multiple questions can reuse the shared text prefix. The probabilities describe the model’s answers; they are not measured accuracy.</p>
+        <h3>Point at a model instead of fetching it</h3>
+        <p>“Browse…” now accepts a model folder as well as a <code>.gguf</code>, Spotlight finds MLX checkpoints already on this Mac and lists them as models, and a folder you choose is granted access once and remembered across launches.</p>
+        <p><strong>One new model.</strong> Gemma&nbsp;4&nbsp;26B&nbsp;A4B — 26B parameters, 4B active, QAT 4-bit, 15.6&nbsp;GB. It is catalogued as an MLX checkpoint only; there is no GGUF for it, and it carries an <em>unevaluated</em> badge because no speed figure has been measured for it here.</p>
       </div>
       <div class="panel">
-        <h3>jev-rs — open source, by us</h3>
-        <p>Our Rust judgments engine, <a href="https://github.com/yijunyu/jev-rs">jev-rs</a>, powers this feature and is available under MIT OR Apache-2.0. Developers can also request typed judgments through the Jev-compatible <code>POST /v1/systemone</code> endpoint on the local service.</p>
+        <h3>Hybrid Mind — one endpoint, a local model and a cloud model</h3>
+        <p>The app fronts the local engine and a cloud API you configure on <strong>its own port</strong>, speaking all three request shapes, so Claude Code on <code>/v1/messages</code>, Codex on <code>/v1/responses</code> and opencode-style clients on <code>/v1/chat/completions</code> all get it without being reconfigured. A priority says which side to try first.</p>
+        <p>Off until you turn it on; it states that prompts will leave before the first enable; the engine keeps its own port, so anything already pointed there stays local-only; every reply is tagged with the side that answered, and both sides are counted. When the provider reports no remaining credit it says so <strong>once</strong> and goes local-only rather than asking again — turning the cloud back on retries, and will ask again if the account is still unfunded.</p>
+        <p>The engine itself is untouched and still network-locked: it holds no outbound entitlement, and the cloud call is made by the app, which needs network access for model downloads anyway. That asymmetry is why the engine's guarantee survives the feature.</p>
+      </div>
+      <div class="panel">
+        <h3>A local turn that an agent's preamble does not swamp</h3>
+        <p>The local service can compact an agent's fixed preamble before the model prefills it (off by default). Measured on a real captured Claude&nbsp;Code request with 23 tools, <strong>tool definitions were 64% of the body and the system prompt only 8%</strong> — the opposite of the obvious guess. Compacting tools first removed <strong>77% of the tool definitions and 52% of the whole prefilled context</strong>, about 24.7K approximate tokens down to 11.9K, while keeping every tool's name and required parameters: a clipped description makes a tool worse to choose, a missing name makes the call impossible to construct, and those are different kinds of damage.</p>
+        <p>It sits in the protocol parsers rather than one client's path, so all three shapes shrink — 85%, 87% and 85% on one deliberately bulky tool. What is <strong>not</strong> claimed is an end-to-end run with each agent: the ratios above come from one captured Claude&nbsp;Code request, and another agent's preamble has a different shape.</p>
+      </div>
+      <div class="panel">
+        <h3>Where MLX models run, and where they do not</h3>
+        <p>The MLX engine is a separate <code>mlx-server</code> binary installed beside the app's other engine files, and macOS does not let the Mac&nbsp;App&nbsp;Store build launch an app outside itself. <strong>MLX models therefore run in the Developer-ID build only</strong>, and the App&nbsp;Store build says so plainly rather than failing with an engine error. The GGUF version of every model above except Gemma&nbsp;4 runs in both builds.</p>
+        <p>Four of the five checkpoints were loaded and served through the app's engine path on an M1&nbsp;Ultra 128&nbsp;GB, answering with correct completions, their catalogued checksums checked against the bytes on disk. The fifth, the 113&nbsp;GB Qwen3.8-Flash-Next pack, was fetched in full and <strong>does not load on the bundled engine</strong>: it reaches 75.8&nbsp;GiB of weights and then trips a runtime precondition inside that architecture's embedding layer. Said plainly because the row is in the catalogue.</p>
+        <p>Served by a third-party MLX binary this app does not ship, the same pack decodes at <strong>26.4&nbsp;tok/s</strong> on this machine (median of three, 628-token prompt, 128 generated), against <strong>43.7</strong> for the GGUF form of the same model on the reference engine. That is a capacity result, not a verdict on the packaging: its per-layer embedding table was paged from SSD rather than resident, and whether its draft head engaged is unconfirmed — the binary logs no acceptance rate.</p>
       </div>
     </div>
     <p class="lede" style="margin-top:.85rem">
-      Earlier releases are kept in full: <a href="releases.html">1.0.7, 1.0.6, 1.0.5, 1.0.4, 1.0.3 and 1.0.2</a>.
+      Earlier releases are kept in full: <a href="releases.html">1.0.8, 1.0.7, 1.0.6, 1.0.5, 1.0.4, 1.0.3 and 1.0.2</a>.
     </p>
   </section>
 
@@ -279,7 +299,7 @@
           <div class="head">
             <span class="n">STAGE 01</span>
             <span class="t">Model</span>
-            <span class="sub">Downloaded and SHA-256 verified before it will load.</span>
+            <span class="sub">Downloaded and SHA-256 verified before it will load. A GGUF file, or — new in 1.0.9 — an MLX checkpoint folder, verified file by file.</span>
           </div>
           <ul class="opts">
             <li><span class="o">DeepSeek-V4-Flash</span><span class="d">267B MoE, three expert recipes</span></li>
@@ -293,8 +313,11 @@
             <li><span class="o">DeepSeek-V4-Flash Vision-Exp<span class="nu">new</span></span><span class="d">Sees images &mdash; model plus its encoder, 81.6 GiB together</span></li>
             <li><span class="o">DeepSeek-V4.1-Flash<span class="pd">purchase</span></span><span class="d">763B MoE, 366 GB &mdash; only ~152 GiB of it is weights</span></li>
             <li><span class="o">Qwen3.8-Flash-Next MTP<span class="pd">purchase</span></span><span class="d">The same 125B, drafting several tokens at a time &mdash; 147 GB, ~45 GiB resident</span></li>
+            <li><span class="o">Gemma 4 26B A4B<span class="nu">new</span></span><span class="d">Google, 26B/4B active, QAT 4-bit &mdash; MLX checkpoint only, 15.6 GB</span></li>
+            <li><span class="o">Ternary Bonsai 2 27B<span class="nu">new</span></span><span class="d">1.75 bits per weight &mdash; 5.95 GB as GGUF, 8.6 GB as MLX</span></li>
+            <li><span class="o">Laguna XS 2.1 NVFP4<span class="nu">new</span></span><span class="d">The same 33B as an MLX checkpoint, 21.6 GB</span></li>
             <li><span class="o">Kimi-K3</span><span class="d">~1500B, out-of-core only</span></li>
-            <li><span class="o">Bring your own</span><span class="d">Any GGUF already on disk</span></li>
+            <li><span class="o">Bring your own</span><span class="d">Any GGUF on disk &mdash; or an MLX folder, browsed or found by Spotlight</span></li>
           </ul>
         </div>
 
@@ -309,6 +332,8 @@
             <li><span class="tag">reference</span><span class="o">antirez's C engine</span><span class="d">The upstream reference, for models it supports</span></li>
             <li><span class="tag">llamacpp</span><span class="o">llama.cpp</span><span class="d">Third-party, linked in-process</span></li>
             <li><span class="tag">llamacpp-ds4</span><span class="o">llama.cpp + ds4 kernels</span><span class="d">Upstream with our kernels substituted</span></li>
+            <li><span class="tag">mlx</span><span class="o">MLX (mlx.fast)<span class="nu">new</span></span><span class="d">Apple MLX &mdash; the only engine here that reads an MLX checkpoint folder. A separate local process behind this server, so Developer-ID builds only.</span></li>
+            <li><span class="tag">mlx-tensorfold</span><span class="o">MLX (TensorFold MTP)<span class="nu">new</span></span><span class="d">Specialised to one checkpoint, with its pinned draft head. Listed as unavailable until its build is installed, rather than quietly falling back to the stock one.</span></li>
           </ul>
         </div>
 
@@ -336,7 +361,8 @@
             <li><span class="o">Generate Video<span class="nu">new</span></span><span class="d">A few seconds of video from a description, or from a first and last frame</span></li>
             <li><span class="o">Local API</span><span class="d">Chat-completions and Anthropic wire formats, loopback by default</span></li>
             <li><span class="o">AI agents</span><span class="d">Wire a coding agent to the local model in one click</span></li>
-            <li><span class="o">Serve others<span class="nu">new</span></span><span class="d">Opt in per session, API key required — off again at every launch</span></li>
+            <li><span class="o">Serve others</span><span class="d">Opt in per session, API key required — off again at every launch</span></li>
+            <li><span class="o">Hybrid Mind<span class="nu">new</span></span><span class="d">A second port fronting the local engine and a cloud API, with a priority — off until you turn it on, and every reply says which side answered</span></li>
           </ul>
         </div>
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Local Mind — release history</title>
-<meta name="description" content="Every release note for Local Mind for Private AI, kept as it was written at the time: 1.0.6, 1.0.5, 1.0.4, 1.0.3 and 1.0.2.">
+<meta name="description" content="Every release note for Local Mind for Private AI, kept as it was written at the time: 1.0.8, 1.0.7, 1.0.6, 1.0.5, 1.0.4, 1.0.3 and 1.0.2.">
 <style>
   html{color-scheme:light dark}
   :root {
@@ -101,6 +101,36 @@
       <a href="https://apps.apple.com/app/id6793161102">Mac App Store</a>
     </p>
   </header>
+
+  <section class="rel">
+    <div class="relhead">
+      <span class="v">1.0.8</span>
+      <span class="when">Oct 2026</span>
+      <span class="src">poster band</span>
+    </div>
+    <div class="relbody">
+    <p class="lede">Local judgments powered by jev-rs. Version 1.0.8, build 75, is released on the
+       Mac App Store.</p>
+    <div class="duo">
+      <div class="panel">
+        <h3>Typed answers in the Judgments tab</h3>
+        <p>Ask the local model yes-or-no questions, choose among named options, or rate text on an ordered scale. The Judgments tab shows the answers and their probability distributions.</p>
+      </div>
+      <div class="panel">
+        <h3>One message, several questions</h3>
+        <p>Paste a customer message and ask which team should handle it, how urgent it is, and whether the customer threatens to leave. Define your own questions and labels to use the same workflow for your own text.</p>
+      </div>
+      <div class="panel">
+        <h3>Zero generated output tokens</h3>
+        <p>The engine scores answer labels from the model’s next-token distribution, with no generated response text. Multiple questions can reuse the shared text prefix. The probabilities describe the model’s answers; they are not measured accuracy.</p>
+      </div>
+      <div class="panel">
+        <h3>jev-rs — open source, by us</h3>
+        <p>Our Rust judgments engine, <a href="https://github.com/yijunyu/jev-rs">jev-rs</a>, powers this feature and is available under MIT OR Apache-2.0. Developers can also request typed judgments through the Jev-compatible <code>POST /v1/systemone</code> endpoint on the local service.</p>
+      </div>
+    </div>
+    </div>
+  </section>
 
   <section class="rel">
     <div class="relhead">
