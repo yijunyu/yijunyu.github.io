@@ -223,7 +223,7 @@
         <span class="eyebrow" style="margin-left:auto">1.0.8 · Mac App Store</span>
       </div>
       <h1>Local&nbsp;Mind</h1>
-      <p class="thesis">Large models run on the Machine in front of you. Once a model is serving, the engine cannot open a network connection — the prompt has nowhere else to go.</p>
+      <p class="thesis">Large models run on the Machine in front of you. Once a model is serving, the engine cannot open a network connection — the prompt has nowhere else to go. <strong>Hybrid Mind is the second use case:</strong> keep that engine and put a cloud API beside it, under one endpoint, with a priority between them — so a model you host and a model you rent answer the same agents, and you can always tell which one did.</p>
       <p class="postlist" id="postlist"></p>
     </div>
     <aside class="mast-store">
@@ -400,11 +400,20 @@ sh install --key DS4-… --email you@example.com</div>
 
   <div class="duo">
     <div class="panel">
-      <h3>The prompt cannot leave</h3>
+      <h3>The prompt cannot leave, unless a hybrid cloud/local API mode is turned on</h3>
       <p>Enforced, not promised. Once the engine has loaded weights and bound its port, it asks the kernel to revoke its own networking — irreversibly, for the life of the process.</p>
+      <p><strong>The one exception, named rather than buried.</strong> A hybrid mode can put a cloud API beside the local engine, and a prompt the cloud side answers does leave this Mac. It is off until you turn it on, it says so before the first time, it runs on a different port from the engine — so anything already pointed at the engine stays local-only — and every reply records which side produced it. The engine itself stays locked either way: it is the app, not the engine, that can reach the network, which is why the engine's guarantee survives the exception.</p>
       <p>Check it while it serves:</p>
       <p><code>lsof -i -a -p &lt;pid&gt;</code></p>
       <p><strong>1.0.3 adds one door, and it is locked by default.</strong> Serving others binds the LAN instead of loopback — so it needs a key you minted, it is refused without one, and it switches itself off again at the next launch. Nothing you do not turn on this session.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Hybrid Mind — the second use case</h3>
+      <p>The first use case is everything above: your model, your Machine, nothing leaving. The second is <strong>one endpoint over two models</strong> — the local engine and a cloud API you choose — with a priority saying which to try first.</p>
+      <p>Why it is one feature and not two switches: the conversation <em>survives the move</em>. A priority alone gives you a second model. A priority plus a rolling summary plus a cooldown gives you one assistant that keeps working when the cloud rate-limits, runs out of credit, or cannot be reached — it falls back to the Machine and carries on.</p>
+      <p>It serves whichever protocol your agent speaks, so Claude Code, Codex, opencode and the rest all get it from the same port without being reconfigured.</p>
+      <p><strong>Off until you turn it on</strong>, on a different port from the engine, and every reply records which side produced it. When the cloud runs out of credit it tells you once and goes local-only rather than asking again.</p>
     </div>
 
     <div class="panel">
