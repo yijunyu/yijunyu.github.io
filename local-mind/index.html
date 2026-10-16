@@ -139,6 +139,7 @@
   th[aria-sort="descending"] .sarrow::after{content:"\2193";}
   th[aria-sort="none"] .sarrow::after{content:"\2195";}
   thead th.sortable .sortbtn:hover .sarrow{opacity:.45;}
+  .eng{font-size:.86em;color:var(--ink-2);}
   tbody tr:last-child td{border-bottom:0;}
   td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;}
   td.fam{font-weight:590;}
@@ -391,6 +392,7 @@
           <tr>
             <th scope="col" class="sortable" data-sort="model"  aria-sort="none"><button type="button" class="sortbtn">Model<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="size"   aria-sort="none"><button type="button" class="sortbtn">Size<span class="sarrow" aria-hidden="true"></span></button></th>
+            <th scope="col" class="sortable" data-sort="engine" aria-sort="none"><button type="button" class="sortbtn">Engine<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="runs"   aria-sort="none"><button type="button" class="sortbtn">Runs as<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="decode" aria-sort="none"><button type="button" class="sortbtn">Decode<span class="sarrow" aria-hidden="true"></span></button></th>
           </tr>
@@ -582,6 +584,7 @@ sh install --key DS4-… --email you@example.com</div>
   const SORTS = {
     model:  { first:  1, get: r => (r.name || "").toLowerCase() },
     size:   { first:  1, get: r => sizeGB(r.size) },
+    engine: { first:  1, get: r => (r.engine || "").toLowerCase() },
     runs:   { first: -1, get: r => runsRank(r.modes) },
     decode: { first: -1, get: r => rateNum(r.decode) },
   };
@@ -630,7 +633,7 @@ sh install --key DS4-… --email you@example.com</div>
       // showing an empty table that reads as "runs nothing".
       const be = BACKENDS.find(x => x.id === curBE);
       paintSortHeaders();
-      rowsEl.innerHTML = `<tr><td colspan="4" class="na">no ${be ? be.label : ""} measurements published yet</td></tr>`;
+      rowsEl.innerHTML = `<tr><td colspan="5" class="na">no ${be ? be.label : ""} measurements published yet</td></tr>`;
       priceEl.textContent = "";
       noteEl.textContent = `Nothing has been measured on ${be ? be.label : "this backend"} yet. The backend is supported; the numbers are not published because they have not been taken.`;
       return;
@@ -642,8 +645,10 @@ sh install --key DS4-… --email you@example.com</div>
         : `<span class="na">does not fit</span>`;
       // null decode means NOT MEASURED, which is a different claim from slow.
       const d = r.decode ? r.decode : `<span class="na">not measured</span>`;
+      // The engine is named per row because a rate is meaningless without it.
+      const eng = r.engine ? `<span class="eng">${r.engine}</span>` : `<span class="na">not recorded</span>`;
       return `<tr><td class="fam">${r.name} <span class="variant">${r.params}</span></td>`
-           + `<td class="num">${r.size}</td><td>${runs}</td><td class="num">${d}</td></tr>`;
+           + `<td class="num">${r.size}</td><td>${eng}</td><td>${runs}</td><td class="num">${d}</td></tr>`;
     }).join("");
     // A box with no recorded price says nothing rather than "$0" or "—".
     priceEl.textContent = b.price ? `≈ ${b.price}` : "";
@@ -790,7 +795,7 @@ sh install --key DS4-… --email you@example.com</div>
       // Say so plainly. An empty table would read as a product that runs
       // nothing, which is worse than admitting the data did not load.
       noteEl.textContent = `Could not load the measurements (${err.message}).`;
-      rowsEl.innerHTML = `<tr><td colspan="4" class="na">measurements unavailable</td></tr>`;
+      rowsEl.innerHTML = `<tr><td colspan="5" class="na">measurements unavailable</td></tr>`;
     });
 </script>
 
