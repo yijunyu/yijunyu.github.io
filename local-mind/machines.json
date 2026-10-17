@@ -164,8 +164,18 @@
       "id": "m2max",
       "label": "M2 Max \u00b7 64 GB",
       "price": "from $1,999 at launch \u00b7 ~$1,200\u20131,400 refurbished",
-      "note": "The same catalogue, scored for 64&nbsp;GB. Every row here is measured with Low Power Mode off, but this laptop normally runs with it <em>on</em>, where it delivers roughly half &mdash; so these are the chip's rates, not this machine's everyday ones. <strong>DeepSeek-V4-Flash</strong> moved the most &mdash; 2.9 to 7.2&nbsp;tok/s &mdash; and it does not fit in 64&nbsp;GB, so that rate is experts streaming from SSD, not a resident model. <strong>Laguna-S-2.1</strong> was re-measured at 25.8 and its published 26.4 stands. <strong>Muse Glimmer</strong> is the reminder that a tier estimate is not a promise: it reaches 0.37&times; the M1&nbsp;Ultra here where scaling by GPU tier predicts 0.605, because how far a chip falls behind depends on how bandwidth-bound the model is. This is also the smallest M2&nbsp;Max, 30 of a possible 38 GPU cores.",
+      "note": "The same catalogue, scored for 64&nbsp;GB. Every row here is measured with Low Power Mode off, but this laptop normally runs with it <em>on</em>, where it delivers roughly half &mdash; so these are the chip's rates, not this machine's everyday ones. <strong>DeepSeek-V4-Flash</strong> moved the most &mdash; 2.9 to 7.2&nbsp;tok/s &mdash; and it does not fit in 64&nbsp;GB, so that rate is experts streaming from SSD, not a resident model. <strong>Laguna-S-2.1</strong> was re-measured at 25.8 and its published 26.4 stands. <strong>Muse Glimmer</strong> is the reminder that a tier estimate is not a promise: it reaches 0.37&times; the M1&nbsp;Ultra here where scaling by GPU tier predicts 0.605, because how far a chip falls behind depends on how bandwidth-bound the model is. This is also the smallest M2&nbsp;Max, 30 of a possible 38 GPU cores. 2026-10-17: <strong>MiniCPM-V 4.7</strong> added \u2014 the same file the M1&nbsp;Ultra row uses (official Q4_K_M, 21.2&nbsp;GB, SHA-256 bf3d1c67&hellip;df6, byte-identical), on the same engine, so the two Mac rows are directly comparable and the only differences are the chip and the power source. <strong>66.4&nbsp;tok/s</strong> is a cooled single-shot 256-token generation at a 131072-token context, all 41 layers on the GPU (<code>offloaded 41/41 layers</code>, device MTL0). Thread count is not the lever: <code>-t 4</code>, <code>-t 6</code> and <code>-t 8</code> measured 66.5, 66.2 and 66.4, and flash-attention with 2048/512 batching gave 66.5, so the figure is the chip's, not a setting's. ONE CAVEAT, and it is the reason this row quotes a cooled single shot rather than a median: <strong>this measurement was taken on battery power</strong> (<code>pmset</code>: &lsquo;Now drawing from Battery Power&rsquo;), where the rate decays under sustained load \u2014 three back-to-back runs read 66.6, 62.0 and 55.9. A seven-run benchmark under that decay produced 37.6, which is thermal history rather than capability and is <strong>not</strong> the number published here. On AC power an unqualified median should be higher and flat; re-measure before treating 66.4 as a sustained figure. Text only: image prompting was not tested. Against the M1&nbsp;Ultra's 82.7 on identical weights and engine, this 30-core GPU reaches 0.80&times;, which tracks memory bandwidth (~400 vs ~800&nbsp;GB/s) rather than a shortfall in the machine.",
       "rows": [
+        {
+          "name": "MiniCPM-V 4.7",
+          "params": "35B-A3B MoE (text)",
+          "size": "21.2 GB",
+          "engine": "llama.cpp (Metal)",
+          "modes": [
+            "gpu"
+          ],
+          "decode": "66.4 tok/s"
+        },
         {
           "name": "Muse Glimmer 30B",
           "params": "30B dense",
