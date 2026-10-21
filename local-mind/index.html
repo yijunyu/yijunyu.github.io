@@ -287,6 +287,11 @@
         <h3>512 fewer GPU dispatches a token, and the throughput goal now met</h3>
         <p>A decode step of Ternary Bonsai&nbsp;2 issued <strong>1171 separate GPU dispatches</strong>; nine kernel pairs are now fused into one each, taking it to <strong>659</strong>, <strong>bit-identical</strong> &mdash; all 248320 logits match as bit patterns. On an M1&nbsp;Ultra 128&nbsp;GB, twelve interleaved whole-process runs (six fused, six not) measure <strong>+12.9%</strong> against this session's own control, and the fused rate, 33.46&nbsp;tok/s at a 256-token prompt, clears the 32.0 goal this work was aimed at. Still <strong>not in build&nbsp;77 or any shipped build</strong>.</p>
       </div>
+      <div class="panel">
+        <h3>And the long-context shortcut underneath it, checked on real prose</h3>
+        <p>Splitting the KV cache across threadgroups is what made long-context decode affordable, and it was proven only on generated prompts &mdash; on which this model answers with a two-token cycle, so agreeing with itself cost it nothing. On <strong>512 tokens of real text</strong> and 128 greedy tokens, the split path and the single-split control emit <strong>identical tokens</strong>, with a worst one-step logit difference of <strong>8.5&times;10<sup>&minus;5</sup></strong>, 23&times; inside the bound a CPU oracle sets for that merge. 128 autoregressive steps, each arm keeping its own cache, move it only to 9.4&times;10<sup>&minus;5</sup>: <strong>the error does not compound</strong>.</p>
+        <p>The number that says what the agreement is worth is printed beside it: the closest decision in the run sat <strong>51067&times;</strong> further from flipping than that drift. So the identical text is a tripwire and the drift is the evidence &mdash; and the same figures come back to the last digit with all nine fusions on and all nine off, which is the fusions' bit-identity confirmed from outside the tests built to assert it.</p>
+      </div>
     </div>
     <p class="lede" style="margin-top:.85rem">
       Earlier releases are kept in full: <a href="releases.html">1.0.8, 1.0.7, 1.0.6, 1.0.5, 1.0.4, 1.0.3 and 1.0.2</a>.
