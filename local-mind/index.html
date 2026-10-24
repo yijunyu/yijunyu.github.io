@@ -37,6 +37,11 @@
   h1,h2,h3{text-wrap:balance;margin:0;}
   p{margin:0;}
   a{color:inherit;}
+  /* Any display: declaration outranks the user agent's [hidden]{display:none},
+     and several blocks here set one. Without this, hiding a section from
+     script sets the attribute and changes nothing on screen -- which is how
+     the Linux download section came to render on the macOS tab. */
+  [hidden]{display:none !important;}
   :focus-visible{outline:2px solid var(--resident);outline-offset:3px;border-radius:2px;}
 
   .eyebrow{font-family:var(--mono);font-size:var(--step);letter-spacing:.14em;
@@ -211,6 +216,54 @@
   .cmd{font-family:var(--mono);font-size:.78rem;background:var(--panel-2);
        border:1px solid var(--rule);border-radius:2px;padding:.6rem .7rem;
        overflow-x:auto;white-space:pre;margin:.7rem 0 0;color:var(--ink);}
+  /* Disclosures. The page is a poster, and its headings are written as claims,
+     so a closed panel still says what it would say open -- which is what makes
+     collapsing them honest rather than merely shorter. Native <details>, so it
+     works with no script at all, and keyboard and screen-reader behaviour come
+     for free instead of being reimplemented on a div.
+
+     <details> is NOT given display:flex here even though .panel is. A flex
+     container on the details element itself stops some engines hiding the
+     closed content, which fails in the one direction that matters: everything
+     looks expanded and nothing is packed. Block, with the gap restored as a
+     margin on the children. */
+  details.panel{display:block;}
+  details.panel > *:not(summary){margin-top:.6rem;}
+  summary{cursor:pointer;list-style:none;}
+  summary::-webkit-details-marker{display:none;}
+  /* The chevron holds its own slot and only rotates, so a panel's heading does
+     not shift sideways when it is opened. */
+  .chev::after{content:"";display:block;width:.42rem;height:.42rem;
+       border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
+       transform:rotate(45deg);transition:transform .15s ease;}
+  details[open] > summary .chev::after{transform:rotate(225deg);}
+  details.panel > summary{display:flex;gap:.8rem;align-items:flex-start;
+       justify-content:space-between;color:var(--ink);}
+  details.panel > summary .chev{color:var(--ink-3);flex:0 0 auto;margin-top:.42rem;}
+  details.panel > summary:hover .chev{color:var(--ink);}
+  details.panel > summary:hover h3{color:var(--ink-2);}
+
+  /* One long passage behind a label. The label is a question or the passage's
+     own topic, never a new claim -- a reader who leaves it closed must not have
+     been told something the page cannot then show them. */
+  details.more > summary{display:flex;gap:.45rem;align-items:center;
+       font-family:var(--mono);font-size:var(--step);letter-spacing:.08em;
+       text-transform:uppercase;color:var(--ink-3);
+       border-top:1px solid var(--rule);padding-top:.55rem;margin-top:.55rem;}
+  details.more > summary:hover{color:var(--ink);}
+  details.more > *:not(summary){margin-top:.6rem;}
+
+  .platright{display:flex;flex-wrap:wrap;gap:.3rem .6rem;align-items:center;
+             justify-content:flex-end;margin-left:auto;}
+  .allctl{font-family:var(--mono);font-size:var(--step);letter-spacing:.1em;
+          text-transform:uppercase;cursor:pointer;color:var(--ink-3);
+          background:none;border:1px solid var(--rule);border-radius:2px;
+          padding:.18rem .42rem;line-height:1.3;}
+  .allctl:hover{color:var(--ink);border-color:var(--rule-2);}
+
+  /* A closed <details> does not print. Opening them for the print is done in
+     script; this only keeps the chevrons out of the paper. */
+  @media print{ .chev,.allctl{display:none;} }
 </style>
 </head>
 <body>
@@ -223,7 +276,10 @@
         <div class="ptabs" id="ostabs" role="tablist" aria-label="Operating system"></div>
         <span class="psep">·</span>
         <div class="ptabs" id="betabs" role="tablist" aria-label="Accelerator"></div>
-        <span class="eyebrow" style="margin-left:auto">1.0.10 candidate · 1.0.9 on the Mac App Store</span>
+        <span class="platright">
+          <span class="eyebrow">1.0.10 candidate · 1.0.9 on the Mac App Store</span>
+          <button type="button" class="allctl" id="expandall" aria-expanded="false">expand all</button>
+        </span>
       </div>
       <h1>Local&nbsp;Mind</h1>
       <p class="thesis">Large models run on the Machine in front of you. Once a model is serving, the engine cannot open a network connection — the prompt has nowhere else to go. <strong>Hybrid Mind is the second use case:</strong> keep that engine and put a cloud API beside it, under one endpoint, with a priority between them — so a model you host and a model you rent answer the same agents, and you can always tell which one did.</p>
@@ -245,7 +301,10 @@
   <section class="sec newband">
     <h2>1.0.10 candidate · MiniCPM-V 4.7 runs locally</h2>
     <p class="lede">MiniCPM-V 4.7 35B-A3B now has a measured local path on the M1 Ultra 128 GB. The official Q4_K_M weights and F16 vision projector loaded in llama.cpp; stock Metal decoded text at <strong>97.8 tok/s</strong> (mean of two warmed 512-token runs). For this model, the local Mac is the default host; an AMD machine is not required. The existing DS4 Q4_K substitution measured 94.0 tok/s, so stock llama.cpp remains selected. This is a text-only server measurement: image prompts and the exact bundled app build still need validation, and no Opus 4.6 parity claim is made.</p>
-    <p>Memory decides whether that path exists at all. On an Apple&nbsp;M4 with 16&nbsp;GB, Metal offers a working set of <strong>12.7&nbsp;GB</strong> &mdash; 74% of the machine's 17.2&nbsp;GB &mdash; so the official Q4_K_M weights at 21.2&nbsp;GB do not fit the GPU, and neither does the smallest published quantisation, IQ3_XS at 14.5&nbsp;GB: asking for full offload stops with an out-of-memory from the GPU rather than running slowly. Holding 32 of the 40 layers on the GPU and the rest on the CPU, it decodes <strong>24.7&nbsp;tok/s</strong> (median of seven runs, 23.8&ndash;25.5) and reads a 3,030-token prompt in <strong>15.5&nbsp;s</strong> (195.8&nbsp;tok/s, three runs within 2.3%); a 512-token prompt runs at 150.5&nbsp;tok/s, so a long prompt is handled more efficiently here rather than less. That is about 38&nbsp;GB/s of weight traffic, under a third of this chip's bandwidth, so what limits it is the split between the two processors and not the speed of memory. Moving that boundary does not help: 34 layers is no faster, swings far more run to run, and runs out of GPU memory altogether once a 3,000-token prompt's cache is added, while putting the experts on the CPU instead halves throughput. A 16&nbsp;GB Mac therefore runs this model at a smaller quantisation and about four times slower than a machine that can hold the weights; everything on the CPU is 0.35&nbsp;tok/s and not a usable path.</p>
+    <details class="more">
+      <summary><span class="chev" aria-hidden="true"></span>What a 16&nbsp;GB Mac does with it</summary>
+      <p>Memory decides whether that path exists at all. On an Apple&nbsp;M4 with 16&nbsp;GB, Metal offers a working set of <strong>12.7&nbsp;GB</strong> &mdash; 74% of the machine's 17.2&nbsp;GB &mdash; so the official Q4_K_M weights at 21.2&nbsp;GB do not fit the GPU, and neither does the smallest published quantisation, IQ3_XS at 14.5&nbsp;GB: asking for full offload stops with an out-of-memory from the GPU rather than running slowly. Holding 32 of the 40 layers on the GPU and the rest on the CPU, it decodes <strong>24.7&nbsp;tok/s</strong> (median of seven runs, 23.8&ndash;25.5) and reads a 3,030-token prompt in <strong>15.5&nbsp;s</strong> (195.8&nbsp;tok/s, three runs within 2.3%); a 512-token prompt runs at 150.5&nbsp;tok/s, so a long prompt is handled more efficiently here rather than less. That is about 38&nbsp;GB/s of weight traffic, under a third of this chip's bandwidth, so what limits it is the split between the two processors and not the speed of memory. Moving that boundary does not help: 34 layers is no faster, swings far more run to run, and runs out of GPU memory altogether once a 3,000-token prompt's cache is added, while putting the experts on the CPU instead halves throughput. A 16&nbsp;GB Mac therefore runs this model at a smaller quantisation and about four times slower than a machine that can hold the weights; everything on the CPU is 0.35&nbsp;tok/s and not a usable path.</p>
+    </details>
   </section>
 
   <section class="sec newband">
@@ -253,48 +312,48 @@
     <p class="lede">MLX checkpoints in the picker, and Hybrid Mind. Version 1.0.9, build 77, has been
        released on the <strong>Mac App Store</strong>.</p>
     <div class="duo">
-      <div class="panel">
-        <h3>Serve MLX checkpoints, not only a single file</h3>
+      <details class="panel">
+        <summary><h3>Serve MLX checkpoints, not only a single file</h3><span class="chev" aria-hidden="true"></span></summary>
         <p>Until now every model in the picker was one <code>.gguf</code>. Five catalogue models are also published as MLX checkpoints — a folder with a <code>config.json</code>, <code>safetensors</code> shards and a tokenizer — and the mlx engine reads that format. Where a model exists in both, the row carries a switch: GGUF runs on this app's own engines, MLX runs on <code>mlx-server</code>. The choice is remembered per model.</p>
         <p>Each checkpoint is catalogued <em>per file</em>, with the publisher's own byte size and checksum, because a directory has no single artefact to verify. Nothing is fetched that the engine does not read — no model card, no licence text, no helper scripts — and an interrupted download resumes from the file it was missing.</p>
-      </div>
-      <div class="panel">
-        <h3>The five checkpoints, and whose records they are</h3>
+      </details>
+      <details class="panel">
+        <summary><h3>The five checkpoints, and whose records they are</h3><span class="chev" aria-hidden="true"></span></summary>
         <p>Gemma&nbsp;4&nbsp;26B&nbsp;A4B (15.6&nbsp;GB), Ternary Bonsai&nbsp;2&nbsp;27B (8.6&nbsp;GB), Qwen3.8-27B 4-bit MTP (16.1&nbsp;GB), Laguna&nbsp;XS&nbsp;2.1 NVFP4 (21.6&nbsp;GB) and Qwen3.8-Flash-Next 4-bit MTP (113.2&nbsp;GB, published by TensorFold).</p>
         <p>These are the reference checkpoints the finished <strong>MLX.fast</strong> optimisation tracks pinned. Two tracks published records — 453.1% over a serial control for Bonsai&nbsp;2, 111% composite for Qwen3.8-Flash-Next — measured by that competition, on its hardware, against its own control. <strong>The winners were the submitted engines, not the models.</strong> What this release adds is a verified download and a way to serve the weights those engines were tuned against.</p>
         <p>And it does <strong>not</strong> serve them with a winning engine, which was measured rather than assumed: the Bonsai&nbsp;2 track's winning tree, at the submission holding that record, decoded <strong>10.0&ndash;10.4&nbsp;tok/s</strong> against the stock MLX engine's <strong>30.7&ndash;35.3</strong> on the same checkpoint, three repetitions each, greedy, on an M1&nbsp;Ultra 128&nbsp;GB. Its advantage is speculative decoding driven by a pinned drafter the serving binary will not load, so what is reachable is the slower target-only path.</p>
-      </div>
-      <div class="panel">
-        <h3>Point at a model instead of fetching it</h3>
+      </details>
+      <details class="panel">
+        <summary><h3>Point at a model instead of fetching it</h3><span class="chev" aria-hidden="true"></span></summary>
         <p>“Browse…” now accepts a model folder as well as a <code>.gguf</code>, Spotlight finds MLX checkpoints already on this Mac and lists them as models, and a folder you choose is granted access once and remembered across launches.</p>
         <p><strong>One new model.</strong> Gemma&nbsp;4&nbsp;26B&nbsp;A4B — 26B parameters, 4B active, QAT 4-bit, 15.6&nbsp;GB. It is catalogued as an MLX checkpoint only; there is no GGUF for it, and it carries an <em>unevaluated</em> badge because no speed figure has been measured for it here.</p>
-      </div>
-      <div class="panel">
-        <h3>Hybrid Mind — one endpoint, a local model and a cloud model</h3>
+      </details>
+      <details class="panel">
+        <summary><h3>Hybrid Mind — one endpoint, a local model and a cloud model</h3><span class="chev" aria-hidden="true"></span></summary>
         <p>The app fronts the local engine and a cloud API you configure on <strong>its own port</strong>, speaking all three request shapes, so Claude Code on <code>/v1/messages</code>, Codex on <code>/v1/responses</code> and opencode-style clients on <code>/v1/chat/completions</code> all get it without being reconfigured. A priority says which side to try first.</p>
         <p>Off until you turn it on; it states that prompts will leave before the first enable; the engine keeps its own port, so anything already pointed there stays local-only; every reply is tagged with the side that answered, and both sides are counted. When the provider reports no remaining credit it says so <strong>once</strong> and goes local-only rather than asking again — turning the cloud back on retries, and will ask again if the account is still unfunded.</p>
         <p>The engine itself is untouched and still network-locked: it holds no outbound entitlement, and the cloud call is made by the app, which needs network access for model downloads anyway. That asymmetry is why the engine's guarantee survives the feature.</p>
-      </div>
-      <div class="panel">
-        <h3>A local turn that an agent's preamble does not swamp</h3>
+      </details>
+      <details class="panel">
+        <summary><h3>A local turn that an agent's preamble does not swamp</h3><span class="chev" aria-hidden="true"></span></summary>
         <p>The local service can compact an agent's fixed preamble before the model prefills it (off by default). Measured on a real captured Claude&nbsp;Code request with 23 tools, <strong>tool definitions were 64% of the body and the system prompt only 8%</strong> — the opposite of the obvious guess. Compacting tools first removed <strong>77% of the tool definitions and 52% of the whole prefilled context</strong>, about 24.7K approximate tokens down to 11.9K, while keeping every tool's name and required parameters: a clipped description makes a tool worse to choose, a missing name makes the call impossible to construct, and those are different kinds of damage.</p>
         <p>It sits in the protocol parsers rather than one client's path, so all three shapes shrink — 85%, 87% and 85% on one deliberately bulky tool. What is <strong>not</strong> claimed is an end-to-end run with each agent: the ratios above come from one captured Claude&nbsp;Code request, and another agent's preamble has a different shape.</p>
-      </div>
-      <div class="panel">
-        <h3>Where MLX models run, and where they do not</h3>
+      </details>
+      <details class="panel">
+        <summary><h3>Where MLX models run, and where they do not</h3><span class="chev" aria-hidden="true"></span></summary>
         <p>The MLX engine is a separate <code>mlx-server</code> binary installed beside the app's other engine files, and macOS does not let the Mac&nbsp;App&nbsp;Store build launch an app outside itself. <strong>MLX models therefore run in the Developer-ID build only</strong>, and the App&nbsp;Store build says so plainly rather than failing with an engine error. The GGUF version of every model above except Gemma&nbsp;4 runs in both builds.</p>
         <p>Four of the five checkpoints were loaded and served through the app's engine path on an M1&nbsp;Ultra 128&nbsp;GB, answering with correct completions, their catalogued checksums checked against the bytes on disk. The fifth, the 113&nbsp;GB Qwen3.8-Flash-Next pack, was fetched in full and <strong>does not load on the bundled engine</strong>: it reaches 75.8&nbsp;GiB of weights and then trips a runtime precondition inside that architecture's embedding layer. Said plainly because the row is in the catalogue.</p>
         <p>Served by a third-party MLX binary this app does not ship, the same pack decodes at <strong>26.4&nbsp;tok/s</strong> on this machine (median of three, 628-token prompt, 128 generated), against <strong>43.7</strong> for the GGUF form of the same model on the reference engine. That is a capacity result, not a verdict on the packaging: its per-layer embedding table was paged from SSD rather than resident, and whether its draft head engaged is unconfirmed — the binary logs no acceptance rate.</p>
-      </div>
-      <div class="panel">
-        <h3>512 fewer GPU dispatches a token, and the throughput goal now met</h3>
+      </details>
+      <details class="panel">
+        <summary><h3>512 fewer GPU dispatches a token, and the throughput goal now met</h3><span class="chev" aria-hidden="true"></span></summary>
         <p>A decode step of Ternary Bonsai&nbsp;2 issued <strong>1171 separate GPU dispatches</strong>; nine kernel pairs are now fused into one each, taking it to <strong>659</strong>, <strong>bit-identical</strong> &mdash; all 248320 logits match as bit patterns. On an M1&nbsp;Ultra 128&nbsp;GB, twelve interleaved whole-process runs (six fused, six not) measure <strong>+12.9%</strong> against this session's own control, and the fused rate, 33.46&nbsp;tok/s at a 256-token prompt, clears the 32.0 goal this work was aimed at. Still <strong>not in build&nbsp;77 or any shipped build</strong>.</p>
-      </div>
-      <div class="panel">
-        <h3>And the long-context shortcut underneath it, checked on real prose</h3>
+      </details>
+      <details class="panel">
+        <summary><h3>And the long-context shortcut underneath it, checked on real prose</h3><span class="chev" aria-hidden="true"></span></summary>
         <p>Splitting the KV cache across threadgroups is what made long-context decode affordable, and it was proven only on generated prompts &mdash; on which this model answers with a two-token cycle, so agreeing with itself cost it nothing. On <strong>512 tokens of real text</strong> and 128 greedy tokens, the split path and the single-split control emit <strong>identical tokens</strong>, with a worst one-step logit difference of <strong>8.5&times;10<sup>&minus;5</sup></strong>, 23&times; inside the bound a CPU oracle sets for that merge. 128 autoregressive steps, each arm keeping its own cache, move it only to 9.4&times;10<sup>&minus;5</sup>: <strong>the error does not compound</strong>.</p>
         <p>The number that says what the agreement is worth is printed beside it: the closest decision in the run sat <strong>51067&times;</strong> further from flipping than that drift. So the identical text is a tripwire and the drift is the evidence &mdash; and the same figures come back to the last digit with all nine fusions on and all nine off, which is the fusions' bit-identity confirmed from outside the tests built to assert it.</p>
-      </div>
+      </details>
     </div>
     <p class="lede" style="margin-top:.85rem">
       Earlier releases are kept in full: <a href="releases.html">1.0.8, 1.0.7, 1.0.6, 1.0.5, 1.0.4, 1.0.3 and 1.0.2</a>.
@@ -432,34 +491,40 @@
     <div class="cmd">curl -fsSL https://peria.ai/install | sh -s -- --key DS4-… --email you@example.com</div>
     <p class="note" style="margin-top:.5rem">Without a key it installs and runs the unlicensed path, so you can try it before buying one.</p>
 
-    <p class="note" style="margin-top:.7rem">Piping a script into a shell asks you to trust what you cannot read, which is the opposite of everything else on this page. The same install, verifiable:</p>
-    <div class="cmd">curl -fsSLO https://peria.ai/install
+    <details class="more">
+      <summary><span class="chev" aria-hidden="true"></span>Install without piping to a shell</summary>
+      <p class="note">Piping a script into a shell asks you to trust what you cannot read, which is the opposite of everything else on this page. The same install, verifiable:</p>
+      <div class="cmd">curl -fsSLO https://peria.ai/install
 shasum -a 256 install    # must match the value published at peria.ai/install.sha256
 sh install --key DS4-… --email you@example.com</div>
+    </details>
 
-    <p class="note" style="margin-top:.9rem"><strong>One key, every binary.</strong> The licence carries an expiry and the address it was issued to, and nothing else — there is no per-binary entitlement, so a key bought for one accelerator works on the others as they ship. It is checked offline against a public key compiled into the binary: no network is consulted, so it works on an air-gapped machine, and it stops working the day after it expires without needing to phone home. Keys come from <a href="https://peria.ai">peria.ai</a>, emailed on purchase.</p>
+    <details class="more">
+      <summary><span class="chev" aria-hidden="true"></span>One key, every binary</summary>
+      <p class="note"><strong>One key, every binary.</strong> The licence carries an expiry and the address it was issued to, and nothing else — there is no per-binary entitlement, so a key bought for one accelerator works on the others as they ship. It is checked offline against a public key compiled into the binary: no network is consulted, so it works on an air-gapped machine, and it stops working the day after it expires without needing to phone home. Keys come from <a href="https://peria.ai">peria.ai</a>, emailed on purchase.</p>
+    </details>
   </section>
 
   <div class="duo">
-    <div class="panel">
-      <h3>The prompt cannot leave, unless a hybrid cloud/local API mode is turned on</h3>
+    <details class="panel">
+      <summary><h3>The prompt cannot leave, unless a hybrid cloud/local API mode is turned on</h3><span class="chev" aria-hidden="true"></span></summary>
       <p>Enforced, not promised. Once the engine has loaded weights and bound its port, it asks the kernel to revoke its own networking — irreversibly, for the life of the process.</p>
       <p><strong>The one exception, named rather than buried.</strong> A hybrid mode can put a cloud API beside the local engine, and a prompt the cloud side answers does leave this Mac. It is off until you turn it on, it says so before the first time, it runs on a different port from the engine — so anything already pointed at the engine stays local-only — and every reply records which side produced it. The engine itself stays locked either way: it is the app, not the engine, that can reach the network, which is why the engine's guarantee survives the exception.</p>
       <p>Check it while it serves:</p>
       <p><code>lsof -i -a -p &lt;pid&gt;</code></p>
       <p><strong>1.0.3 adds one door, and it is locked by default.</strong> Serving others binds the LAN instead of loopback — so it needs a key you minted, it is refused without one, and it switches itself off again at the next launch. Nothing you do not turn on this session.</p>
-    </div>
+    </details>
 
-    <div class="panel">
-      <h3>Hybrid Mind — the second use case</h3>
+    <details class="panel">
+      <summary><h3>Hybrid Mind — the second use case</h3><span class="chev" aria-hidden="true"></span></summary>
       <p>The first use case is everything above: your model, your Machine, nothing leaving. The second is <strong>one endpoint over two models</strong> — the local engine and a cloud API you choose — with a priority saying which to try first.</p>
       <p>Why it is one feature and not two switches: the conversation <em>survives the move</em>. A priority alone gives you a second model. A priority plus a rolling summary plus a cooldown gives you one assistant that keeps working when the cloud rate-limits, runs out of credit, or cannot be reached — it falls back to the Machine and carries on.</p>
       <p>It serves whichever protocol your agent speaks, so Claude Code, Codex, opencode and the rest all get it from the same port without being reconfigured.</p>
       <p><strong>Off until you turn it on</strong>, on a different port from the engine, and every reply records which side produced it. When the cloud runs out of credit it tells you once and goes local-only rather than asking again.</p>
-    </div>
+    </details>
 
-    <div class="panel">
-      <h3>Agents on your Machine</h3>
+    <details class="panel">
+      <summary><h3>Agents on your Machine</h3><span class="chev" aria-hidden="true"></span></summary>
       <p>The app writes each agent's config and points it at the local engine.</p>
       <ul>
         <li>Claude Code</li>
@@ -469,19 +534,19 @@ sh install --key DS4-… --email you@example.com</div>
         <li>Grok Build<span class="nu">new</span></li>
         <li>Or your own — name the binary and the wire format</li>
       </ul>
-    </div>
+    </details>
 
-    <div class="panel">
-      <h3>Numbers you can check</h3>
+    <details class="panel">
+      <summary><h3>Numbers you can check</h3><span class="chev" aria-hidden="true"></span></summary>
       <p>Every run reports time to first token, prefill and decode rate — beside the engine that produced them and the model actually served.</p>
       <p>Two prompts: a short chat, and a ~3000-token passage that measures real prefill.</p>
       <p>Rankings are links, not verdicts — 1.0.3 lets you add the leaderboard you trust beside the ones we shipped.</p>
-    </div>
+    </details>
 
-    <div class="panel">
-      <h3>Weights are verified</h3>
+    <details class="panel">
+      <summary><h3>Weights are verified</h3><span class="chev" aria-hidden="true"></span></summary>
       <p>Every download carries its expected SHA-256. A mismatch is refused rather than loaded, and a partial file is reported as incomplete instead of failing later as corruption.</p>
-    </div>
+    </details>
   </div>
 
   <section class="sec" id="thanks">
@@ -490,40 +555,40 @@ sh install --key DS4-… --email you@example.com</div>
       <p class="lede">Local Mind is a small amount of new code on top of a great deal of open source. Named because a benchmark is meaningless without saying whose code produced it, and because these projects are the reason any of this runs at all.</p>
     </div>
     <div class="duo">
-      <div class="panel">
-        <h3>Ours, open</h3>
+      <details class="panel">
+        <summary><h3>Ours, open</h3><span class="chev" aria-hidden="true"></span></summary>
         <ul>
           <li><strong><a href="https://github.com/yijunyu/jev-rs">jev-rs</a></strong> — our open-source Rust engine for typed local judgments: yes/no, choices and ordered scores. MIT OR Apache-2.0.</li>
           <li><strong><a href="https://github.com/yijunyu/tile-rs">tile-rs</a></strong> — the compiler framework the app's own kernels come from. Kernels are written once in a Rust tile DSL and lowered through MLIR to 15 backends; the Metal kernels running your model on this machine are generated by it.</li>
           <li><strong><a href="https://pu-rs.org">pu-rs.org</a></strong> — a ranking system for accelerator kernels, measuring execution time on real hardware rather than quoting peak FLOPS. <a href="https://github.com/purs-org/pu-rs.org">Source and submissions</a> are open, so a claim there can be re-run.</li>
         </ul>
-      </div>
-      <div class="panel">
-        <h3>Also ours</h3>
+      </details>
+      <details class="panel">
+        <summary><h3>Also ours</h3><span class="chev" aria-hidden="true"></span></summary>
         <ul>
           <li><strong><a href="https://github.com/peri-a-i/precc-cc">precc</a></strong> — predictive error correction for coding agents. Different problem, same habit: measure it, publish the number, let someone check.</li>
         </ul>
         <p>The inference engine itself is not open. The kernels it runs are generated by tooling that is, which is the part worth reading.</p>
-      </div>
+      </details>
     </div>
     <div class="duo">
-      <div class="panel">
-        <h3>Engines</h3>
+      <details class="panel">
+        <summary><h3>Engines</h3><span class="chev" aria-hidden="true"></span></summary>
         <ul>
           <li><strong>llama.cpp</strong> and <strong>ggml</strong> — Georgi Gerganov and contributors. Linked in-process as one of the selectable engines, and the origin of the GGUF format every model here is distributed in. MIT.</li>
           <li><strong>ds4</strong> — Salvatore Sanfilippo (antirez). The upstream reference engine, shipped as the <code>reference</code> option and used as the correctness oracle our own kernels are checked against.</li>
         </ul>
-      </div>
-      <div class="panel">
-        <h3>Compiler and runtime</h3>
+      </details>
+      <details class="panel">
+        <summary><h3>Compiler and runtime</h3><span class="chev" aria-hidden="true"></span></summary>
         <ul>
           <li><strong>Rust</strong> — the engine, the server and the compiler backend are Rust. Apache-2.0 / MIT.</li>
           <li><strong>LLVM</strong> and <strong>MLIR</strong> — our kernels are generated through an MLIR dialect before they become Metal, CUDA or AscendC. Apache-2.0 with LLVM exceptions.</li>
           <li>Rust crates doing load-bearing work, notably <strong>ed25519-dalek</strong>, <strong>sha2</strong>, <strong>serde</strong> and <strong>serde_json</strong>.</li>
         </ul>
-      </div>
-      <div class="panel">
-        <h3>Models</h3>
+      </details>
+      <details class="panel">
+        <summary><h3>Models</h3><span class="chev" aria-hidden="true"></span></summary>
         <ul>
           <li><strong>DeepSeek-V4-Flash</strong> — DeepSeek</li>
           <li><strong>DeepSeek-V4.1-Flash</strong> — DeepSeek, MIT</li>
@@ -536,14 +601,14 @@ sh install --key DS4-… --email you@example.com</div>
           <li><strong>MiniMax H3</strong> — MiniMax</li>
         </ul>
         <p>Each carries its own licence, shown in the app before download.</p>
-      </div>
-      <div class="panel">
-        <h3>Distribution</h3>
+      </details>
+      <details class="panel">
+        <summary><h3>Distribution</h3><span class="chev" aria-hidden="true"></span></summary>
         <ul>
           <li><strong>Hugging Face</strong> — where the weights come from, and the quantisers who publish them.</li>
           <li>The community that produces the GGUF conversions and imatrix quantisations these models are usable at all on a desktop because of.</li>
         </ul>
-      </div>
+      </details>
     </div>
   </section>
 
@@ -867,6 +932,70 @@ sh install --key DS4-… --email you@example.com</div>
       tabsEl.appendChild(t);
     });
   }
+
+  // ---- disclosures --------------------------------------------------------
+  // The panels ship closed, which hands the page three obligations it did not
+  // have while everything was visible: a reader who wants the whole thing must
+  // be able to get it in one action, a printed copy must not silently lose the
+  // closed parts, and a link into a section that happens to sit inside a closed
+  // panel must still land somewhere the reader can see.
+  const allBtn = document.getElementById("expandall");
+  const allDetails = () => [...document.querySelectorAll("details")];
+
+  function syncAllBtn() {
+    if (!allBtn) return;
+    const ds = allDetails();
+    const open = ds.length > 0 && ds.every(d => d.open);
+    allBtn.textContent = open ? "collapse all" : "expand all";
+    allBtn.setAttribute("aria-expanded", String(open));
+  }
+
+  if (allBtn) {
+    allBtn.addEventListener("click", () => {
+      const open = allBtn.getAttribute("aria-expanded") !== "true";
+      allDetails().forEach(d => { d.open = open; });
+      syncAllBtn();
+    });
+    // toggle does not bubble, so the label is kept honest from the capture
+    // phase. Without this, opening every panel by hand leaves the button
+    // still offering to expand them.
+    document.addEventListener("toggle", e => {
+      if (e.target instanceof HTMLDetailsElement) syncAllBtn();
+    }, true);
+  }
+
+  // A closed <details> is not rendered, so it is not printed either. Open them
+  // for the print and restore exactly the ones that were closed, so printing
+  // does not quietly expand the reader's page.
+  let closedForPrint = [];
+  window.addEventListener("beforeprint", () => {
+    closedForPrint = allDetails().filter(d => !d.open);
+    closedForPrint.forEach(d => { d.open = true; });
+  });
+  window.addEventListener("afterprint", () => {
+    closedForPrint.forEach(d => { d.open = false; });
+    closedForPrint = [];
+    syncAllBtn();
+  });
+
+  // An anchor can address an element inside a closed panel, where the browser
+  // scrolls to something it is not showing. Open every ancestor first, then
+  // scroll, because the target has no position until they are open.
+  function revealHash() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    let d = el.closest("details");
+    while (d) {
+      d.open = true;
+      d = d.parentElement ? d.parentElement.closest("details") : null;
+    }
+    syncAllBtn();
+    el.scrollIntoView();
+  }
+  window.addEventListener("hashchange", revealHash);
+  revealHash();
 
   fetch("machines.json", { cache: "no-cache" })
     .then(r => { if (!r.ok) throw new Error(`machines.json: HTTP ${r.status}`); return r.json(); })
