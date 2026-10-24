@@ -170,9 +170,9 @@
            text-transform:uppercase;color:var(--ink-3);}
   .s-url{font-family:var(--mono);font-size:var(--step);color:var(--ink-3);}
 
-  /* Platform tabs. Two rows that gate each other: an OS choice disables the
-     accelerators it cannot run, rather than hiding them -- "not on this OS" is
-     information, and a tab that vanishes teaches the reader nothing. */
+  /* Platform tabs. Two rows: the OS, then the accelerators. An accelerator that
+     belongs to the other OS is dimmed but still clickable -- picking it switches
+     the OS with it, so the reader never has to find the OS tab first. */
   .platrow{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem .5rem;}
   .ptabs{display:flex;flex-wrap:wrap;gap:.25rem;}
   .psep{color:var(--ink-3);}
@@ -180,12 +180,14 @@
                 text-transform:uppercase;cursor:pointer;color:var(--ink-3);
                 background:none;border:1px solid transparent;border-radius:2px;
                 padding:.18rem .42rem;line-height:1.3;}
-  .ptabs button:hover:not([aria-disabled="true"]){color:var(--ink);}
+  .ptabs button:hover{color:var(--ink);}
   .ptabs button[aria-selected="true"]{color:var(--ink);border-color:var(--rule-2);
                                       background:var(--panel);}
-  /* Disabled reads as unavailable, not as merely unselected. */
-  .ptabs button[aria-disabled="true"]{opacity:.32;cursor:not-allowed;
-                                      text-decoration:line-through;}
+  /* Another OS's accelerator: dimmed because it is not the current OS, not
+     because the click is refused. No line-through and no not-allowed cursor --
+     both would promise that clicking does nothing, which is no longer true. */
+  .ptabs button.crossos{opacity:.5;}
+  .ptabs button.crossos:hover{opacity:1;}
   .postlist{margin:.5rem 0 0;font-family:var(--mono);font-size:.82rem;
             display:flex;flex-wrap:wrap;gap:.3rem .6rem;}
   .postlist a{color:var(--resident);text-decoration:none;}
@@ -695,6 +697,45 @@ sh install --key DS4-… --email you@example.com</div>
   ];
   let curOS = "mac", curBE = "metal";
 
+  // ---- remembering the reader's choice ------------------------------------
+  // The OS, the accelerator and the machine survive a refresh. The machine is
+  // keyed by its id, never by tab index: index 1 is a different machine once the
+  // accelerator changes. Every access is wrapped, because localStorage throws
+  // rather than returning null in a private window or with site data blocked,
+  // and a storage failure must not take the page down with it.
+  const CHOICE_KEY = "localmind-poster-choice";
+  let wantMachine = null;
+
+  function saveChoice() {
+    try {
+      const m = machinesFor(curOS, curBE)[curBox];
+      localStorage.setItem(CHOICE_KEY, JSON.stringify({
+        os: curOS, backend: curBE, machine: m ? m.id : null,
+      }));
+    } catch (e) { /* no storage: the page still works, it just forgets */ }
+  }
+
+  function restoreChoice() {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(CHOICE_KEY) || "null"); }
+    catch (e) { return; }
+    if (!saved || typeof saved !== "object") return;
+    // Validate against the lists as they are now. A remembered accelerator may
+    // have been renamed or dropped since the last visit, and a stale id must
+    // fall back to a working pair rather than blank the table.
+    const be = BACKENDS.find(b => b.id === saved.backend);
+    if (be && OSES.some(o => o.id === be.os)) {
+      // The accelerator carries its OS, so the two rows cannot disagree.
+      curBE = be.id;
+      curOS = be.os;
+    } else if (OSES.some(o => o.id === saved.os)) {
+      curOS = saved.os;
+      const mine = BACKENDS.filter(b => b.os === curOS);
+      if (mine.length) curBE = mine[0].id;
+    }
+    if (typeof saved.machine === "string") wantMachine = saved.machine;
+  }
+
   const osTabsEl = document.getElementById("ostabs");
   const beTabsEl = document.getElementById("betabs");
   const postEl   = document.getElementById("postlist");
@@ -727,14 +768,29 @@ sh install --key DS4-… --email you@example.com</div>
       t.textContent = b.label;
       t.setAttribute("aria-selected", String(on && b.id === curBE));
       if (!on) {
-        t.setAttribute("aria-disabled", "true");
-        t.title = `${b.label} does not run on ${OSES.find(o => o.id === curOS).label}`;
+        // Belongs to the other OS. Still offered and still clickable: the click
+        // switches the OS too, rather than refusing and making the reader go up
+        // a row to do it by hand.
+        t.classList.add("crossos");
+        t.title = `${b.label} runs on ${OSES.find(o => o.id === b.os).label} — click to switch`;
       } else {
         t.title = has ? `${b.label} — measured` : `${b.label} — supported, no measurement published yet`;
-        t.addEventListener("click", () => { curBE = b.id; renderAll(); });
       }
+      t.addEventListener("click", () => selectBackend(b.id));
       beTabsEl.appendChild(t);
     });
+  }
+
+  // One entry point for the accelerator row. An accelerator names its own OS, so
+  // selecting one from the other OS moves both rows together and the OS tab can
+  // never end up disagreeing with the table below it.
+  function selectBackend(id) {
+    const b = BACKENDS.find(x => x.id === id);
+    if (!b) return;
+    if (b.os === curOS && b.id === curBE) return;
+    curOS = b.os;
+    curBE = b.id;
+    renderAll();
   }
 
   function selectOS(os) {
@@ -771,7 +827,25 @@ sh install --key DS4-… --email you@example.com</div>
     renderPosts();
     renderBins();
     buildTabs();
-    render(0);
+    // Land on the remembered machine when it belongs to this OS and accelerator,
+    // otherwise the first one. wantMachine is consumed on the way so that a
+    // later tab change is not overridden by a stale remembered id.
+    const shown = machinesFor(curOS, curBE);
+    let idx = 0;
+    if (wantMachine) {
+      const at = shown.findIndex(b => b.id === wantMachine);
+      if (at >= 0) idx = at;
+      wantMachine = null;
+    }
+    render(idx);
+    saveChoice();
+  }
+
+  // Machine picked by hand, so remember it. Sorting the table also re-renders,
+  // but through render() directly: a sort is not a change of machine.
+  function selectMachine(i) {
+    render(i);
+    saveChoice();
   }
 
   function buildTabs() {
@@ -782,13 +856,13 @@ sh install --key DS4-… --email you@example.com</div>
       t.type = "button"; t.setAttribute("role", "tab");
       t.setAttribute("aria-controls", "modeltable");
       t.textContent = b.label;
-      t.addEventListener("click", () => render(i));
+      t.addEventListener("click", () => selectMachine(i));
       t.addEventListener("keydown", e => {
         const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
         if (!d) return;
         e.preventDefault();
         const n = (i + d + shown.length) % shown.length;
-        render(n); tabsEl.children[n].focus();
+        selectMachine(n); tabsEl.children[n].focus();
       });
       tabsEl.appendChild(t);
     });
@@ -796,7 +870,7 @@ sh install --key DS4-… --email you@example.com</div>
 
   fetch("machines.json", { cache: "no-cache" })
     .then(r => { if (!r.ok) throw new Error(`machines.json: HTTP ${r.status}`); return r.json(); })
-    .then(data => { BOXES = data.boxes || []; wireSortHeaders(); renderAll(); })
+    .then(data => { BOXES = data.boxes || []; restoreChoice(); wireSortHeaders(); renderAll(); })
     .catch(err => {
       // Say so plainly. An empty table would read as a product that runs
       // nothing, which is worse than admitting the data did not load.
