@@ -255,6 +255,9 @@
 
   .platright{display:flex;flex-wrap:wrap;gap:.3rem .6rem;align-items:center;
              justify-content:flex-end;margin-left:auto;}
+  /* The platform tabs choose what the heading below them is about, so they sit
+     with it as one block rather than a full .sec gap above it. */
+  .sechead{display:flex;flex-direction:column;gap:.5rem;}
   /* The stage columns. Same trap as .panel: a flex container on the <details>
      itself stops some engines hiding the closed content. The chevron is placed
      absolutely rather than appended, so the head keeps the column layout it
@@ -285,9 +288,6 @@
   <header class="mast">
     <div class="mast-copy">
       <div class="platrow">
-        <div class="ptabs" id="ostabs" role="tablist" aria-label="Operating system"></div>
-        <span class="psep">·</span>
-        <div class="ptabs" id="betabs" role="tablist" aria-label="Accelerator"></div>
         <span class="platright">
           <span class="eyebrow">1.0.10 candidate · 1.0.9 on the Mac App Store</span>
           <button type="button" class="allctl" id="expandall" aria-expanded="false">expand all</button>
@@ -311,7 +311,14 @@
   </header>
 
   <section class="sec">
-    <h2>What your Machine can run</h2>
+    <div class="sechead">
+      <div class="platrow">
+        <div class="ptabs" id="ostabs" role="tablist" aria-label="Operating system"></div>
+        <span class="psep">·</span>
+        <div class="ptabs" id="betabs" role="tablist" aria-label="Accelerator"></div>
+      </div>
+      <h2>What your Machine can run</h2>
+    </div>
 
     <div class="tabrow">
       <div class="tabs" role="tablist" aria-label="Machine"></div>
