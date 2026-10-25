@@ -47,15 +47,38 @@
   .eyebrow{font-family:var(--mono);font-size:var(--step);letter-spacing:.14em;
            text-transform:uppercase;color:var(--ink-3);}
 
-  .mast{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(1.5rem,4vw,3rem);
+  /* The meta line spans both columns as its own row, so the h1 and the store
+     card start on the same line instead of the card riding up level with the
+     eyebrow. align-items:start then keeps their tops flush. */
+  .mast{display:grid;grid-template-columns:minmax(0,1fr) auto;
+        grid-template-areas:"meta meta" "copy store";
+        column-gap:clamp(1.5rem,4vw,3rem);row-gap:1.15rem;
         align-items:start;border-bottom:1px solid var(--rule);
         padding-bottom:clamp(1.5rem,3vw,2.5rem);}
-  .mast-copy{display:flex;flex-direction:column;gap:1.15rem;min-width:0;}
-  @media (max-width:640px){ .mast{grid-template-columns:minmax(0,1fr);} }
+  .mast > .platrow{grid-area:meta;}
+  .mast-copy{grid-area:copy;display:flex;flex-direction:column;gap:1.15rem;min-width:0;}
+  .mast-store{grid-area:store;}
+  @media (max-width:640px){
+    .mast{grid-template-columns:minmax(0,1fr);
+          grid-template-areas:"meta" "copy" "store";}
+  }
   .mast h1{font-family:var(--display);font-weight:500;letter-spacing:-.02em;
            font-size:clamp(2.6rem,1.6rem + 4.4vw,5.2rem);line-height:.98;}
-  .mast .thesis{font-family:var(--display);font-size:clamp(1.1rem,.95rem + .7vw,1.6rem);
-                line-height:1.35;color:var(--ink-2);max-width:34ch;font-style:italic;}
+  /* The thesis was display italic up to 1.6rem and three lines of masthead.
+     Smaller, and the hybrid half folds behind the first: the local-only claim
+     is the one a reader must not be able to miss, so it stays in the summary
+     and only the elaboration is behind the disclosure. */
+  details.thesis{display:block;font-family:var(--display);
+                 font-size:clamp(.95rem,.9rem + .3vw,1.15rem);
+                 line-height:1.4;color:var(--ink-2);max-width:48ch;font-style:italic;}
+  /* Here the chevron trails the last word rather than holding a column, so it
+     reads as "this sentence continues" instead of floating beside line one. */
+  details.thesis > summary{display:block;}
+  details.thesis > summary:hover{color:var(--ink);}
+  details.thesis > summary .chev{display:inline-block;margin-left:.45rem;
+       vertical-align:.12em;color:var(--ink-3);}
+  details.thesis > summary:hover .chev{color:var(--ink);}
+  details.thesis > p{margin-top:.55rem;}
 
   .flowscroll{overflow-x:auto;}
   .flow{display:grid;grid-template-columns:repeat(4,minmax(215px,1fr));gap:.85rem;min-width:940px;}
@@ -286,15 +309,18 @@
 <div class="wrap">
 
   <header class="mast">
+    <div class="platrow">
+      <span class="platright">
+        <span class="eyebrow">1.0.10 candidate · 1.0.9 on the Mac App Store</span>
+        <button type="button" class="allctl" id="expandall" aria-expanded="false">expand all</button>
+      </span>
+    </div>
     <div class="mast-copy">
-      <div class="platrow">
-        <span class="platright">
-          <span class="eyebrow">1.0.10 candidate · 1.0.9 on the Mac App Store</span>
-          <button type="button" class="allctl" id="expandall" aria-expanded="false">expand all</button>
-        </span>
-      </div>
       <h1>Local&nbsp;Mind</h1>
-      <p class="thesis">Large models run on the Machine in front of you. Once a model is serving, the engine cannot open a network connection — the prompt has nowhere else to go. <strong>Hybrid Mind is the second use case:</strong> keep that engine and put a cloud API beside it, under one endpoint, with a priority between them — so a model you host and a model you rent answer the same agents, and you can always tell which one did.</p>
+      <details class="thesis">
+        <summary>Large models run on the Machine in front of you. Once a model is serving, the engine cannot open a network connection — the prompt has nowhere else to go.<span class="chev" aria-hidden="true"></span></summary>
+        <p><strong>Hybrid Mind is the second use case:</strong> keep that engine and put a cloud API beside it, under one endpoint, with a priority between them — so a model you host and a model you rent answer the same agents, and you can always tell which one did.</p>
+      </details>
       <p class="postlist" id="postlist"></p>
     </div>
     <aside class="mast-store">
