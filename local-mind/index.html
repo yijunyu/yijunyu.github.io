@@ -310,6 +310,35 @@
     </aside>
   </header>
 
+  <section class="sec">
+    <h2>What your Machine can run</h2>
+
+    <div class="tabrow">
+      <div class="tabs" role="tablist" aria-label="Machine"></div>
+      <span class="price" id="boxprice"></span>
+      <span class="bindnote">Engine binds 127.0.0.1:8000</span>
+    </div>
+
+    <div class="tscroll">
+      <table id="modeltable">
+        <thead>
+          <tr>
+            <th scope="col" class="sortable" data-sort="model"  aria-sort="none"><button type="button" class="sortbtn">Model<span class="sarrow" aria-hidden="true"></span></button></th>
+            <th scope="col" class="sortable" data-sort="size"   aria-sort="none"><button type="button" class="sortbtn">Size<span class="sarrow" aria-hidden="true"></span></button></th>
+            <th scope="col" class="sortable" data-sort="engine" aria-sort="none"><button type="button" class="sortbtn">Engine<span class="sarrow" aria-hidden="true"></span></button></th>
+            <th scope="col" class="sortable" data-sort="runs"   aria-sort="none"><button type="button" class="sortbtn">Runs as<span class="sarrow" aria-hidden="true"></span></button></th>
+            <th scope="col" class="sortable" data-sort="decode" aria-sort="none"><button type="button" class="sortbtn">Decode<span class="sarrow" aria-hidden="true"></span></button></th>
+          </tr>
+        </thead>
+        <tbody id="modelrows"></tbody>
+      </table>
+    </div>
+    <details class="more" id="tablenotewrap">
+      <summary><span class="chev" aria-hidden="true"></span>Measurement notes and caveats</summary>
+      <p class="note" id="tablenote"></p>
+    </details>
+  </section>
+
   <section class="sec newband">
     <h2>1.0.10 candidate · MiniCPM-V 4.7 runs locally</h2>
     <p class="lede">MiniCPM-V 4.7 35B-A3B now has a measured local path on the M1 Ultra 128 GB. The official Q4_K_M weights and F16 vision projector loaded in llama.cpp; stock Metal decoded text at <strong>97.8 tok/s</strong> (mean of two warmed 512-token runs). For this model, the local Mac is the default host; an AMD machine is not required. The existing DS4 Q4_K substitution measured 94.0 tok/s, so stock llama.cpp remains selected. This is a text-only server measurement: image prompts and the exact bundled app build still need validation, and no Opus 4.6 parity claim is made.</p>
@@ -458,35 +487,6 @@
 
       </div>
     </div>
-  </section>
-
-  <section class="sec">
-    <h2>What your Machine can run</h2>
-
-    <div class="tabrow">
-      <div class="tabs" role="tablist" aria-label="Machine"></div>
-      <span class="price" id="boxprice"></span>
-      <span class="bindnote">Engine binds 127.0.0.1:8000</span>
-    </div>
-
-    <div class="tscroll">
-      <table id="modeltable">
-        <thead>
-          <tr>
-            <th scope="col" class="sortable" data-sort="model"  aria-sort="none"><button type="button" class="sortbtn">Model<span class="sarrow" aria-hidden="true"></span></button></th>
-            <th scope="col" class="sortable" data-sort="size"   aria-sort="none"><button type="button" class="sortbtn">Size<span class="sarrow" aria-hidden="true"></span></button></th>
-            <th scope="col" class="sortable" data-sort="engine" aria-sort="none"><button type="button" class="sortbtn">Engine<span class="sarrow" aria-hidden="true"></span></button></th>
-            <th scope="col" class="sortable" data-sort="runs"   aria-sort="none"><button type="button" class="sortbtn">Runs as<span class="sarrow" aria-hidden="true"></span></button></th>
-            <th scope="col" class="sortable" data-sort="decode" aria-sort="none"><button type="button" class="sortbtn">Decode<span class="sarrow" aria-hidden="true"></span></button></th>
-          </tr>
-        </thead>
-        <tbody id="modelrows"></tbody>
-      </table>
-    </div>
-    <details class="more" id="tablenotewrap">
-      <summary><span class="chev" aria-hidden="true"></span>Measurement notes and caveats</summary>
-      <p class="note" id="tablenote"></p>
-    </details>
   </section>
 
   <section class="sec" id="linuxsec">
