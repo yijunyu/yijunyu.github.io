@@ -105,7 +105,7 @@ footer { margin-top:2.5rem; padding-top:1rem; border-top:1px solid var(--line);
   <div><b>4</b><span>excluded, with reason</span></div>
 </div>
 
-<div class="note win"><b>Verdict.</b> kyuz0's ds4 ROCm branch with resident/missing MoE split enabled (<code>feat/rocm-deepseek41-halo</code> + <code>DS4_ROCM_SELECTED_SPLIT=1</code>) runs V4.1 Flash on this box: ~9 tok/s decode (+35% over baseline), flat across context, and prefill rising from ~22 to 125 tok/s with prompt size. The split optimization (from kyuz0/ds4 PR #4, commit 546aa99) is production-ready: quality is identical (89.3% top-1, ×1.18 PPL), and it is a <b>single-user</b> engine here: four parallel users get less aggregate throughput than one.</div>
+<div class="note win"><b>Verdict.</b> kyuz0's ds4 ROCm branch with resident/missing MoE split enabled (<code>feat/rocm-deepseek41-halo</code> + <code>DS4_ROCM_SELECTED_SPLIT=1</code>) runs V4.1 Flash on this box: a median 8.66 tok/s decode over its 8 runs, +22% over the baseline's 7.08 median (per context +4% to +31%), and prefill rising from ~22 to 125 tok/s with prompt size. Decode is <b>not</b> flat across context: the split arm's own runs span 4.86–9.44 tok/s, and the medium context gains only +4% because one of its two runs read 4.86. The split optimization (from kyuz0/ds4 PR #4, commit 546aa99) is production-ready: quality is identical (89.3% top-1, ×1.18 PPL), and it is a <b>single-user</b> engine here: four parallel users get less aggregate throughput than one.</div>
 
 <div class="note"><b>Why every engine streams from SSD.</b> V4.1 Flash has a 552B backbone. The smallest
 builds are 365.7&nbsp;GB (ds4 Q2: 152&nbsp;GiB main weights + 189&nbsp;GiB Engram tables) and 264.5&nbsp;GB
@@ -118,7 +118,7 @@ builds are 365.7&nbsp;GB (ds4 Q2: 152&nbsp;GiB main weights + 189&nbsp;GiB Engra
 <article class="card" data-status="confirmed">
   <div class="meta"><span class="st st-confirmed">winner</span><span>measured</span><span class="id">kyuz0/ds4 + split @ 546aa99</span></div>
   <p class="claim">kyuz0/ds4 <code>feat/rocm-deepseek41-halo</code> + resident/missing MoE split from PR #4: SSD expert streaming, disk-backed Engram, selective expert residency.</p>
-  <div class="ev"><span class="evl">evidence</span>Built natively on HIP 7.1; measured with <code>DS4_ROCM_SELECTED_SPLIT=1</code> or <code>--ssd-streaming-split</code> flag. Final A/B (3 arms × 4 contexts × 2 reps): kyuz0 baseline 6.12–7.45 tok/s decode, PR #4 merged (split off) 6.03–7.24 tok/s mixed, merged+split 8.66–9.44 tok/s all contexts. Quality unchanged: 89.3% top-1, ×1.18 PPL.</div>
+  <div class="ev"><span class="evl">evidence</span>Built natively on HIP 7.1; measured with <code>DS4_ROCM_SELECTED_SPLIT=1</code> or <code>--ssd-streaming-split</code> flag. Final A/B (3 arms × 4 contexts × 2 reps, 8 runs an arm, every run counted): kyuz0 baseline 5.61–7.45 tok/s decode (median 7.08), PR #4 merged (split off) 5.71–7.28 (median 6.72), merged+split 4.86–9.44 (median 8.66). Quality unchanged: 89.3% top-1, ×1.18 PPL.</div>
 </article>
 
 <article class="card" data-status="partial">
@@ -166,17 +166,17 @@ builds are 365.7&nbsp;GB (ds4 Q2: 152&nbsp;GiB main weights + 189&nbsp;GiB Engra
 
 <section class="step">
   <h2><span class="num">3</span>Single user — final A/B and baseline</h2>
-  <p class="blurb">Decode tok/s only (primary KPI). Final A/B: 3 arms × 4 contexts × 2 reps = 24 runs on 2026-10-04. Baseline and merged arm: one run each per context.</p>
+  <p class="blurb">Decode tok/s only (primary KPI). Final A/B: 3 arms × 4 contexts × 2 reps = 24 runs on 2026-10-04, on DeepSeek-V4.1-Flash-Q2 (365.7 GB GGUF on NVMe, read by SSD streaming with an 84 GB expert cache; the model does not fit the 122 GiB of RAM). Each cell below is the span of that arm's two reps.</p>
   <div class="tbl"><table>
     <thead><tr><th>Configuration</th><th class="n">Code <span class="u">119</span></th><th class="n">Short <span class="u">940</span></th><th class="n">Medium <span class="u">6.6K</span></th><th class="n">Long: Claude Code <span class="u">15.6K</span></th></tr></thead>
     <tbody>
-      <tr class="best"><td>kyuz0 + <code>DS4_ROCM_SELECTED_SPLIT=1</code></td><td class="n">9.38</td><td class="n">8.66</td><td class="n">9.44</td><td class="n">8.66</td></tr>
-      <tr><td>kyuz0 baseline (no split)</td><td class="n">5.61–7.45</td><td class="n">6.12–7.19</td><td class="n">6.34–7.41</td><td class="n">7.1</td></tr>
-      <tr><td>merged (row batches, no split)</td><td class="n">7.28</td><td class="n">7.19</td><td class="n">7.24</td><td class="n">6.03</td></tr>
+      <tr class="best"><td>kyuz0 + <code>DS4_ROCM_SELECTED_SPLIT=1</code></td><td class="n">7.33–9.38</td><td class="n">8.66–8.82</td><td class="n">4.86–9.44</td><td class="n">8.60–8.66</td></tr>
+      <tr><td>kyuz0 baseline (no split)</td><td class="n">5.61–7.45</td><td class="n">6.12–7.19</td><td class="n">6.34–7.41</td><td class="n">7.06–7.10</td></tr>
+      <tr><td>merged (row batches, no split)</td><td class="n">5.71–7.28</td><td class="n">7.14–7.19</td><td class="n">6.11–7.24</td><td class="n">6.03–6.30</td></tr>
       <tr><td>llama.cpp HIP</td><td class="n">&lt;0.4</td><td class="n">not run</td><td class="n">not run</td><td class="n">not run</td></tr>
     </tbody>
   </table></div>
-  <div class="note win"><b>Winner:</b> Split flag on kyuz0 baseline: <b>+22–49% decode</b> across all contexts, quality maintained.</div>
+  <div class="note win"><b>Winner:</b> Split flag on kyuz0 baseline: <b>+22% decode on medians</b> (8.66 against 7.08, 8 runs an arm). Per context +28% code, +31% short, +4% medium, +22% long — the medium figure is held down by one run at 4.86 tok/s, so the win is real but not uniform. Quality maintained.</div>
 </section>
 
 <section class="step">
@@ -244,7 +244,7 @@ builds are 365.7&nbsp;GB (ds4 Q2: 152&nbsp;GiB main weights + 189&nbsp;GiB Engra
   </article>
   <article class="card" data-status="partial">
     <div class="meta"><span class="st st-partial">open</span><span>gap to published</span></div>
-    <p class="claim">Decode here (even with split, at 8.66–9.44 tok/s) is still ~15% below the branch's published 10.2–10.5 tok/s.</p>
+    <p class="claim">Decode here (even with split, median 8.66 tok/s, runs spanning 4.86–9.44) is still ~15% below the branch's published 10.2–10.5 tok/s.</p>
     <div class="ev"><span class="evl">likely causes</span>System HIP 7.1 here versus ROCm 10.0 / HIP 7.15 on the reference rig (its tuned Engram matmul path needs hipBLASLt 100401); no TuneD <code>accelerator-performance</code> profile; a different SSD (Kingston OM8TAP42048K1, PCIe&nbsp;4 ×4, ~3.2&nbsp;GB/s measured direct read). Upgrading ROCm is the first thing to try.</div>
   </article>
   <pre>cd ds4-v41 &amp;&amp; ./ds4-server --rocm -m DeepSeek-V4.1-Flash-Q2.gguf \
