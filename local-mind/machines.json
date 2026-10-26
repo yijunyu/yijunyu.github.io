@@ -343,7 +343,7 @@
       "id": "amd395",
       "label": "Bosgame M5 \u00b7 Ryzen AI Max+ 395 \u00b7 128 GB",
       "price": "\u00a33,099 \u00b7 Bosgame M5, paid Aug 2026",
-      "note": "The same DeepSeek-V4-Flash file as the DGX Spark row, on a Bosgame M5 mini-PC (AMD Ryzen AI Max+&nbsp;395 &ldquo;Strix Halo&rdquo;, 128&nbsp;GB) through the reference ROCm engine. The weights sit in unified memory rather than streaming, which is why an 87&nbsp;GB model reports a resident rate on a 128&nbsp;GB box. The figure is the out-of-the-box power governor. Re-measured 2026-10-04 on the PR #992 build (<code>/data/ds4-main</code>): 14.7, consistent with the August 15.0; V4.1 re-measured 2026-10-04 at 12.1 with the pr4 engine's resident/missing MoE split (<code>DS4_ROCM_SELECTED_SPLIT=1</code>), up from the 8.66-9.44 August figure on the older build. The price is what was paid, not a list figure. 2026-10-04: four more Local Mind models were pulled onto this box and measured with llama.cpp's llama-bench (<code>build 3173a56</code>, ROCm backend on the Radeon 8060S) at <code>tg128, r=3</code>: Qwen3-4B 67.0, Qwen3-8B 38.2, Qwen3.6-35B-A3B 56.1 (MoE), Muse Glimmer 30B 11.5. These are the same instrument and token count (128 generated) used for the M1 Ultra's llama.cpp llama-bench rows, so the two columns are directly comparable. 2026-10-04 (later): Qwen3-14B 22.1 and Laguna-XS-2.1 60.1, same llama-bench instrument. 2026-10-04 (later still): Qwen3-32B 9.7 and Qwen3.8-27B 11.0, same instrument. Qwen3.8-Flash-Next is NOT offered here: no inference engine runs it on this hardware \u2014 llama.cpp does not know its architecture, antirez ds4's ROCm path refuses it (Metal/CUDA only), and SGLang/vLLM on gfx1151 require building against TheRock nightly rather than using a packaged install. Until one of those changes, this model has no honest AMD number. 2026-10-16: <strong>MiniCPM-V 4.7</strong> added for this box \u2014 the official mixed-Q3 GGUF (15.5 GB, <code>mix_q3gud_im</code>, SHA-256 51e32201\u2026df6b) served by <strong>PolyStrata</strong>, a HIP engine built for gfx1151, at a 131072-token context allocation with speculation off (<code>--no-draft --window 1 --lookup 0 --tail-skip 0</code>). 60.5 tok/s is the median of six 256-token generations taken as three interleaved A/B/B/A pairs over two different prompts, with a warm-up run excluded and the two arms alternating order each repetition so drift lands on both; the six runs spanned 60.4\u201360.6 tok/s (0.2). The rate is the server's own <code>predicted_per_second</code>, the machine was otherwise idle (GPU 0%, 30&nbsp;C), and the GPU clock was sampled throughout. Text only: image prompting was NOT tested, and this is a text-decode figure, not a vision result. Because it is served through a router that keeps the full conversation, a 70,074-token prompt was also verified end to end (three labelled codes recalled, ~498 prompt tok/s).",
+      "note": "The same DeepSeek-V4-Flash file as the DGX Spark row, on a Bosgame M5 mini-PC (AMD Ryzen AI Max+&nbsp;395 &ldquo;Strix Halo&rdquo;, 128&nbsp;GB) through the reference ROCm engine. The weights sit in unified memory rather than streaming, which is why an 87&nbsp;GB model reports a resident rate on a 128&nbsp;GB box. The figure is the out-of-the-box power governor. Re-measured 2026-10-04 on the PR #992 build (<code>/data/ds4-main</code>): 14.7, consistent with the August 15.0; V4.1 re-measured 2026-10-04 at 12.1 with the pr4 engine's resident/missing MoE split (<code>DS4_ROCM_SELECTED_SPLIT=1</code>), up from the 8.66-9.44 August figure on the older build. The price is what was paid, not a list figure. 2026-10-04: four more Local Mind models were pulled onto this box and measured with llama.cpp's llama-bench (<code>build 3173a56</code>, ROCm backend on the Radeon 8060S) at <code>tg128, r=3</code>: Qwen3-4B 67.0, Qwen3-8B 38.2, Qwen3.6-35B-A3B 56.1 (MoE), Muse Glimmer 30B 11.5. These are the same instrument and token count (128 generated) used for the M1 Ultra's llama.cpp llama-bench rows, so the two columns are directly comparable. 2026-10-04 (later): Qwen3-14B 22.1 and Laguna-XS-2.1 60.1, same llama-bench instrument. 2026-10-04 (later still): Qwen3-32B 9.7 and Qwen3.8-27B 11.0, same instrument. Qwen3.8-Flash-Next is NOT offered here: no inference engine runs it on this hardware \u2014 llama.cpp does not know its architecture, antirez ds4's ROCm path refuses it (Metal/CUDA only), and SGLang/vLLM on gfx1151 require building against TheRock nightly rather than using a packaged install. Until one of those changes, this model has no honest AMD number. 2026-10-16: <strong>MiniCPM-V 4.7</strong> added for this box \u2014 the official mixed-Q3 GGUF (15.5 GB, <code>mix_q3gud_im</code>, SHA-256 51e32201\u2026df6b) served by <strong>PolyStrata</strong>, a HIP engine built for gfx1151, at a 131072-token context allocation with speculation off (<code>--no-draft --window 1 --lookup 0 --tail-skip 0</code>). 60.5 tok/s is the median of six 256-token generations taken as three interleaved A/B/B/A pairs over two different prompts, with a warm-up run excluded and the two arms alternating order each repetition so drift lands on both; the six runs spanned 60.4\u201360.6 tok/s (0.2). The rate is the server's own <code>predicted_per_second</code>, the machine was otherwise idle (GPU 0%, 30&nbsp;C), and the GPU clock was sampled throughout. Text only: image prompting was NOT tested, and this is a text-decode figure, not a vision result. Because it is served through a router that keeps the full conversation, a 70,074-token prompt was also verified end to end (three labelled codes recalled, ~498 prompt tok/s). 2026-10-26: <strong>the MiniCPM row is no longer PolyStrata.</strong> Production on this box moved to <strong>llama.cpp + Vulkan</strong> on 2026-10-17, on the Q4_K_M file Studio and the Macs use rather than the mixed-Q3 above, and the row now reads <strong>68.6 tok/s</strong> (median of three interleaved 256-token generations, 68.2\u201368.9). On that same Q4_K_M file with identical flags, ROCm llama.cpp gives 58.0\u201358.4, so Vulkan is +18% on decode; it costs \u221210% of prefill (1,127 against ROCm's tuned 1,255), which is accepted because this service is interactive. PolyStrata measured 61.4 decode and ~1,055 prefill on the mixed-Q3 file and is retired. The <code>rocm</code> tab is still the right column for this box \u2014 it is AMD on Linux \u2014 but the tab names a vendor stack and the engine field names the runtime, and the eight llama-bench rows above now say <code>ROCm</code> explicitly rather than a bare <code>llama.cpp</code>. 2026-10-26: <strong>Nanbeige4.3-33B</strong> added \u2014 a dense 33.1B released 2026-10-24 under Apache-2.0, aimed at agentic coding, whose own benchmark claims are the vendor's and unreplicated. Measured with the same llama-bench instrument (<code>tg128, r=3</code>) but on the Vulkan backend and a newer build (<code>2881e5b8</code>) than the ROCm rows: <strong>10.33 \u00b1 0.00</strong> decode, 306.8 \u00b1 0.2 prefill at <code>pp2048</code>. Served at 131,072 context with a q8_0 KV cache, which is what makes that context affordable: its cache costs 208 KiB/token at f16, about ten times MiniCPM's, so the 524,288 it advertises would want 104 GB of cache on a 128 GB box and does not fit at any cache type. It is the first model here that need not evict another \u2014 resident beside MiniCPM with 55 GB spare. 2026-10-26: <strong>what the dense rows have been measuring all along.</strong> Multiply each dense row's size by its decode rate and every ROCm row from 8B to 32B lands within 4% of 193 GB/s \u2014 Qwen3-8B 193, Qwen3-14B 199, Muse Glimmer 193, Qwen3.8-27B 191, Qwen3-32B 192. That is the memory system, which sustains about 215 GB/s here against the M1 Ultra's 800, and it is why the Macs lead this page on dense decode and why no kernel work reorders them. A dense model's rate here is predictable before it is downloaded: ~200 GB/s divided by the file size. Re-measuring Qwen3.8-27B on Vulkan gives 11.74 against the 11.0 ROCm row on a near-identical file, so the backend is worth about 7% on dense decode and both sit against a wall. Speculative n-gram decoding is worth far more on the right workload: it moved Nanbeige from 10.1 to <strong>37.9 tok/s</strong> on an edit-this-file prompt (249 of 249 drafts accepted) and does nothing on prose, at the cost of bit-exact reproducibility. See the gfx1151 backend study linked above for the tables, the instruments and the caveats.",
       "rows": [
         {
           "name": "DeepSeek-V4-Flash",
@@ -373,7 +373,7 @@
             "gpu"
           ],
           "decode": "67.0 tok/s",
-          "engine": "llama.cpp (llama-bench)"
+          "engine": "llama.cpp ROCm (llama-bench)"
         },
         {
           "name": "Qwen3-8B",
@@ -383,7 +383,7 @@
             "gpu"
           ],
           "decode": "38.2 tok/s",
-          "engine": "llama.cpp (llama-bench)"
+          "engine": "llama.cpp ROCm (llama-bench)"
         },
         {
           "name": "Qwen3.6-35B-A3B",
@@ -393,7 +393,7 @@
             "gpu"
           ],
           "decode": "56.1 tok/s",
-          "engine": "llama.cpp (llama-bench)"
+          "engine": "llama.cpp ROCm (llama-bench)"
         },
         {
           "name": "Muse Glimmer 30B",
@@ -403,7 +403,7 @@
             "gpu"
           ],
           "decode": "11.5 tok/s",
-          "engine": "llama.cpp (llama-bench)"
+          "engine": "llama.cpp ROCm (llama-bench)"
         },
         {
           "name": "Qwen3-14B",
@@ -413,7 +413,7 @@
             "gpu"
           ],
           "decode": "22.1 tok/s",
-          "engine": "llama.cpp (llama-bench)"
+          "engine": "llama.cpp ROCm (llama-bench)"
         },
         {
           "name": "Laguna-XS-2.1",
@@ -423,7 +423,7 @@
             "gpu"
           ],
           "decode": "60.1 tok/s",
-          "engine": "llama.cpp (llama-bench)"
+          "engine": "llama.cpp ROCm (llama-bench)"
         },
         {
           "name": "Qwen3-32B",
@@ -433,7 +433,7 @@
             "gpu"
           ],
           "decode": "9.7 tok/s",
-          "engine": "llama.cpp (llama-bench)"
+          "engine": "llama.cpp ROCm (llama-bench)"
         },
         {
           "name": "Qwen3.8-27B",
@@ -443,17 +443,27 @@
             "gpu"
           ],
           "decode": "11.0 tok/s",
-          "engine": "llama.cpp (llama-bench)"
+          "engine": "llama.cpp ROCm (llama-bench)"
         },
         {
           "name": "MiniCPM-V 4.7",
           "params": "35B-A3B MoE (text)",
-          "size": "15.5 GB",
-          "engine": "PolyStrata (HIP, gfx1151)",
+          "size": "19.7 GB",
+          "engine": "llama.cpp Vulkan (gfx1151)",
           "modes": [
             "gpu"
           ],
-          "decode": "60.5 tok/s"
+          "decode": "68.6 tok/s"
+        },
+        {
+          "name": "Nanbeige4.3-33B",
+          "params": "33B dense",
+          "size": "19.4 GB",
+          "engine": "llama.cpp Vulkan (gfx1151)",
+          "modes": [
+            "gpu"
+          ],
+          "decode": "10.33 tok/s"
         }
       ],
       "os": "linux",

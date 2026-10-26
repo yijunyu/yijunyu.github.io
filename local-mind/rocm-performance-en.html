@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROCm, Vulkan and PolyStrata on gfx1151</title>
+<meta name="description" content="What the AMD column of the Local Mind benchmark page measures: dense decode on Strix Halo is a memory-bandwidth line, the backend is worth about 7%, and n-gram drafting is worth 3.7x.">
+<style>
+  html{color-scheme:light dark}
+  *{box-sizing:border-box}
+  body{margin:0;padding:0;font:15px -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
+       background:#f4f6f5;color:#10161a;line-height:1.55;-webkit-font-smoothing:antialiased}
+  :root{
+    --ground:#F2F5F3;--panel:#FFFFFF;--panel-2:#EAF0ED;
+    --ink:#0E1512;--ink-2:#44514B;--ink-3:#75817B;
+    --line:#D7DFDA;--line-2:#B9C5BE;
+    --accent:#0E8C57;--accent-soft:#D9EFE5;
+    --win:#0E8C57;--lose:#B5451F;--note:#9A6B00;
+    --display:ui-serif,"New York","Iowan Old Style",Georgia,serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0C1110;--panel:#151B18;--panel-2:#1D2622;
+      --ink:#E7EEEB;--ink-2:#9AA69F;--ink-3:#6D7972;
+      --line:#27312C;--line-2:#35413B;
+      --accent:#2ED08A;--accent-soft:#143324;
+      --win:#2ED08A;--lose:#F0774A;--note:#D4A23A;
+    }
+  }
+  body{background:var(--ground);color:var(--ink);font-family:var(--body)}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(1.6rem,4vw,3rem) clamp(1rem,3vw,1.75rem) 4rem;
+        display:flex;flex-direction:column;gap:2rem}
+
+  /* header */
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  header h1{font-family:var(--display);font-weight:500;letter-spacing:-.02em;
+            font-size:clamp(1.9rem,1.4rem + 2.6vw,2.9rem);line-height:1.05;margin:.4rem 0 .7rem}
+  header .ctx{color:var(--ink-2);max-width:44rem}
+  header .ctx strong{color:var(--ink)}
+  .lang{display:inline-block;margin-top:.6rem;font-family:var(--mono);font-size:.74rem;font-weight:700;
+        color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:4px;padding:.12rem .55rem}
+  .lang:hover{background:var(--accent-soft)}
+
+  /* apex */
+  .apex{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);
+        border-radius:6px;padding:1.5rem 1.7rem}
+  .apex .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+             color:var(--accent);font-weight:700}
+  .apex .caption{font-family:var(--display);font-size:clamp(1.35rem,1.15rem + 1.6vw,1.9rem);
+                 font-weight:500;letter-spacing:-.01em;line-height:1.25;margin:.5rem 0 0;text-wrap:balance}
+  .apex .caption b{color:var(--accent);font-weight:600}
+
+  /* branches */
+  details{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  summary{list-style:none;cursor:pointer;padding:1rem 1.2rem;display:flex;gap:1rem;align-items:baseline}
+  summary::-webkit-details-marker{display:none}
+  summary .kick{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+                font-weight:700;color:var(--accent);flex:0 0 5.5rem}
+  summary .head{font-size:1.06rem;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+  summary .arrow{margin-left:auto;color:var(--ink-3);font-family:var(--mono);font-size:.9rem;transition:transform .15s}
+  details[open] summary .arrow{transform:rotate(90deg)}
+  details[open] summary{border-bottom:1px solid var(--line)}
+  .leaves{padding:.4rem 1.2rem 1.1rem}
+  .leaf{display:grid;grid-template-columns:auto 1fr;gap:.6rem;padding:.55rem 0;border-top:1px solid var(--line);
+        color:var(--ink-2);font-size:.92rem}
+  .leaf:first-child{border-top:none}
+  .leaf b{color:var(--ink);font-weight:600}
+  .leaf .k{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);padding-top:.18rem}
+
+  /* footer */
+  .foot{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:1.1rem 1.25rem}
+  .foot h2{font-size:.8rem;font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;
+           color:var(--ink-3);margin:0 0 .5rem}
+  .foot p{font-size:.88rem;color:var(--ink-2);margin:0 0 .5rem}
+  .foot p:last-child{margin-bottom:0}
+  .foot b{color:var(--ink)}
+  .win{color:var(--win);font-weight:700}.lose{color:var(--lose);font-weight:700}
+  .colophon{color:var(--ink-3);font-size:.76rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Backend study &middot; Strix Halo gfx1151 &middot; llama.cpp Vulkan vs. ROCm vs. PolyStrata &middot; 2026-10</p>
+    <h1>ROCm, Vulkan and PolyStrata on gfx1151</h1>
+    <p class="ctx">One box &mdash; Ryzen&nbsp;AI Max+&nbsp;395, Radeon&nbsp;8060S, 128&nbsp;GB unified memory &mdash; and the question the AMD column keeps raising: <strong>would another inference engine serve these models better?</strong> For dense models the answer is arithmetic rather than opinion. Every figure below is measured on the machine.</p>
+  </header>
+
+  <section class="apex">
+    <span class="tag">Answer &mdash; governing thought</span>
+    <p class="caption">Dense decode here is a <b>bandwidth line, not an engine result</b>: every ROCm dense row from 8B to 32B lands within 4% of 193&nbsp;GB/s. The backend is worth about <b>7%</b>; n-gram drafting is worth <b>3.7&times;</b>.</p>
+  </section>
+
+  <details open>
+    <summary>
+      <span class="kick">Bandwidth</span>
+      <span class="head">Six dense models, 8B to 33B, all reading at the same rate &mdash; because that rate is the memory system.</span>
+      <span class="arrow">&rsaquo;</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">B1</span><div><b>A dense model must read every weight for every token</b>, so its decode rate is bandwidth divided by file size and nothing else. Multiplying this page's dense rows out: Qwen3-8B <b>193</b>, Qwen3-14B <b>199</b>, Muse&nbsp;Glimmer&nbsp;30B <b>193</b>, Qwen3.8-27B <b>191</b>, Qwen3-32B <b>192</b>&nbsp;GB/s. Five models, five sizes, one number.</div></div>
+      <div class="leaf"><span class="k">B2</span><div><b>That number is the hardware:</b> about 215&nbsp;GB/s sustained on this box, against the M1&nbsp;Ultra's 800. It is why the Macs lead this page on dense decode, and it is not reachable by kernel work on either side.</div></div>
+      <div class="leaf"><span class="k">B3</span><div><b>So a dense model's rate is predictable before you download it:</b> ~200&nbsp;GB/s &divide; file size. Nanbeige4.3-33B at 19.4&nbsp;GiB measured <b>10.33&nbsp;tok/s</b>, which is 215&nbsp;GB/s &mdash; the ceiling itself. Quantizing smaller is the lever that moves this, because it changes the divisor; changing runtime is not.</div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="kick">Backend</span>
+      <span class="head">Real but small on dense decode (+7%); large on MoE (+18%), and it reverses on prefill.</span>
+      <span class="arrow">&rsaquo;</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">K1</span><div><b>The controlled dense pair</b> &mdash; Qwen3.8-27B, same llama-bench instrument, 16.2&nbsp;GiB on ROCm against 16.3&nbsp;GiB on Vulkan: <b>11.0</b> vs. <b>11.74&nbsp;tok/s</b>, <span class="win">+6.7%</span> for Vulkan. That puts Vulkan at 96% of the sustained ceiling and ROCm at about 89%.</div></div>
+      <div class="leaf"><span class="k">K2</span><div><b>On MoE the gap is wider and the phases disagree.</b> MiniCPM-V&nbsp;4.7 35B-A3B, 256-token decode on the same Q4_K_M file with identical flags: ROCm llama.cpp 58.0&ndash;58.4 against <b>Vulkan 68.2&ndash;68.9</b> (median&nbsp;68.6), <span class="win">+18%</span>. Vulkan gives back <span class="lose">&minus;10%</span> of prefill for it (1,127 vs. ROCm's tuned 1,255), which is accepted here because interactive serving is decode-dominated.</div></div>
+      <div class="leaf"><span class="k">K3</span><div><b>PolyStrata is retired</b> &mdash; 61.4&nbsp;tok/s decode and ~1,055 prefill, against Vulkan's 68.6 and 1,127, so it lost on both phases and production moved on 2026-10-17. Note those two PolyStrata figures were taken on the smaller mixed-Q3 file rather than the Q4_K_M above, so they flatter it slightly. Its kernels were also model-shaped, so a Llama-architecture model was never covered by it.</div></div>
+      <div class="leaf"><span class="k">K4</span><div><b>An independent measurement points the same way:</b> DeepSeek V4 Flash on this hardware, Vulkan 231.8 prefill / 18.9 decode against ROCm's 207.9 / 14.8.</div></div>
+      <div class="leaf"><span class="k">K5</span><div><b>MoE is where this box looks good at all</b> &mdash; 56&ndash;69&nbsp;tok/s &mdash; because only a fraction of the weights are read per token. The bandwidth line above is a dense-model constraint, not a property of the machine.</div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="kick">Drafting</span>
+      <span class="head">3.7&times; on an edit-this-file prompt &mdash; larger than any backend change, and narrower.</span>
+      <span class="arrow">&rsaquo;</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">S1</span><div><b>Since dense decode is bandwidth-bound, the only large win is to stop reading the weights once per token.</b> n-gram lookup needs no draft model &mdash; the candidates come from the prompt. On Nanbeige4.3-33B: <b>10.1 &rarr; 37.9&nbsp;tok/s</b>, with <b>249 of 249</b> drafted tokens accepted on &ldquo;here is a function, rename two identifiers, print it back&rdquo;.</div></div>
+      <div class="leaf"><span class="k">S2</span><div><b>It is workload-shaped, not universal.</b> On free-form prose the same flag gives 10.85 against 10.14: nothing gained when the lookup misses, and nothing lost either. It suits agentic and coding work, where most output tokens already appear in the input, and is irrelevant to chat.</div></div>
+      <div class="leaf"><span class="k">S3</span><div>&#9888; <b>It costs bit-exact reproducibility.</b> Greedy output was byte-identical to non-speculative decode on the copy-heavy prompt and <span class="lose">diverged on prose</span> &mdash; the same claim in different words. Two draft lengths produced the <em>same</em> divergent text, which points at the numerics of verifying a batch rather than a drafting fault.</div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="kick">vLLM / SGLang</span>
+      <span class="head">Not wrong, but answering a different question: they win on batched concurrency, which this box does not have.</span>
+      <span class="arrow">&rsaquo;</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">V1</span><div><b>Their advantage grows with concurrency,</b> and local serving here is one stream at a time. At C=1 on a large model llama.cpp led in a published Strix Halo comparison (13.57 vs. 10.34&nbsp;tok/s); vLLM led on small dense models and at every C&nbsp;&ge;&nbsp;2.</div></div>
+      <div class="leaf"><span class="k">V2</span><div><b>SGLang has no stock gfx1151 lane.</b> Running it required patched AOT targets, import guards, an allow-list entry and a hand-named quantization method &mdash; and it still trailed vLLM at every matched point.</div></div>
+      <div class="leaf"><span class="k">V3</span><div><b>There is a cost no benchmark shows:</b> the model arbiter on this box persists each slot's KV across a model swap through llama.cpp's <span style="font-family:var(--mono)">/slots/{id}?action=save|restore</span>. That is what turns 13,967&nbsp;ms of prefill back into 106&nbsp;ms after a full stop and start. Neither vLLM nor SGLang offers it, so adopting one would trade a measured 130&times; prefill recovery for, at best, single-stream parity.</div></div>
+    </div>
+  </details>
+
+  <section class="foot">
+    <h2>Caveats that travel with the number</h2>
+    <p><b>The dense Vulkan rows were taken on a newer llama.cpp than the dense ROCm rows</b> &mdash; build <span style="font-family:var(--mono)">2881e5b8</span> against <span style="font-family:var(--mono)">3173a56</span>. So part of that +6.7% may be builds rather than the API, and that pair is suggestive rather than clean. The ROCm-versus-Vulkan MoE pair in K2 <em>is</em> clean: same file, same flags, same day. The PolyStrata figures in K3 are not part of it &mdash; different engine, different quantization, no shared flags.</p>
+    <p><b>Decode figures are llama.cpp <span style="font-family:var(--mono)">llama-bench</span>, <span style="font-family:var(--mono)">tg128</span>, <span style="font-family:var(--mono)">r=3</span></b> &mdash; the same instrument and token count as the M1&nbsp;Ultra rows, so those columns compare to each other. The MoE backend table is a 256-token server measurement. The 3.7&times; drafting figure is a server measurement over 320 generated tokens, because llama-bench does not drive speculative decoding. Sizes are as llama-bench reports them, in GiB.</p>
+    <p><b>Nanbeige4.3-33B's own quality claims are the vendor's and unreplicated.</b> Its figures here are throughput, which is all this page measures. It is served at 131,072 context with a q8_0 KV cache rather than the 524,288 it advertises: its cache costs 208&nbsp;KiB/token at f16, ten times MiniCPM's, so the full context would want 104&nbsp;GB of cache on a 128&nbsp;GB box.</p>
+  </section>
+
+  <p class="colophon">Minto pyramid &mdash; the answer first, four branches beneath, evidence at the base. Click a branch to expand or collapse it. Implied read rate is file size multiplied by decode rate, which is what a dense model must move per token. Measured on device.</p>
+
+</div>
+</body>
+</html>
