@@ -23,7 +23,7 @@
       "id": "m1u",
       "label": "M1 Ultra \u00b7 64-core GPU \u00b7 128 GB",
       "price": "from $3,999 at launch \u00b7 discontinued, used market",
-      "note": "Decode is short-context and measured on this machine, each model on the engine the app picks for it &mdash; and they are not the same engine. <strong>Muse Glimmer 30B</strong> is measured by a different tool and is a mean rather than a median, so it is not strictly comparable with the rows above it. <strong>GLM-5.3-Flash</strong> is quoted short-context, and its decode is a trough rather than a slope: ~14 just under 4k, where the engine's full-attention window ends, then back to ~17.8 from 8k out to 32k. <strong>Kimi-K3</strong>'s out-of-core rate is carried over and has not been verified here. <strong>Ternary Bonsai 2 27B</strong> is the newest row and the one to read most carefully. Its 33.5&nbsp;tok/s is the median of six interleaved whole runs at 129 tokens on 11 October 2026 (spread 32.92&ndash;34.10), with nine kernel fusions enabled, three more than reported earlier the same day; the same instrument with them off gives 29.46, so the fusions are worth <strong>+12.4%</strong> here and change no bit of the output (all 248320 logits match as bit patterns). At a 256-token prompt, 33.46 fused against 29.63 unfused clears the 32.0&nbsp;tok/s goal this work was aimed at (104.6%, up from 98.3% at six fusions). The fusions are in the engine <em>in the repository</em>, <strong>not in build&nbsp;77 or any shipped build</strong>. Separately, the model is 1.75 bits per weight, a ternary quantisation checked against a different 2-bit pack's own published continuations and agreeing on all 256 tokens of a 512-token prompt. Sizes are the real download; residency is computed from that size against this machine's memory and disk. <strong>MiniCPM-V 4.7</strong> is a new local text-decode measurement on the official Q4_K_M weights with the F16 vision projector loaded: stock llama.cpp Metal, 97.8 tok/s mean of two warmed 512-token runs. Image prompting was not tested, and this is a server measurement rather than the bundled 1.0.10 app build.",
+      "note": "Decode is short-context and measured on this machine, each model on the engine the app picks for it &mdash; and they are not the same engine. <strong>Muse Glimmer 30B</strong> is measured by a different tool and is a mean rather than a median, so it is not strictly comparable with the rows above it. <strong>GLM-5.3-Flash</strong> is quoted short-context, and its decode is a trough rather than a slope: ~14 just under 4k, where the engine's full-attention window ends, then back to ~17.8 from 8k out to 32k. <strong>Kimi-K3</strong>'s out-of-core rate is carried over and has not been verified here. <strong>Ternary Bonsai 2 27B</strong> is the newest row and the one to read most carefully. Its 33.5&nbsp;tok/s is the median of six interleaved whole runs at 129 tokens on 11 October 2026 (spread 32.92&ndash;34.10), with nine kernel fusions enabled, three more than reported earlier the same day; the same instrument with them off gives 29.46, so the fusions are worth <strong>+12.4%</strong> here and change no bit of the output (all 248320 logits match as bit patterns). At a 256-token prompt, 33.46 fused against 29.63 unfused clears the 32.0&nbsp;tok/s goal this work was aimed at (104.6%, up from 98.3% at six fusions). The fusions are in the engine <em>in the repository</em>, <strong>not in build&nbsp;77 or any shipped build</strong>. Separately, the model is 1.75 bits per weight, a ternary quantisation checked against a different 2-bit pack's own published continuations and agreeing on all 256 tokens of a 512-token prompt. Sizes are the real download; residency is computed from that size against this machine's memory and disk. <strong>MiniCPM-V 4.7</strong> is a local text-decode measurement on the official Q4_K_M weights with the F16 vision projector loaded: stock llama.cpp Metal, 97.8 tok/s mean of two warmed 512-token runs. Image prompting was not tested, and this is a server measurement rather than the bundled 1.0.10 app build. <strong>Apex-35B-V1.0</strong> is a new local service measurement: Q4_K_M (21.7 GB), 35B total / 3B active, llama.cpp Metal at an 8K context with no speculative decoding. Three warmed 256-token requests measured 82.2\u201387.8 tok/s, median 86.8. This is a llama-server measurement, not a bundled Local Mind build; the model is not yet in the app catalogue, and its rate is not a direct comparison with Qwen3.6-35B-A3B above.",
       "rows": [
         {
           "name": "MiniCPM-V 4.7",
@@ -84,6 +84,16 @@
           ],
           "decode": "72.3 tok/s",
           "engine": "llama.cpp + ds4 kernels"
+        },
+        {
+          "name": "Apex-35B-V1.0",
+          "params": "35B MoE · 3B active",
+          "size": "21.7 GB",
+          "modes": [
+            "gpu"
+          ],
+          "decode": "86.8 tok/s",
+          "engine": "llama.cpp (Metal)"
         },
         {
           "name": "Laguna-S-2.1",
