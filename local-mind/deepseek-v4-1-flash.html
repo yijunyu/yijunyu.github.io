@@ -1,0 +1,37 @@
+<!doctype html><meta charset=utf-8><title>Local Mind — DeepSeek V4.1-Flash weights</title><style>:root{--fg:#111;--mut:#666;--ac:#0a5}*{box-sizing:border-box}body{max-width:46rem;margin:0 auto;padding:3rem 1.2rem;font:16px/1.65 -apple-system,system-ui,Segoe UI,sans-serif;color:var(--fg)}h1{font-size:2rem;margin:.2rem 0}h2{margin-top:2rem}.tag{color:var(--mut);font-size:1.1rem}nav{margin:1.5rem 0;font-size:.95rem}nav a{margin-right:1rem;color:var(--ac);text-decoration:none}a{color:var(--ac)}.pill{display:inline-block;background:#eef;border-radius:1rem;padding:.15rem .7rem;margin:.2rem .3rem .2rem 0;font-size:.9rem}footer{margin-top:3rem;color:var(--mut);font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}pre{white-space:pre-wrap}table{border-collapse:collapse;margin:1rem 0}th,td{border:1px solid #e5e5e5;padding:.4rem .7rem;text-align:left}th{background:#fafafa;font-weight:600}blockquote{margin:1.2rem 0;padding:.8rem 1rem;background:#fffbe6;border-left:4px solid #e8c84a}</style>
+<h1>DeepSeek V4.1-Flash: reading the community weight releases</h1>
+<p class=tag><span class=pill>In development</span></p>
+<nav><a href="./">Home</a><a href="./docs.html">Documentation</a><a href="./support.html">Support</a><a href="./privacy.html">Privacy</a></nav>
+<blockquote><b>Status: in development.</b> The engine work described here is on a development branch and is <b>not</b> in any released or TestFlight build of Local Mind. No release date is promised, and <b>no speed is claimed</b> &mdash; see <a href="#notclaimed">what is not claimed</a>.</blockquote>
+<p>DeepSeek V4.1-Flash is a 748B-parameter mixture-of-experts model with 16B active per token. It is far larger than any Mac's memory, so it is read from storage as it runs rather than held resident, and that makes the <em>size of the weight file</em> the thing that matters most.</p>
+<h2>Nine community quantisations, and what they cost</h2>
+<p>The quantisations published for this model range from about 217 to 474&nbsp;GiB. Smaller is not merely cheaper to store: on a machine that streams the weights, fewer bytes per token is the dominant term.</p>
+<table>
+<tr><th>quantisation</th><th>size</th><th>shards</th></tr>
+<tr><td>UD-IQ1_S</td><td>217.0 GiB</td><td>5</td></tr>
+<tr><td>UD-IQ1_M</td><td>233.2 GiB</td><td>5</td></tr>
+<tr><td>UD-IQ2_XXS</td><td>279.8 GiB</td><td>6</td></tr>
+<tr><td>UD-Q2_K_XL</td><td>311.8 GiB</td><td>7</td></tr>
+<tr><td>UD-IQ3_XXS</td><td>367.6 GiB</td><td>7</td></tr>
+<tr><td>UD-IQ3_S</td><td>394.5 GiB</td><td>8</td></tr>
+<tr><td>UD-Q3_K_XL</td><td>451.8 GiB</td><td>8</td></tr>
+<tr><td>UD-Q4_K_XL</td><td>466.3 GiB</td><td>9</td></tr>
+<tr><td>UD-Q8_K_XL</td><td>473.5 GiB</td><td>9</td></tr>
+</table>
+<h2>Why reading them took work</h2>
+<p>This model carries an <b>n-gram memory</b> &mdash; a very large lookup table consulted per token, separate from the transformer weights. In these exports it is a single tensor of <b>768,022,850 rows</b> that lives alone in the last shard, while the constants describing how to index it live in the <em>first</em> shard. A loader therefore has to carry a description read from one file to a table held in another.</p>
+<p>Local Mind already decoded this model from its own weight export. What was missing was that the community exports spell the same indexing constants under different names. They are now read under both spellings, so a file written by either converter loads.</p>
+<p>One detail worth recording, because it is the kind of thing that passes review and then fails quietly: the row count of each half of the table could be computed two ways &mdash; from the stored offsets, or by summing the bucket sizes. The loader checks those two against each other, so it deliberately reads one of them rather than deriving it from the other. A check whose two sides come from the same number cannot fail.</p>
+<h2>What has been verified</h2>
+<ul>
+<li>The 5-shard 217&nbsp;GiB export opens from its first shard and exposes all <b>1043</b> tensors, the count the file itself declares.</li>
+<li>The indexing constants yield table halves of 384,006,168 and 384,016,682 rows, which sum to exactly the 768,022,850 rows the table has &mdash; three independent sources agreeing.</li>
+<li>Rows read at real computed indices decode to finite, plausibly scaled values, and a read one row past the first half is <b>refused</b> rather than silently returning the second half's data.</li>
+<li><b>A whole token decodes through all forty layers</b>, four positions in sequence, with caches growing across positions. The predicted token agrees with a reference dump recorded on a <em>different</em> quantisation of the same model at <b>3 of 4 positions</b>.</li>
+<li>Three independent checks confirmed the result does not depend on internal scheduling choices: doubling a writing kernel, chaining stage boundaries, and recycling the output buffer pool each left the output unchanged.</li>
+</ul>
+<h2 id=notclaimed>What is <i>not</i> claimed</h2>
+<p><b>No decode or prefill speed.</b> The run above was a single bounded walk of four positions on a shared machine, using an instrument built to check correctness rather than to time anything. It is not an end-to-end serving measurement, it has no repetitions, and its own documentation expects a very different per-token cost than was observed &mdash; which is reason to understand the instrument better before quoting any rate from it, not reason to quote the faster number.</p>
+<p><b>Not parity.</b> Agreement at 3 of 4 positions is cross-quantisation agreement with a differently-built export, and the test deliberately asserts no threshold: the correct agreement rate between two different quantisations is not known in advance, so any threshold would be a number chosen to pass. The position that differs is the first one, where there is no preceding context.</p>
+<p><b>Not an offering.</b> None of these weight files is in Local Mind's catalogue, and nothing here says the app will download or serve them.</p>
+<footer>© 2026 Yijun Yu · <a href="mailto:yijun.yu@gmail.com">yijun.yu@gmail.com</a></footer>
