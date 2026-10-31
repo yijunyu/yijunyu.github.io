@@ -145,7 +145,7 @@
   .na{color:var(--ink-3);}
 
   .tscroll{overflow-x:auto;border:1px solid var(--rule);border-radius:3px;background:var(--panel);}
-  table{border-collapse:collapse;width:100%;min-width:620px;font-size:.88rem;}
+  table{border-collapse:collapse;width:100%;min-width:700px;font-size:.88rem;}
   th,td{text-align:left;padding:.62rem .9rem;border-bottom:1px solid var(--rule);}
   thead th{font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;
            color:var(--ink-3);font-weight:400;background:var(--panel-2);}
@@ -359,6 +359,7 @@
           <tr>
             <th scope="col" class="sortable" data-sort="model"  aria-sort="none"><button type="button" class="sortbtn">Model<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="size"   aria-sort="none"><button type="button" class="sortbtn">Size<span class="sarrow" aria-hidden="true"></span></button></th>
+            <th scope="col" class="sortable" data-sort="ctx"    aria-sort="none"><button type="button" class="sortbtn">Context<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="engine" aria-sort="none"><button type="button" class="sortbtn">Engine<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="runs"   aria-sort="none"><button type="button" class="sortbtn">Runs as<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="decode" aria-sort="none"><button type="button" class="sortbtn">Decode<span class="sarrow" aria-hidden="true"></span></button></th>
@@ -721,6 +722,9 @@ sh install --key DS4-… --email you@example.com</div>
   const SORTS = {
     model:  { first:  1, get: r => (r.name || "").toLowerCase() },
     size:   { first:  1, get: r => sizeGB(r.size) },
+    // Context sorts on the DECLARED token count, not the label, so 1M sits
+    // above 256k instead of beside it alphabetically.
+    ctx:    { first: -1, get: r => (typeof r.ctx_tokens === "number" ? r.ctx_tokens : null) },
     engine: { first:  1, get: r => (r.engine || "").toLowerCase() },
     runs:   { first: -1, get: r => runsRank(r.modes) },
     decode: { first: -1, get: r => rateNum(r.decode) },
@@ -771,7 +775,7 @@ sh install --key DS4-… --email you@example.com</div>
       // showing an empty table that reads as "runs nothing".
       const be = BACKENDS.find(x => x.id === curBE);
       paintSortHeaders();
-      rowsEl.innerHTML = `<tr><td colspan="6" class="na">no ${be ? be.label : ""} measurements published yet</td></tr>`;
+      rowsEl.innerHTML = `<tr><td colspan="7" class="na">no ${be ? be.label : ""} measurements published yet</td></tr>`;
       priceEl.textContent = "";
       setNote(`Nothing has been measured on ${be ? be.label : "this backend"} yet. The backend is supported; the numbers are not published because they have not been taken.`, true);
       return;
@@ -788,17 +792,31 @@ sh install --key DS4-… --email you@example.com</div>
       // Borrowing a figure from another engine or another box would make the two
       // numbers in a row describe different runs.
       const pf = r.prefill ? r.prefill : `<span class="na">not measured</span>`;
+      // Context is what the WEIGHTS declare in their own metadata, not a window
+      // every engine here can serve and not the length the decode was measured
+      // at. Where the file reaches that length by RoPE scaling, the trained
+      // window it was stretched from is printed under it, because the two are
+      // not the same promise.
+      const cx = r.ctx
+        ? `${r.ctx}${r.ctx_base ? ` <span class="variant">YaRN from ${r.ctx_base}</span>` : ""}`
+        : `<span class="na">not read</span>`;
       // The engine is named per row because a rate is meaningless without it.
       const eng = r.engine ? `<span class="eng">${r.engine}</span>` : `<span class="na">not recorded</span>`;
       return `<tr><td class="fam">${r.name} <span class="variant">${r.params}</span></td>`
-           + `<td class="num">${r.size}</td><td>${eng}</td><td>${runs}</td><td class="num">${d}</td>`
+           + `<td class="num">${r.size}</td><td class="num">${cx}</td><td>${eng}</td><td>${runs}</td><td class="num">${d}</td>`
            + `<td class="num">${pf}</td></tr>`;
     }).join("");
     // A box with no recorded price says nothing rather than "$0" or "—".
     priceEl.textContent = b.price ? `≈ ${b.price}` : "";
     setNote((b.note || "")
       + " Sizes are the real download; residency is computed from that size against this"
-      + " machine's memory and disk.", false);
+      + " machine's memory and disk. Context is the window each model declares in its own"
+      + " weights \u2014 context_length in the GGUF, max_position_embeddings in an MLX config \u2014"
+      + " read from a copy of that model here, with k meaning 1024 tokens. It is a property of the"
+      + " file, not a measurement and not a guarantee: it says nothing about how fast the row"
+      + " decodes at that length, every decode figure here was taken short-context, and an engine"
+      + " can support less than the file declares. GLM-5.3-Flash is the clearest case \u2014 it"
+      + " declares 1M and this engine's full-attention window ends just under 4k.", false);
     [...tabsEl.children].forEach((t, n) => t.setAttribute("aria-selected", String(n === i)));
   }
 
@@ -1077,7 +1095,7 @@ sh install --key DS4-… --email you@example.com</div>
       // Say so plainly. An empty table would read as a product that runs
       // nothing, which is worse than admitting the data did not load.
       setNote(`Could not load the measurements (${err.message}).`, true);
-      rowsEl.innerHTML = `<tr><td colspan="6" class="na">measurements unavailable</td></tr>`;
+      rowsEl.innerHTML = `<tr><td colspan="7" class="na">measurements unavailable</td></tr>`;
     });
 </script>
 
