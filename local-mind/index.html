@@ -362,6 +362,7 @@
             <th scope="col" class="sortable" data-sort="engine" aria-sort="none"><button type="button" class="sortbtn">Engine<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="runs"   aria-sort="none"><button type="button" class="sortbtn">Runs as<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="decode" aria-sort="none"><button type="button" class="sortbtn">Decode<span class="sarrow" aria-hidden="true"></span></button></th>
+            <th scope="col" class="sortable" data-sort="prefill" aria-sort="none"><button type="button" class="sortbtn">Prefill<span class="sarrow" aria-hidden="true"></span></button></th>
           </tr>
         </thead>
         <tbody id="modelrows"></tbody>
@@ -723,6 +724,7 @@ sh install --key DS4-… --email you@example.com</div>
     engine: { first:  1, get: r => (r.engine || "").toLowerCase() },
     runs:   { first: -1, get: r => runsRank(r.modes) },
     decode: { first: -1, get: r => rateNum(r.decode) },
+    prefill:{ first: -1, get: r => rateNum(r.prefill) },
   };
   let sortCol = null, sortDir = 1, curBox = 0;
 
@@ -769,7 +771,7 @@ sh install --key DS4-… --email you@example.com</div>
       // showing an empty table that reads as "runs nothing".
       const be = BACKENDS.find(x => x.id === curBE);
       paintSortHeaders();
-      rowsEl.innerHTML = `<tr><td colspan="5" class="na">no ${be ? be.label : ""} measurements published yet</td></tr>`;
+      rowsEl.innerHTML = `<tr><td colspan="6" class="na">no ${be ? be.label : ""} measurements published yet</td></tr>`;
       priceEl.textContent = "";
       setNote(`Nothing has been measured on ${be ? be.label : "this backend"} yet. The backend is supported; the numbers are not published because they have not been taken.`, true);
       return;
@@ -781,10 +783,16 @@ sh install --key DS4-… --email you@example.com</div>
         : `<span class="na">does not fit</span>`;
       // null decode means NOT MEASURED, which is a different claim from slow.
       const d = r.decode ? r.decode : `<span class="na">not measured</span>`;
+      // Prefill is sparse on purpose: it is filled only where a prefill rate was
+      // measured on THIS machine through the SAME engine as the decode beside it.
+      // Borrowing a figure from another engine or another box would make the two
+      // numbers in a row describe different runs.
+      const pf = r.prefill ? r.prefill : `<span class="na">not measured</span>`;
       // The engine is named per row because a rate is meaningless without it.
       const eng = r.engine ? `<span class="eng">${r.engine}</span>` : `<span class="na">not recorded</span>`;
       return `<tr><td class="fam">${r.name} <span class="variant">${r.params}</span></td>`
-           + `<td class="num">${r.size}</td><td>${eng}</td><td>${runs}</td><td class="num">${d}</td></tr>`;
+           + `<td class="num">${r.size}</td><td>${eng}</td><td>${runs}</td><td class="num">${d}</td>`
+           + `<td class="num">${pf}</td></tr>`;
     }).join("");
     // A box with no recorded price says nothing rather than "$0" or "—".
     priceEl.textContent = b.price ? `≈ ${b.price}` : "";
@@ -1069,7 +1077,7 @@ sh install --key DS4-… --email you@example.com</div>
       // Say so plainly. An empty table would read as a product that runs
       // nothing, which is worse than admitting the data did not load.
       setNote(`Could not load the measurements (${err.message}).`, true);
-      rowsEl.innerHTML = `<tr><td colspan="5" class="na">measurements unavailable</td></tr>`;
+      rowsEl.innerHTML = `<tr><td colspan="6" class="na">measurements unavailable</td></tr>`;
     });
 </script>
 
