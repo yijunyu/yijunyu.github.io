@@ -1,0 +1,18 @@
+<!doctype html><meta charset=utf-8><title>Local Mind — Model catalogue</title><style>:root{--fg:#111;--mut:#666;--ac:#0a5}*{box-sizing:border-box}body{max-width:46rem;margin:0 auto;padding:3rem 1.2rem;font:16px/1.65 -apple-system,system-ui,Segoe UI,sans-serif;color:var(--fg)}h1{font-size:2rem;margin:.2rem 0}h2{margin-top:2rem}.tag{color:var(--mut);font-size:1.1rem}nav{margin:1.5rem 0;font-size:.95rem}nav a{margin-right:1rem;color:var(--ac);text-decoration:none}a{color:var(--ac)}.pill{display:inline-block;background:#eef;border-radius:1rem;padding:.15rem .7rem;margin:.2rem .3rem .2rem 0;font-size:.9rem}footer{margin-top:3rem;color:var(--mut);font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}pre{white-space:pre-wrap}table{border-collapse:collapse;margin:1rem 0}th,td{border:1px solid #e5e5e5;padding:.4rem .7rem;text-align:left}th{background:#fafafa;font-weight:600}</style>
+<h1>Model catalogue</h1>
+<nav><a href="./">Home</a><a href="./docs.html">Documentation</a><a href="./support.html">Support</a><a href="./privacy.html">Privacy</a></nav>
+<p>Each entry in Local Mind's catalogue records exactly which files make up a model, how large each one is, and the SHA-256 digest of each. A download is checked against those digests before the model is offered, so a truncated or substituted file is refused rather than loaded.</p>
+<h2>Two shapes of model</h2>
+<ul>
+<li><b>Single-file GGUF.</b> One file holds the weights and the metadata.</li>
+<li><b>MLX checkpoint directory.</b> A folder of configuration, tokenizer and safetensors shards that are loaded together. All of the files are catalogued, and a missing one is a failure, not a silently degraded load.</li>
+</ul>
+<p>For a checkpoint directory, only the files the engine actually reads are catalogued. Licence text and README prose are deliberately left out, because the engine never reads them, and including them would make the recorded total disagree with the bytes that must be present to load.</p>
+<h2 id=unevaluated>The <i>unevaluated</i> badge</h2>
+<p>An entry carries this badge when the app can describe the model but has not measured it in the configuration it ships. While the badge is present:</p>
+<ul>
+<li>any speed shown for that entry is <b>modelled from the model's own structure</b>, not measured, and</li>
+<li>the entry is still fully specified — file list, sizes, digests, context length and licence are recorded facts, not estimates.</li>
+</ul>
+<p>The badge is removed when a measurement exists in the shipped configuration on a machine that was not doing other work at the time. A single request on a busy machine, or weights read from an external disk, does not clear it; those conditions move the result by far more than the differences worth reporting.</p>
+<footer>© 2026 Yijun Yu · <a href="mailto:yijun.yu@gmail.com">yijun.yu@gmail.com</a></footer>

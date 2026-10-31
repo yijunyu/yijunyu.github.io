@@ -1,0 +1,14 @@
+<!doctype html><meta charset=utf-8><title>Local Mind — Inference engines</title><style>:root{--fg:#111;--mut:#666;--ac:#0a5}*{box-sizing:border-box}body{max-width:46rem;margin:0 auto;padding:3rem 1.2rem;font:16px/1.65 -apple-system,system-ui,Segoe UI,sans-serif;color:var(--fg)}h1{font-size:2rem;margin:.2rem 0}h2{margin-top:2rem}.tag{color:var(--mut);font-size:1.1rem}nav{margin:1.5rem 0;font-size:.95rem}nav a{margin-right:1rem;color:var(--ac);text-decoration:none}a{color:var(--ac)}.pill{display:inline-block;background:#eef;border-radius:1rem;padding:.15rem .7rem;margin:.2rem .3rem .2rem 0;font-size:.9rem}footer{margin-top:3rem;color:var(--mut);font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}pre{white-space:pre-wrap}table{border-collapse:collapse;margin:1rem 0}th,td{border:1px solid #e5e5e5;padding:.4rem .7rem;text-align:left}th{background:#fafafa;font-weight:600}</style>
+<h1>Inference engines</h1>
+<nav><a href="./">Home</a><a href="./docs.html">Documentation</a><a href="./support.html">Support</a><a href="./privacy.html">Privacy</a></nav>
+<p>Local Mind can serve a model through more than one engine. Engines are selected <b>by name</b>, and a catalogue entry may declare which engine serves it.</p>
+<h2>Why a tuned build gets its own name</h2>
+<p>An engine tuned for one model architecture is offered as its own engine identity rather than as a switch on the general-purpose one. Two reasons:</p>
+<ul>
+<li>A catalogue entry can then <i>name</i> the engine it expects, so the right code path is chosen from the model rather than from a user setting that happens to be on.</li>
+<li>When that build is not installed, the app can say so and fall back, instead of starting the general engine and reporting whatever it produces as though the tuned path had run.</li>
+</ul>
+<p>The second point is the important one. An engine selected by a flag on another engine cannot report its own absence; an engine selected by name can.</p>
+<h2>Availability</h2>
+<p>Engine availability depends on which builds are installed on the machine. The app shows an engine as available only when the binary that implements it is present. The named-engine mechanism described here is <b>on a development branch and is not in a released or TestFlight build</b>.</p>
+<footer>© 2026 Yijun Yu · <a href="mailto:yijun.yu@gmail.com">yijun.yu@gmail.com</a></footer>
