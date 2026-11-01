@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Strata 0.2.9 on the M1 Ultra</title>
+<meta name="description" content="Strata 0.2.9 on a 128 GB Mac Studio M1 Ultra: integrity, install and the standard benchmark on Qwen3.8-Flash-Next IQ3_S — 51 tok/s short, 47.2 on a story, 530 t/s prefill, and a draft layer worth nothing on this chip.">
+<style>
+  html{color-scheme:light dark}
+  *{box-sizing:border-box}
+  body{margin:0;padding:0;font:15px -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
+       background:#f4f6f5;color:#10161a;line-height:1.55;-webkit-font-smoothing:antialiased}
+  :root{
+    --ground:#F2F5F3;--panel:#FFFFFF;--panel-2:#EAF0ED;
+    --ink:#0E1512;--ink-2:#44514B;--ink-3:#75817B;
+    --line:#D7DFDA;--line-2:#B9C5BE;
+    --accent:#0E8C57;--accent-soft:#D9EFE5;
+    --win:#0E8C57;--lose:#B5451F;--note:#9A6B00;
+    --display:ui-serif,"New York","Iowan Old Style",Georgia,serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0C1110;--panel:#151B18;--panel-2:#1D2622;
+      --ink:#E7EEEB;--ink-2:#9AA69F;--ink-3:#6D7972;
+      --line:#27312C;--line-2:#35413B;
+      --accent:#2ED08A;--accent-soft:#143324;
+      --win:#2ED08A;--lose:#F0774A;--note:#D4A23A;
+    }
+  }
+  body{background:var(--ground);color:var(--ink);font-family:var(--body)}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(1.6rem,4vw,3rem) clamp(1rem,3vw,1.75rem) 4rem;
+        display:flex;flex-direction:column;gap:2rem}
+
+  /* header */
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  header h1{font-family:var(--display);font-weight:500;letter-spacing:-.02em;
+            font-size:clamp(1.9rem,1.4rem + 2.6vw,2.9rem);line-height:1.05;margin:.4rem 0 .7rem}
+  header .ctx{color:var(--ink-2);max-width:44rem}
+  header .ctx strong{color:var(--ink)}
+  .lang{display:inline-block;margin-top:.6rem;font-family:var(--mono);font-size:.74rem;font-weight:700;
+        color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:4px;padding:.12rem .55rem}
+  .lang:hover{background:var(--accent-soft)}
+
+  /* apex */
+  .apex{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);
+        border-radius:6px;padding:1.5rem 1.7rem}
+  .apex .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+             color:var(--accent);font-weight:700}
+  .apex .caption{font-family:var(--display);font-size:clamp(1.35rem,1.15rem + 1.6vw,1.9rem);
+                 font-weight:500;letter-spacing:-.01em;line-height:1.25;margin:.5rem 0 0;text-wrap:balance}
+  .apex .caption b{color:var(--accent);font-weight:600}
+
+  /* branches */
+  details{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  summary{list-style:none;cursor:pointer;padding:1rem 1.2rem;display:flex;gap:1rem;align-items:baseline}
+  summary::-webkit-details-marker{display:none}
+  summary .kick{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+                font-weight:700;color:var(--accent);flex:0 0 5.5rem}
+  summary .head{font-size:1.06rem;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+  summary .arrow{margin-left:auto;color:var(--ink-3);font-family:var(--mono);font-size:.9rem;transition:transform .15s}
+  details[open] summary .arrow{transform:rotate(90deg)}
+  details[open] summary{border-bottom:1px solid var(--line)}
+  .leaves{padding:.4rem 1.2rem 1.1rem}
+  .leaf{display:grid;grid-template-columns:auto 1fr;gap:.6rem;padding:.55rem 0;border-top:1px solid var(--line);
+        color:var(--ink-2);font-size:.92rem}
+  .leaf:first-child{border-top:none}
+  .leaf b{color:var(--ink);font-weight:600}
+  .leaf .k{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);padding-top:.18rem}
+
+  /* footer */
+  .foot{background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:1.1rem 1.25rem}
+  .foot h2{font-size:.8rem;font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;
+           color:var(--ink-3);margin:0 0 .5rem}
+  .foot p{font-size:.88rem;color:var(--ink-2);margin:0 0 .5rem}
+  .foot p:last-child{margin-bottom:0}
+  .foot b{color:var(--ink)}
+  .win{color:var(--win);font-weight:700}.lose{color:var(--lose);font-weight:700}
+  .colophon{color:var(--ink-3);font-size:.76rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Backend study &middot; Mac Studio &middot; M1 Ultra, 64-core GPU, 128&nbsp;GB &middot; Strata 0.2.9 (engine 0.1.55-metal) &middot; 2026-10</p>
+    <h1>Strata 0.2.9 on the M1 Ultra</h1>
+    <p class="ctx">Strata's Mac support is new, and its manual is explicit about the evidence behind it: measured on an M5&nbsp;Max with 128&nbsp;GB, an M4&nbsp;mini with 32&nbsp;GB and an M1&nbsp;Max with 34&nbsp;GB &mdash; <em>&ldquo;Other chips are untested, and reports help.&rdquo;</em> This is the report for a fourth machine. It covers what the installer verified, what the engine did on a chip its manual does not cover, and the number it produced &mdash; together with the comparisons that number does <b>not</b> support.</p>
+  </header>
+
+  <section class="apex">
+    <span class="tag">Answer &mdash; governing thought</span>
+    <p class="caption"><b>0.2.9 installs, verifies and runs on the M1 Ultra first try: 51.0&nbsp;tok/s on a short request, 47.2 on a 200-token story, 530&nbsp;t/s prefilling 4K&ndash;16K, and 12 of 12 sanity checks.</b> It is a compatibility result and a new data point, not a verdict on the release's M5&nbsp;Max figures &mdash; and on this chip the draft layer that is worth 27% upstream is worth nothing.</p>
+  </section>
+
+  <details open>
+    <summary>
+      <span class="kick">Integrity</span>
+      <span class="head">Everything the release published about itself checks out &mdash; hashes, notarization, and every file inside the engine package.</span>
+      <span class="arrow">&rsaquo;</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">I1</span><div><b>Four macOS artefacts, four matching SHA-256s.</b> The DMG, the 0.1.55 Control tarball, the 0.1.55 Metal engine and the DeepSeek 0.1.55 Metal engine were hashed against the release's own <span style="font-family:var(--mono)">SHA256SUMS.txt</span>: 4 of 4 OK. The Terminal's own installer then re-fetched Control and reported <b>&ldquo;Checksum ok&rdquo;</b> and <b>&ldquo;Signature ok&rdquo;</b> against the signed feed.</div></div>
+      <div class="leaf"><span class="k">I2</span><div><b>The app is genuinely notarized.</b> <span style="font-family:var(--mono)">stapler validate</span>: &ldquo;The validate action worked&rdquo;. <span style="font-family:var(--mono)">spctl</span>: accepted, <span style="font-family:var(--mono)">source=Notarized Developer ID</span>, <span style="font-family:var(--mono)">origin=Developer ID Application: Niko Veit (79LR4R7RSC)</span>. <span style="font-family:var(--mono)">codesign --verify --deep --strict</span>: valid on disk, satisfies its Designated Requirement. Bundle version 0.2.9.</div></div>
+      <div class="leaf"><span class="k">I3</span><div><b>The engine package can be checked file by file, and was.</b> Its <span style="font-family:var(--mono)">engine-component.json</span> carries a SHA-256 and a byte count for each of <b>37 files</b> &mdash; binary, Metal kernel sources, vision reader &mdash; and all 37 matched. The component is signed (ed25519, key id <span style="font-family:var(--mono)">5d1bc23abbeffd0d</span>), build id <span style="font-family:var(--mono)">4cf0d8cd3809+metal</span>.</div></div>
+      <div class="leaf"><span class="k">I4</span><div><b>Versions agree end to end:</b> app 0.2.9, Terminal <span style="font-family:var(--mono)">strata 0.2.9 (build 0.1.55)</span>, engine <span style="font-family:var(--mono)">strata 0.1.55-metal</span>, Control <span style="font-family:var(--mono)">0.1.55</span> at commit <span style="font-family:var(--mono)">4cf0d8cd3809</span>.</div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="kick">Compatibility</span>
+      <span class="head">It starts on the untested chip &mdash; and the engine picks the older kernels on its own, which is the right answer here.</span>
+      <span class="arrow">&rsaquo;</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">C1</span><div><b>No workaround was needed.</b> The engine logs <span style="font-family:var(--mono)">GPU 0: Apple M1 Ultra, compute capability 0.0</span> and <span style="font-family:var(--mono)">session is up (engine 0.1.55-metal)</span>. The decode window wrapped in <b>2.8&nbsp;s</b>. The first start in the session was answering within <b>45&nbsp;s</b>; two later starts were ready in <b>8.2&nbsp;s</b> each, which is what a cached Metal kernel compile looks like.</div></div>
+      <div class="leaf"><span class="k">C2</span><div><b>The kernels are the M1 path, not the M5 path.</b> <span style="font-family:var(--mono)">prompt kernels ... the older expert / attention kernels (no M5 layout)</span>. The manual says the M5 prompt-expert layout <em>&ldquo;fails on an M1 Max&rdquo;</em>, so this is the engine declining a layout it knows is wrong &mdash; the reason a compatibility run on this chip can pass where a forced setting would not.</div></div>
+      <div class="leaf"><span class="k">C3</span><div><b>Memory is not the constraint at this size.</b> IQ3_S maps 54.8&nbsp;GB and the engine reported <b>48,631&nbsp;MiB of VRAM free</b> with everything loaded, of a 107.5&nbsp;GB Metal working set. The manual's larger packs (UD-Q4_K_XL, 82.6&nbsp;GB mapped) should also fit, but were not run here.</div></div>
+      <div class="leaf"><span class="k">C4</span><div><b>Storage is a bigger variable than any engine setting we touched.</b> An earlier, unintended start ran the model from an external volume: the engine warned <span style="font-family:var(--mono)">--ple-io direct measures slow here (517 rows/s, about 2 MB/s of random 4 KiB reads)</span> and the decode window took <b>149,604&nbsp;ms</b> to become ready. On the internal SSD the same class of file wrapped in <b>2.8&nbsp;s</b>. The manual's &ldquo;the model's file must be on the internal SSD&rdquo; is not a preference.</div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="kick">Speed</span>
+      <span class="head">51&nbsp;tok/s short, 47.2 on a 200-token story, 530&nbsp;t/s prefilling &mdash; and 12 of 12 checks correct.</span>
+      <span class="arrow">&rsaquo;</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">S1</span><div><b>The standard suite</b> (<span style="font-family:var(--mono)">strata bench run</span>, frozen fixtures, fresh process, three repetitions, thinking on, 512-token cap): short request <b>51.0&nbsp;tok/s</b> (51.0&ndash;51.1) with a 0.75&nbsp;s first token; a 4K prompt at <b>528.9&nbsp;t/s</b> and 49.4&nbsp;tok/s; a 16K prompt at <b>530.4&nbsp;t/s</b> and 46.5&nbsp;tok/s. All six long-prompt requests reached the cap, so those decode figures are taken at the cap rather than at an answer.</div></div>
+      <div class="leaf"><span class="k">S2</span><div><b>A fixed 200-token story, greedy,</b> is the closest thing here to the manual's &ldquo;story&rdquo; column: <b>47.0 and 46.6</b> in two fresh processes, <b>47.4 and 47.6</b> in one warmed one &mdash; a median of <b>47.2&nbsp;tok/s</b> and a spread of 46.6&ndash;47.6. The first request after a start measured <b>38.0</b>, so a cold number is a different claim.</div></div>
+      <div class="leaf"><span class="k">S3</span><div><b>A 32,000-token prompt</b> read at <b>525.5&nbsp;t/s</b> and decoded at 40.9&nbsp;tok/s at that context; a 11,009-token prompt read at 511.3&nbsp;t/s. Prefill is flat from 4K to 32K, which is what a prompt path that is not cache-starved looks like.</div></div>
+      <div class="leaf"><span class="k">S4</span><div><b>Throughput is not the only result: the suite's twelve correctness checks passed 12/12</b> &mdash; instruction following 4/4, retrieval 4/4, tool calls 4/4 &mdash; and the Anthropic <span style="font-family:var(--mono)">/v1/messages</span> route returned 200 from a separately started server of the same build. A fast engine that cannot call a tool would not be worth this page.</div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="kick">Comparison</span>
+      <span class="head">The comparison a reader wants &mdash; against the 30.8&nbsp;tok/s llama.cpp row on this machine &mdash; cannot be made on equal terms.</span>
+      <span class="arrow">&rsaquo;</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">X1</span><div><b>The files are different, and so are the engines and the instruments.</b> This box's Qwen3.8-Flash-Next row is llama.cpp's <span style="font-family:var(--mono)">tg128</span> on Unsloth's <b>UD-Q2_K_XL, 78.9&nbsp;GB</b>. Strata ran its own <b>IQ3_S, 54.8&nbsp;GB mapped</b> (plus a 28.8&nbsp;GB n-gram table), and the number is the server's own <span style="font-family:var(--mono)">predicted_per_second</span> at 200 tokens. 47.2 against 30.8 is <b>1.53&times;</b>, and it is a statement about this pairing, not a like-for-like win: a smaller file is faster for any engine, and llama-bench is not this instrument.</div></div>
+      <div class="leaf"><span class="k">X2</span><div><b>The same pack on the manual's M5&nbsp;Max reads 94.7&nbsp;tok/s</b> on a story with MTP (74.8 without). The M1 Ultra's 47.2 is about half that, on a GPU with fewer, older cores &mdash; a plausible gap, and not something this run can attribute further. The release's headline Mac numbers are M5&nbsp;Max numbers; nothing here confirms or refutes them.</div></div>
+      <div class="leaf"><span class="k">X3</span><div><b>What a real head-to-head would need:</b> one file both engines can read, on the internal SSD, with the same prompt and token count, repeated as whole runs. Strata's packs are its own quantisation and llama.cpp cannot read them; Unsloth's shards need Strata's source-installer repack, which the Terminal does not do. That experiment was not run.</div></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="kick">Drafting</span>
+      <span class="head">The draft layer is worth 27% upstream and nothing here &mdash; measured, not inferred.</span>
+      <span class="arrow">&rsaquo;</span>
+    </summary>
+    <div class="leaves">
+      <div class="leaf"><span class="k">D1</span><div><b>MTP on</b> (setup's default, <span style="font-family:var(--mono)">--spec 2</span>): 47.0, 46.6&nbsp;tok/s on the story in two fresh processes, 47.4 and 47.6 in a warmed one. <b>MTP off</b> (no <span style="font-family:var(--mono)">--spec</span>, no <span style="font-family:var(--mono)">--mtp</span>): 45.8, 47.3, 47.2, 47.4 and 47.6 over five requests. The two ranges overlap and the medians are within 1% of each other; on this chip the draft layer does not pay.</div></div>
+      <div class="leaf"><span class="k">D2</span><div><b>The manual reports the opposite on the M5&nbsp;Max:</b> 94.7 with MTP against 74.8 without for the same IQ3_S pack &mdash; <span class="win">+27%</span>. So the feature is not inert in general; it is inert <em>here</em>, and the difference between the two machines is the finding.</div></div>
+      <div class="leaf"><span class="k">D3</span><div><b>We did not isolate why</b>, and do not claim a mechanism. A plausible candidate is that decode on this chip is bound by moving expert weights rather than by the arithmetic drafting skips; that was not tested, so it stays a hypothesis.</div></div>
+    </div>
+  </details>
+
+  <section class="foot">
+    <h2>Caveats that travel with the number</h2>
+    <p><b>The standard-suite figures are repetitions inside one process.</b> The story figures were repeated across two fresh processes (47.0 and 46.6), which is the method this site prefers, but the suite's three repetitions of each prompt length share one load. A single run's error bar would understate run-to-run variation; the 4K prompt rate already spans 473.6 to 529.2 within the suite.</p>
+    <p><b>Context was configured at 64K and measured to 16K.</b> The suite measured 16K, one manual prompt measured 32K, and the weights themselves declare 262,144 positions. Nothing above 32K was run, and the manual's own measured ceiling is 32K.</p>
+    <p><b>Pictures were not tested.</b> The engine package carries <span style="font-family:var(--mono)">strata-vision</span>, but the picture reader was not installed with the model (<span style="font-family:var(--mono)">images: false</span>), so every number here is text only.</p>
+    <p><b>One request at a time.</b> The Mac engine does not port <span style="font-family:var(--mono)">--parallel</span>; every request was serial, and no concurrency result exists for this machine.</p>
+    <p><b>The machine was not quiesced for the suite.</b> It was in ordinary desktop use; no GPU load was reported, but a busy machine can halve a number, which is why spreads are quoted.</p>
+    <p><b>Release integrity is a snapshot.</b> The hashes, the notarization ticket and the engine manifest were checked on 2026-10-31 against release v0.2.9; a later rebuild of the same version would not match them, and that is the point of recording them.</p>
+  </section>
+
+  <p class="colophon">Minto pyramid &mdash; the answer first, the branches beneath, evidence at the base. Click a branch to expand it. Every figure was measured on the machine named in the eyebrow; the release's own numbers are quoted as upstream claims, never as results of this run.</p>
+
+</div>
+</body>
+</html>

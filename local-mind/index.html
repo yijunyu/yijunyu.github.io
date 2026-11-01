@@ -842,6 +842,8 @@ sh install --key DS4-… --email you@example.com</div>
     { os: "linux", backend: "cuda",  href: "ds4cuda-zh.html", title: "中文" },
     { os: "linux", backend: "rocm",  href: "rocm-performance-en.html", lead: true,
       title: "ROCm, Vulkan and PolyStrata on gfx1151 — what the AMD column measures" },
+    { os: "mac",   backend: "metal", href: "strata-m1-ultra.html",
+      title: "Strata 0.2.9 on the M1 Ultra — integrity, compatibility and 51 tok/s on an untested chip" },
   ];
   const BINS = [
     { os: "linux", backend: "cuda", name: "ds4-rs-cuda", ok: true,
@@ -963,7 +965,7 @@ sh install --key DS4-… --email you@example.com</div>
   function renderPosts() {
     const ps = POSTS.filter(p => p.os === curOS && p.backend === curBE);
     postEl.innerHTML = ps.length
-      ? ps.map(p => `<a href="${p.href}"${p.lead ? ' style="font-weight:700"' : ""}>${p.title}</a>`).join("")
+      ? ps.map(p => `<a href="${p.href}"${p.lead ? ' style="font-weight:700"' : ""}>${p.title}</a>`).join(" &middot; ")
       : `<span class="none">no write-up for this combination yet</span>`;
   }
 
