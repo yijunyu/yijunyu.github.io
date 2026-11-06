@@ -76,6 +76,31 @@ tilecov feedback --resolve <id>
 `tilecov round` prints `feedback N open instrument report(s)` on every block, so
 the backlog is visible next to the KPI instead of buried in a document.
 
+The local log is a queue, not a notification — on another machine it lands in
+that machine's checkout and nobody upstream sees it. Send it:
+
+```sh
+tilecov feedback --link
+```
+
+prints a prefilled issue URL on https://github.com/yijunyu/yijunyu.github.io/issues
+(labels `feedback`, title and body built from the open entries). No token needed.
+Record the URL you posted in your report so the next agent does not duplicate it.
+
+## Keeping the skill current
+
+The skill is versioned and the manifest pins the version and its sha256:
+
+```sh
+tilecov skill            # which instances exist here and at what version
+tilecov skill --check    # exit 1 if any installed copy is behind the manifest
+tilecov skill --update   # verify the digest, then refresh every instance present
+```
+
+`install.sh` runs `--update` at the end, so installing or upgrading the binary
+refreshes the skill too. Symlinked instances report `managed` and are not written
+through.
+
 ## Attach the skill to your agent
 
 The skill is one markdown file and the loop above is what it tells the agent to

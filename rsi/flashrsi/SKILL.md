@@ -1,6 +1,6 @@
 ---
 name: flashrsi
-version: 2
+version: 3
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
@@ -114,6 +114,15 @@ Every round prints `feedback N open instrument report(s)`. That line is the
 mechanism: a finding filed once and never printed again does not get fixed, so
 the count rides on the block next to the KPI. Fix them, or resolve them with the
 reason recorded, before closing a campaign.
+
+**And send it where someone will see it.** The local log is a queue, not a
+notification: on another machine it is written into that machine's checkout and
+the maintainer never learns of it. `tilecov feedback --link` prints a prefilled
+issue URL on the public tracker; post it, or paste the same text into whatever
+channel the campaign uses. A finding that stays local has not been reported.
+
+In a multi-agent setting, say where you sent it in the report (`issue: <url>`),
+so the next agent does not file the duplicate.
 
 ## Expansion of `flashrsi go`
 
