@@ -1,6 +1,6 @@
 ---
 name: flashrsi
-version: 5
+version: 6
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
@@ -56,8 +56,14 @@ tilecov round --baseline benchmarks/tilecov/campaigns/<campaign>/state.json \
 - It exits **1 and prints `REJECT`** when the ledger covers fewer items or opens
   more than the baseline. A round that regressed cannot be credited; do not
   report it as progress.
-- Run it with `--strict`. When every remaining open item needs hardware, it
-  prints `terminal  yes` and exits **4**. That is the campaign ending, not a
+- Every round prints a `ruler` line: host, repo root, branch, HEAD, and the
+  skill path, version and content hash it measured with. Two reports (F6, F10)
+  exist because an agent could not tell which clone or which skill it was
+  running -- read that line before interpreting any delta.
+- Run it with `--strict`. If the tree and the stored ledger are at different
+  revisions it prints `REFUSE` and exits **5**, because that delta compares two
+  trees, not one. When every remaining open item needs hardware, it prints
+  `terminal  yes` and exits **4**. That is the campaign ending, not a
   failure: report the residue and stop. A continuing goal armed on that residue
   would spin forever, and this exit code is what makes that visible.
 - It exits **0** on progress or on no change. An unchanged number is still the
