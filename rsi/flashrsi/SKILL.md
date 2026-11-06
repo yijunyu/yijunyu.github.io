@@ -1,6 +1,6 @@
 ---
 name: flashrsi
-version: 6
+version: 7
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
@@ -52,6 +52,10 @@ the comparison drift:
 tilecov round --baseline benchmarks/tilecov/campaigns/<campaign>/state.json \
               --goal "<the campaign's declared, measured goal>"
 ```
+
+Add `--json` when a driver consumes it, and run `tilecov doctor` when anything
+looks wrong: it checks the binary version, the repo root, the manifest, git
+HEAD, every installed skill copy, and the telemetry endpoint in one command.
 
 - It exits **1 and prints `REJECT`** when the ledger covers fewer items or opens
   more than the baseline. A round that regressed cannot be credited; do not
