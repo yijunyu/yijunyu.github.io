@@ -1,11 +1,30 @@
 ---
 name: flashrsi
-version: 7
+version: 8
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
 
 # FlashRSI tilecov loop
+
+## What the tilecov numbers are, and are not
+
+The tile-rs coverage ledger (**230/239**, nine hardware targets open) is the
+**reference demo**, not necessarily the objective. It exists so the loop has a
+real, measurable, adversarial workload to prove itself against -- something with
+a denominator it can count, exclusions with counterparts, and items that refuse.
+
+Do not assume it is what the user wants. A user who says "run flashrsi" against
+**this** repository is working on the demo; a user with a different benchmark, a
+different KPI or a different product may want the same mechanism pointed
+somewhere else. Ask before spending rounds on coverage the user never asked for,
+and never treat the 230/239 figure as a deliverable.
+
+What transfers to another goal is the mechanism: a ledger-shaped measurement, a
+`round` that refuses a regression and names the next mechanism, a feedback queue
+for defects in the ruler, and a self-updating skill. What does not transfer is
+the denominator -- every new goal needs its own, with a committed reader that
+resolves it.
 
 ## Expansion of `flashrsi spec`
 
@@ -19,7 +38,9 @@ Carry out all four parts in order.
 
 A KPI is a row with a **goal**, a `name`, a `target`, a `current`, a unit, and **the script that reads it**. Write them to the campaign config, not to chat. A KPI with no reader is not specified — it stays prose, is printed as `UNRESOLVED`, and never becomes scope by inference. This repository has paid twice for prose-to-scope guessing; the rule is that only a committed script may resolve a target.
 
-The goal itself is the campaign's declared one, read from the campaign config. Where `.claude/goal.json` carries a matching `goal` + `kpi` pair, resolve the KPI from its structured fields (`name`, `board`, `condition`, `measured`) and carry its prose `target` through as context only.
+The goal itself is the campaign's declared one, read from the campaign config --
+and for the demo campaign that config says the nine hardware forms are out of
+scope by decision. The denominator is not an instruction. Where `.claude/goal.json` carries a matching `goal` + `kpi` pair, resolve the KPI from its structured fields (`name`, `board`, `condition`, `measured`) and carry its prose `target` through as context only.
 
 If the campaign's `ACCEPTED_SCOPE.md` or `CLOSE.md` marks a subset out of scope, the **accepted** target — not the raw denominator — is the goal. The ledger's `achievable of achievable` line is a denominator, not a decision: never copy it into an objective, and never arm a goal whose remaining items the accepted scope already declares out of scope.
 

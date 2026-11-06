@@ -5,6 +5,20 @@ the improvement loop**: it re-measures, compares against the campaign's stored
 ledger, refuses a regression, prints the goal/KPI/progress block, and names the
 next mechanism.
 
+## What this is
+
+`tilecov` measures a **ledger-shaped benchmark** and drives the loop against it.
+The tile-rs coverage ledger (230/239, nine hardware targets) is the **reference
+demo** — a real workload with a countable denominator, exclusions that have
+counterparts, and items that refuse. It is not a product target, and it is
+probably not your goal.
+
+What transfers to another goal: a measurement with a committed reader, a `round`
+that refuses a regression and names the next mechanism, a feedback queue for
+defects in the ruler, and a self-updating skill. What does not transfer is the
+denominator — every new goal needs its own, resolved by its own script rather
+than restated in prose.
+
 ## Install (one line)
 
 ```sh
