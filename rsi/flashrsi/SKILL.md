@@ -96,6 +96,23 @@ Specifying is not the deliverable. Once the KPIs resolve and the loop prints, en
 
 **Do not let `spec` become a planning session.** If the KPI already resolves and the loop already prints, `spec` verifies both against the ledger in a few commands and goes straight to iteration 1; re-deriving an existing benchmark from scratch is not specification, it is stalling.
 
+### 3c. File instrument anomalies while testing
+
+A round can find a defect in the **ruler** rather than an uncovered item: a gate
+failing for an environmental reason, a published number disagreeing with the
+ledger, an example pointing at an empty split. Those are not coverage items and
+must never be counted as progress — but they must not be lost either.
+
+```sh
+tilecov feedback --add "<what happened>" --kind bug|anomaly|ask --where "<file:line>"
+tilecov feedback --resolve <id>       # when it is fixed or explicitly deferred
+```
+
+Every round prints `feedback N open instrument report(s)`. That line is the
+mechanism: a finding filed once and never printed again does not get fixed, so
+the count rides on the block next to the KPI. Fix them, or resolve them with the
+reason recorded, before closing a campaign.
+
 ## Expansion of `flashrsi go`
 
 `flashrsi go` expands to, verbatim:

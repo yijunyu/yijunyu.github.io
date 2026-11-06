@@ -63,6 +63,19 @@ tilecov: cannot find the benchmark tree from /tmp upwards (looked for benchmarks
 
 Other commands: `ledger [--json]`, `kpi`, `measure [-o P]`, `round`, `version`.
 
+## Feedback: defects in the ruler
+
+A round can find an instrument defect rather than an uncovered item. That is not
+coverage and must not be scored as such, but it must not be lost either:
+
+```sh
+tilecov feedback --add "<what happened>" --kind bug|anomaly|ask --where "<file:line>"
+tilecov feedback --resolve <id>
+```
+
+`tilecov round` prints `feedback N open instrument report(s)` on every block, so
+the backlog is visible next to the KPI instead of buried in a document.
+
 ## Attach the skill to your agent
 
 The skill is one markdown file and the loop above is what it tells the agent to
