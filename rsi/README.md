@@ -19,11 +19,12 @@ tilecov version      # tilecov 0.1.0
 ```
 
 Published assets: `bin/tilecov-darwin-arm64`. To install elsewhere or from a
-mirror:
+mirror, put the variable on the **`sh` side of the pipe** — `VAR=x curl … | sh`
+sets it for `curl` only, so the script would still install to the default:
 
 ```sh
-TILECOV_PREFIX="$HOME/bin" curl -fsSL https://yijunyu.github.io/rsi/install.sh | sh
-TILECOV_BASE=https://example.org/rsi  curl -fsSL https://yijunyu.github.io/rsi/install.sh | sh
+curl -fsSL https://yijunyu.github.io/rsi/install.sh | TILECOV_PREFIX="$HOME/bin" sh
+curl -fsSL https://yijunyu.github.io/rsi/install.sh | TILECOV_BASE=https://example.org/rsi sh
 ```
 
 If there is no asset for your platform the installer fails and says so — it does
