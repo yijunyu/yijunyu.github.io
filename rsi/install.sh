@@ -46,6 +46,10 @@ if ! "$DEST/tilecov" version; then
   exit 1
 fi
 
+# Refresh any skill instance already installed for an agent. Absent directories
+# are skipped, so this never installs the skill where it was not asked for.
+"$DEST/tilecov" skill --update || echo "install.sh: could not refresh the skill (offline?)"
+
 case ":$PATH:" in
   *":$DEST:"*) : ;;
   *) echo "install.sh: add this to your shell profile:"
