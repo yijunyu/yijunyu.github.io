@@ -1,6 +1,6 @@
 ---
 name: flashrsi
-version: 3
+version: 4
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
@@ -123,6 +123,11 @@ channel the campaign uses. A finding that stays local has not been reported.
 
 In a multi-agent setting, say where you sent it in the report (`issue: <url>`),
 so the next agent does not file the duplicate.
+
+Telemetry is OFF unless the operator sets `TILECOV_TELEMETRY=1` **and**
+`TILECOV_TELEMETRY_URL`. When on it posts version, command name, duration, exit
+code, os and arch -- never paths, arguments, ledger numbers or hashes. Do not
+enable it on a user's behalf; it is their call, not the loop's.
 
 ## Expansion of `flashrsi go`
 

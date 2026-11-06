@@ -87,6 +87,22 @@ prints a prefilled issue URL on https://github.com/yijunyu/yijunyu.github.io/iss
 (labels `feedback`, title and body built from the open entries). No token needed.
 Record the URL you posted in your report so the next agent does not duplicate it.
 
+## Telemetry (opt-in, anonymous)
+
+Off unless **both** are set:
+
+```sh
+export TILECOV_TELEMETRY=1
+export TILECOV_TELEMETRY_URL=https://your-collector.example/feedback
+```
+
+It posts `schema, tool, version, command name, duration_ms, exit, os, arch` —
+never arguments, paths, branch, ledger numbers or hashes. The POST is spawned and
+not awaited, so a dead collector never slows or fails a command.
+
+There is no default sink: GitHub Pages cannot accept a POST, so the endpoint is
+yours to run. With the flag set and no URL, nothing is sent.
+
 ## Keeping the skill current
 
 The skill is versioned and the manifest pins the version and its sha256:
