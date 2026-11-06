@@ -61,7 +61,21 @@ tilecov: cannot find the benchmark tree from /tmp upwards (looked for benchmarks
   Pass --root <checkout> or set TILECOV_ROOT=<checkout>.
 ```
 
-Other commands: `ledger [--json]`, `kpi`, `measure [-o P]`, `round`, `version`.
+Other commands:
+
+| command | what |
+|---|---|
+| `ledger [--json]` | the item ledger, as a table or as JSON |
+| `kpi` | the one-line KPI |
+| `measure [-o P]` | re-measure the tree into a manifest |
+| `round --json` | the round block as one object, for a driver that should not parse prose |
+| `doctor` | is this install sane? binary version, repo root, manifest, git HEAD, every installed skill copy, and a real POST to the telemetry endpoint |
+| `version` | the binary version |
+
+`round` also prints a **ruler** line every round — host, repo root, branch, HEAD,
+and the skill path/version/hash it measured with — and `--strict` refuses with
+exit **5** when the tree and the stored ledger are at different revisions, so a
+delta is never silently computed across two trees.
 
 ## Feedback: defects in the ruler
 
