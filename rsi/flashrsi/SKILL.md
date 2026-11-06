@@ -1,11 +1,49 @@
 ---
 name: flashrsi
-version: 8
+version: 9
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
 
 # FlashRSI tilecov loop
+
+## Pointing the loop at a different goal
+
+The loop is defined against a **canonical ledger**, not against `coverage.json`.
+Any goal that can produce this shape gets `round`, `--json`, the ruler line, the
+regression refusal and the terminal check, with no change to the binary:
+
+```json
+{
+  "schema": 1,
+  "revision": "anything that identifies the measured tree",
+  "kpi":  {"name": "docstring coverage", "covered": 62, "achievable": 117, "unit": "lines"},
+  "rows": [{"key": "core/parse.py", "covered": 41, "achievable": 48,
+            "excluded": 0, "open": 7, "controls": 0, "reachable": true}]
+}
+```
+
+To start a goal elsewhere:
+
+1. **Write the producer first.** A small committed script prints the ledger. It
+   resolves the denominator; the goal text does not. This is the step that was
+   missing every time prose was mistaken for scope.
+2. `tilecov round --ledger path/to/ledger.json --goal "<the goal>" --dry-run`
+   works from any directory -- the ledger carries its own rows, so the tilecov
+   tree is not needed.
+3. Write the first round as the baseline (`--baseline path/to/ledger.json`), and
+   later rounds compare against it. A drop exits **1**.
+4. Set `"reachable": false` on rows no amount of work can move. They land in
+   `open.hardware`, never in `open.reachable`, so the block will not promise them
+   and `terminal` can still be honest.
+
+The tool refuses (`exit 2`) a ledger whose `schema` is not 1, or with no rows --
+a goal with no measurable rows is not a goal at 100%.
+
+`tilecov ledger --canonical` emits this repo's own rows in the same shape, so you
+can see a filled-in example. `benchmarks/tilecov/rustport/canonical_selftest.py`
+drives a foreign ledger end to end and fails if the tool ever becomes welded to
+tilecov again.
 
 ## What the tilecov numbers are, and are not
 

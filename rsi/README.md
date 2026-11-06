@@ -79,7 +79,8 @@ Other commands:
 
 | command | what |
 |---|---|
-| `ledger [--json]` | the item ledger, as a table or as JSON |
+| `ledger [--json\|--canonical]` | the item ledger; `--canonical` emits the portable shape any other goal can produce |
+| `round --ledger P` | drive the loop over **any** goal's canonical ledger, from any directory |
 | `kpi` | the one-line KPI |
 | `measure [-o P]` | re-measure the tree into a manifest |
 | `round --json` | the round block as one object, for a driver that should not parse prose |
