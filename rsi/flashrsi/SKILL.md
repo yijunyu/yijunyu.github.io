@@ -61,10 +61,13 @@ tilecov round --baseline benchmarks/tilecov/campaigns/<campaign>/state.json \
 - Report the block it prints. Do not recompute it, and do not add a second
   opinion about whether the delta is "really" progress.
 
-Build it once with `cargo build --release -p tilecov_rs --bin tilecov`; the
-binary is `target/release/tilecov`. The Python toolchain stays as the parity
-oracle (`benchmarks/tilecov/rustport/score.py` grades the port) until that
-score is trusted; the round path is the Rust one.
+It is installed with `curl -fsSL https://yijunyu.github.io/rsi/install.sh | sh`,
+or built in-tree with `cargo build --release -p tilecov_rs --bin tilecov`
+(`target/release/tilecov`). It locates the tree at run time — `--root <dir>`,
+then `$TILECOV_ROOT`, then walking up for `benchmarks/tilecov/` — so running it
+inside a checkout needs no flags. The Python toolchain stays as the parity
+oracle (`benchmarks/tilecov/rustport/score.py` grades the port) until that score
+is trusted; the round path is the Rust one.
 
 ### 3a. Arm a CONTINUING goal — part of `spec`, not only of `go`
 

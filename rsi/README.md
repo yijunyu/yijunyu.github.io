@@ -47,10 +47,21 @@ blocked?  no -- 0 reachable open item(s), 9 hardware-only
 Exit `1` with `REJECT` when the ledger went backwards; the stored baseline is
 not overwritten, so a rejected round cannot launder a claim into the next one.
 
-`tilecov` reads the tree from its checkouts: set `TILECOV_ROOT=/path/to/repo`
-when running it against a different checkout, otherwise it uses the path baked
-in at build time. Other commands: `ledger [--json]`, `kpi`, `measure [-o P]`,
-`version`.
+`tilecov` finds the tree at **run time** — nothing is baked in at build time:
+
+1. `--root <checkout>` (global, may go before or after the command)
+2. `$TILECOV_ROOT`
+3. walking up from the current directory, looking for `benchmarks/tilecov/`
+
+So running it inside a checkout needs no flags. Outside one it fails with the
+search path named instead of guessing:
+
+```
+tilecov: cannot find the benchmark tree from /tmp upwards (looked for benchmarks/tilecov/).
+  Pass --root <checkout> or set TILECOV_ROOT=<checkout>.
+```
+
+Other commands: `ledger [--json]`, `kpi`, `measure [-o P]`, `round`, `version`.
 
 ## Attach the skill to your agent
 
