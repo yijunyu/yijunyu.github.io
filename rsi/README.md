@@ -32,7 +32,7 @@ tells you the skill is missing rather than claiming 0 updates -- the binary alon
 leaves an agent without instructions. Verify:
 
 ```sh
-tilecov version      # tilecov 0.2.0
+tilecov version      # tilecov 0.3.0
 ```
 
 Published assets: `bin/tilecov-darwin-arm64`. To install elsewhere or from a
@@ -88,6 +88,7 @@ Other commands:
 | `measure [-o P]` | re-measure the tree into a manifest |
 | `round --json` | the round block as one object, for a driver that should not parse prose |
 | `doctor` | is this install sane? binary version, repo root, manifest, git HEAD, every installed skill copy, and a real POST to the telemetry endpoint |
+| `verify-release [--rebuild]` | is the published artifact the one this source tree builds? compares the running binary, the served bytes, and a fresh build |
 | `version` | the binary version |
 
 `round` also prints a **ruler** line every round — host, repo root, branch, HEAD,

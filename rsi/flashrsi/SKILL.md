@@ -1,11 +1,41 @@
 ---
 name: flashrsi
-version: 9
+version: 10
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
 
 # FlashRSI tilecov loop
+
+## Shipping: `tilecov verify-release`
+
+Publishing is where this instrument has failed most quietly. A binary built
+before a feature existed was served to installers for a full round while every
+check in the tool reported success, because none of them could see the artifact
+people actually fetch.
+
+Before announcing a release, from the source tree:
+
+```sh
+tilecov verify-release --rebuild
+```
+
+It compares three things -- the binary you are running, the bytes served at
+`rsi/bin/`, and a fresh build of the tree -- and fails when any of them differ.
+It also scans the published artifact for the build host's path, which leaks a
+private checkout into every install.
+
+The green state is the only state worth reporting:
+
+```
+ok        installed binary is the published artifact
+ok        published binary is path-clean
+ok        source tree builds the published bytes
+ok: release verified
+```
+
+Without `--rebuild` the third comparison is skipped and says so: a check that
+silently omits the case which caused the bug is worse than no check.
 
 ## Pointing the loop at a different goal
 
@@ -394,3 +424,206 @@ nuisance: a silently broken instrument can make the number *rise*. Pin the KPI's
 unit tests, its **end-to-end pipeline and denominator** in a golden integration test over the real
 ledger, and assert monotonic non-regression (a floor, not equality) so a legitimate improvement does
 not look like a failure — a gate that cries wolf stops being read.
+
+## Silent failure modes, and the rules that catch them
+
+Each rule below cost at least one round in a long campaign. They are stated **generally** on purpose: the
+campaign-specific instances live in that campaign's own reflection file, because a rule that only applies
+to one target is a note, not a skill.
+
+### 8. A perfect ratio is an absence, not a success
+
+A relative error of exactly `1.0`, or a metric that lands exactly on a boundary, usually means the output was
+**zero** -- nothing happened -- and not that the computation was wrong. The dangerous variants all produce a
+*zero* rather than an error: a placeholder emitted as a commented zero, an operation declared but never
+implemented, a check compared **before** the work it checks, a probe that cannot pass.
+
+Two moves follow. Make a dropped, unbound or zero-sized operation a **hard error** at emit/compare time, so
+"no output" can never be the signal. And add a dump of the intermediate sizes/types behind a debug flag: in
+the campaign that produced this section it found in one run what two rounds of eliminating candidates had
+not.
+
+### 9. A KPI reader must require EVIDENCE, and must parse a STRUCTURE
+
+Two independent faults, both of which made the number look *better*:
+
+* it credited the first artefact whose name and extent matched, never asking whether that artefact had ever
+  **run**. An artefact that fails on the target counted as serving a slot. **A thing is done only if the
+  ledger holds a pass record for it**, not if it exists and is named plausibly.
+* it matched on a pattern in a whole source file, so a **test stub** counted as a real feature for sixty
+  rounds. Parse the data structure (the list the program iterates), not the file that contains it.
+
+When a denominator changes, state the three checks that make it a correction rather than score inflation:
+the KPI's own definition already said so, **nothing was declared out of scope**, and an independent
+quantity agrees.
+
+### 10. Predict, then CHECK -- never derive a name
+
+Names that identify things in a binary, a container or a protocol are usually *not* what they look like:
+mangled vs unmangled symbols, a key prefix taken from a header field, an entry point with a vendor suffix.
+Deriving one from the source signature reads plausible and fails as "not found", which looks like a missing
+feature rather than a wrong guess.
+
+> Write the prediction down **before** checking it, then read the real name from the artefact, then publish
+> the **checked** value. The written prediction is what makes the error visible instead of plausible.
+
+### 11. Trust exit codes; distrust summaries and pipelines
+
+Three variants of one mistake: a parsed summary (`awk` over a test log) that turned a failing suite into
+"0 passed"; a background job whose log went somewhere unreadable, so "no verdict" was recorded for a run
+that had finished; and `prog | grep ...; echo $?`, which reports the **last pipeline stage's** status, so a
+killed program printed `0`.
+
+Print the program's own status and its elapsed time, redirect to a file you can read, and read the file.
+
+### 12. Build the code path you are testing
+
+A build without the feature flag compiled *nothing* of the target-specific paths and printed success. Use a
+check-only build with the feature locally, and the real build on the real target. Same class: artefacts that
+only build with a feature must be gated, or they break the default build for everyone else.
+
+And for a **code emitter or generator**: compiling the tool proves nothing about its output. A patch was
+committed whose emitted artefact referenced two buffers that the declaration pass never saw -- correct Rust,
+invalid output, and it would have broken every artefact that tool produces. **Check a generator by
+generating**: emit an artefact that is already certified and diff or grep the output for what should not be
+there. One command, and it is the only one that tests the thing that ships.
+
+### 13. Sync the whole tree, never a file list
+
+Copying individual files to a remote target over many rounds left it building **stale** sources: the build
+was self-consistent, the tests passed, and a probe asked for a name that had been renamed away rounds
+earlier. Conclusions had to be re-qualified, including one reported as proof that a rename was
+"side-effect free" -- it had exercised the old code. A partial sync fails *silently*, which is worse than a
+build error, and it is the same failure as a stale cached input.
+
+### 13a. Probe the RESOURCE's own state before theorising about a hang
+
+Ten rounds went into "the launch hangs", with six hypotheses tested and eliminated, before anyone ran the
+device's own status command. It showed a shared vLLM worker holding **56 GB of a 64 GB device**: an `aclrtMalloc`
+that succeeds and a kernel launch that never completes is what a nearly-full accelerator looks like, and the
+clincher was that a KNOWN-GOOD revision of the code, re-run unchanged, hung too.
+
+**The check is one second long and belongs before the first hypothesis**: the accelerator's memory and process
+list (`npu-smi info`, `nvidia-smi`, equivalent). A permanence clause says to re-probe a busy resource each round
+-- re-probe the DEVICE, not only the files and the network.
+
+Corollary: **when a known-good revision also fails, the variable is the environment, not the code.** That single
+run -- old code, same host, same inputs -- is worth more than six hypotheses.
+
+### 13b. Code reachable only through a LONG run cannot be cross-checked -- extract it
+
+A router lived inside an end-to-end example whose shortest meaningful run was 11 minutes. Every test of it was
+therefore either skipped or run through the whole model. Extracted into a library function, it acquired three unit
+tests and a second independent implementation in one round -- the same move that turned a 34-block dependency from
+"consistent" into "correct".
+
+The test is: **can this function be called with a five-element input in under a second?** If not, it is not
+testable, whatever it computes.
+
+### 13c. Metadata is WIRING TRUTH, not decoration -- read every key the model declares
+
+Four independent-arithmetic cross-checks were green and the model was still wrong: `expert_weights_scale = 2.5` sat
+in the checkpoint's own metadata the whole time and the implementation ignored it. Every product, dequant and route
+was correct; the contribution was simply weighted differently from the model's -- a class of error that no amount of
+checking the ARITHMETIC can find.
+
+**Enumerate the checkpoint's metadata keys and check each one against the implementation.** Block counts, expert
+counts, used/shared counts, scales, norms, epsilons: each is a claim the model makes about itself, and each is
+cheap to verify. The tensor names give the STRUCTURE; the metadata gives the CONSTANTS.
+
+### 13d. SEARCH for an existing implementation before writing one, and never `cat >` a path you have not read
+
+A 1,310-line tokeniser with the model family's special tokens already existed in the repository. I did not look, wrote a
+partial one with `cat >` at that exact path, and **destroyed the real one**. Restored from git and compared, my version was
+WRONG -- right on one word, emitting a token separator between every word of a sentence.
+
+Three failures, one lesson:
+1. **Grep for the function before writing it**: `pub fn encode`, `tokenizer`, the obvious names. One command.
+2. **Never `cat > path` / `write` a path without READING it first.** A shell redirect bypasses the read-before-write
+   policy entirely; the policy exists because this exact mistake is cheap and silent.
+3. **Commit only if the gate passed IN THAT COMMAND**: `pytest ... && git commit`, never `pytest ...; git commit`.
+
+And the trap that made it dangerous rather than merely redundant: **the wrong encoding round-trips perfectly.** Any
+test that only checks encode->decode passes on a broken tokeniser. The real check is a hand-known token count for a
+sentence, which is why `Vocab`'s own tests assert specific id lists.
+
+### 13e. A regression test's fixture must CONTAIN the condition the bug needed
+
+Four tests were written to guard real fixed bugs, and every one that was thrown away or rewritten was wrong in the
+FIXTURE, not the code: zeros where the bug needed signal (`k`/`v` = 0 means attention contributes nothing), one step where
+the bug needed two (`taps[j]` needs `j` positions; a carried state needs something carried), an output format only one of
+two implementations prints, and a tolerance tighter than the printed precision.
+
+**A fixture that cannot express the bug passes against the broken code and proves nothing -- which is worse than no test,
+because it is a green light.**
+
+And when PROVING a test by reintroducing the bug: **verify the mutation landed before reading the result.** A `replace`
+whose pattern omitted one comment line silently matched nothing, the test passed ("proof inconclusive"), and the
+near-conclusion was that the TEST was weak when in fact the CODE had never changed. Use a rigid pattern, assert the new
+text is in the file, and refuse to run if it is not -- a vacuous proof and a passing test look identical from the
+outside.
+
+So, when writing the test: *construct the input that would make the OLD code fail first*, watch it fail, then fix the code
+and watch it pass. A test that has never been red is not yet evidence.
+
+### 13f. A recorded FAILURE is a claim about a REVISION -- it expires when a fix lands near it
+
+For ten rounds I described the hyper-connection path as "still panics on a third indexing bug". The fix had landed in the
+round after the run I was quoting; I never re-ran it, and the path had worked ever since (a token that moves by 10%, a
+passing integration test asserting exactly that, and an exit code of 0).
+
+The campaign had already recorded five stale ARTEFACTS (a cpp, an ELF, a binary) and one stale SCOPE (a defaulted block
+count). This is the most expensive variant: **a conclusion that was true when drawn and never re-tested after the change that
+fixed it.**
+
+So: when writing a known-failure into a plan, record **the revision or commit it was measured at**, and when a fix lands
+anywhere near it, treat the claim as expired until a re-run renews it. A passing test and a persisting belief are different
+kinds of evidence, and only one of them updates itself.
+
+### 13g. A KPI field must DERIVE from the record, not REMEMBER a fact
+
+Three fields in one campaign's KPI were stale in the same way, each reporting a fact that was true when written and had
+stopped being true:
+
+  * a certification count that lived in a narrative instead of the manifest;
+  * `tok_per_s: "UNRESOLVED"` while a timed run sat in a commit message;
+  * `weights_missing: [two models]` dated the day before both arrived -- for ~120 rounds.
+
+**Every one was a remembered fact in a field that reads as measured.** The check is mechanical: for each field, is there a
+file, a probe or a count behind it, or is it a literal? A literal in a status field is a note to self that will outlive its
+truth.
+
+And deriving is not enough on its own: **a field derived from the WRONG OBJECT looks live and is wrong.** A reference table
+pointed at `glm5_ref.rs` for "GLM 5.3" -- a real file, a real CPU reference, for GLM-5.**2**, whose architecture is
+DeepSeek-V3.2. Every "does the reference exist" check passed. Read the artefact's own header before trusting its name.
+
+Corollary: when a field must answer about "the host", **say which host** -- one machine's `absent` is another's `file`, and
+the path in the value is the disclosure.
+
+### 13h. A count that misses its own arithmetic is a bug, not a bonus
+
+A `pub mod` line inserted between a `#[path = "moe.rs"]` attribute and its own `pub mod moe;` bound `moe.rs` to a second
+module name. Everything compiled, everything passed, and the ONLY symptom was the test count: 388 -> 418.
+
+**The fix took two minutes; the diagnosis took a round**, because +30 had been written down as "the new module is
+contributing tests" when the new module had three tests. The arithmetic was available at the moment of recording and was
+skipped.
+
+Rule: after adding code, predict the count. +3 expected and +30 observed is not a rounding error -- it is a second module.
+When a number surprises you in a direction you did not ask for, it is evidence, not confirmation.
+
+### 14. After two rounds of confirming that correct code is correct, change the instrument
+
+A fault resisted several hypotheses, each tested by reading the same code again. The rule that would have
+saved the most: by the second round, stop reading and either (a) change the *instrument* -- a bisect, a
+different driver, a reproducer handed to the vendor -- or (b) **record a bounded limit and move on**. A
+recorded limit with its range ("fails above roughly X, passes below Y") is worth more than a seventh
+plausible story, and it is often the fact that later identifies the real cause.
+
+### 15. When a generated artefact misbehaves, wrap the WORKING one minimally
+
+If a generated artefact behaves badly, do not theorise about the generator. Take the artefact that **is**
+known good, change one thing, and compare: wrap the working body in one loop, switch one constant, add one
+brace. In the campaign this came from, three rounds went into a failure whose cause was a defect in a scratch
+generator; the command that found it took a minute. Done first, it saves rounds; done afterwards, it becomes
+the method that produced the campaign's biggest wins.
