@@ -1,11 +1,30 @@
 ---
 name: flashrsi
-version: 13
+version: 14
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
 
 # FlashRSI tilecov loop
+
+### The driver's view must not differ from the terminal's
+
+`round` and `round --json` derive their baseline from the same function. They did
+not always: the JSON path kept an older parser, so it reported `delta: null` for
+every canonical baseline, called every foreign ledger `revision_mismatch: false`,
+and ignored `--strict` completely. A driver is the consumer least able to notice
+a quiet difference, so the two are now one code path.
+
+Under `--strict` with a mismatched baseline, `--json` emits the refusal as a
+document rather than only on stderr:
+
+```json
+{"refused": "the ledger is at r1 and the baseline at r0, ...",
+ "revision_mismatch": true, "strict": true}
+```
+
+and exits **5**. Without `--strict` the same run reports `revision_mismatch:
+true`, `delta: null`, `regressed: false`.
 
 ### `doctor` reports conditions, not just presence
 
@@ -662,6 +681,44 @@ skipped.
 
 Rule: after adding code, predict the count. +3 expected and +30 observed is not a rounding error -- it is a second module.
 When a number surprises you in a direction you did not ask for, it is evidence, not confirmation.
+
+### 13j. Absence claims need a WHOLE-CRATE search and a TEST search
+
+Four consecutive rounds claimed parts of a model were "not implemented in the engine" -- hyper-connections, a compressor, an
+indexer, a learned output collapse. **All four were wrong**, each time because a `grep` in one file was followed by a
+conclusion about the system, and each time the mechanism was one module away with its own tests.
+
+The procedure that would have avoided all four:
+
+1. **Search for the WEIGHTS the mechanism consumes**, not for a field name you expect: `hc_`, `hc_fn`, `output_hc_head`,
+   `compressor`, `indexer`. A mechanism that multiplies by weights names those weights somewhere.
+2. **Search for a TEST.** Tests name their subject (`cpu_dispatcher_output_hc_head_batched_matches_sequential`). In a codebase
+   with this much testing, **a test is proof of existence**; if you find one, the question is where the mechanism is *called*,
+   not whether it is *written*.
+3. **Search the whole crate**, not the file you are reading, and say which directories the search covered when you report it.
+
+A negative claim is a claim about everywhere. Make the search match the claim's scope, or scope the claim down to what you
+searched.
+
+### 13i. Ask the object; do not infer what it would say
+
+For dozens of rounds this record called `9703` "decode's token for Hello", then built three rounds of conclusions on it. Asked
+directly, the vocabulary object says:
+
+```
+Vocab::decode(&[19180]) -> "Hello"        Vocab::decode(&[9703]) -> " master"
+```
+
+**9703 was never a tokenisation of anything.** It was a value from a synthetic-embedding fallback path, and I attributed it to
+the tokeniser because that is where token ids normally come from.
+
+The general form: when a value's meaning is in doubt and the object that owns it is already in hand, **call the accessor**. A
+`debug_assert`, a `decode`, a `name_of`, a `display` -- one line, a string for an answer. Reasoning about a number from the
+context you believe it came from substitutes your model of the provenance for the provenance itself, and that model is exactly
+what is wrong when you are confused.
+
+Corollary: if the object's accessor is awkward to call, that is the code smell. A vocabulary you cannot ask "what is token N"
+is a vocabulary whose users will guess.
 
 ### 14. After two rounds of confirming that correct code is correct, change the instrument
 
