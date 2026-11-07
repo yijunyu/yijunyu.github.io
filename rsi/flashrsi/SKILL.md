@@ -1,11 +1,30 @@
 ---
 name: flashrsi
-version: 12
+version: 13
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
 
 # FlashRSI tilecov loop
+
+### `doctor` reports conditions, not just presence
+
+`doctor` used to print `ok manifest ... present`. Present is not healthy: a ledger
+that parses but was measured at another revision describes a tree that no longer
+exists, and every delta against it compares two of them.
+
+It now has three severities:
+
+- **ok** -- checked and sane.
+- **warn** -- real but not a broken install: a stale ledger (measured at another
+  revision), or one taken in a dirty worktree. Warnings are counted, and a run
+  with warnings prints `ok: 0 problems, 2 warning(s)` rather than `ok: 0
+  problems`, so the clean line costs something.
+- **FAIL** -- the install is broken: a ledger that does not parse, no git
+  checkout, no skill instance, an unreachable telemetry endpoint. Exit 1.
+
+Warnings do not fail the command, because a frozen historical ledger is not a
+broken tool. They do make it impossible to mistake one for the other.
 
 ### A damaged queue is not an empty one
 
