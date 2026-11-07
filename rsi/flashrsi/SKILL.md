@@ -1,11 +1,28 @@
 ---
 name: flashrsi
-version: 10
+version: 11
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
 
 # FlashRSI tilecov loop
+
+### The ledger must not contradict itself
+
+Two rules, both learned by watching a round report something confidently wrong:
+
+1. **`kpi` must equal the sum of the rows.** If a producer writes
+   `"covered": 90` but the rows add to 65, the round exits **2** and names both
+   numbers. A dashboard reading `kpi` and a round reading `rows` would otherwise
+   disagree forever, each looking correct on its own.
+2. **A baseline from another revision is not a regression.** If the ledger says
+   `revision: r1` and the baseline says `r0`, the round prints the two revisions
+   and reports **no delta and no verdict**. With `--strict` it refuses and exits
+   **5**, naming both.
+
+Without rule 2 the tool once reported "the ledger went backwards" when the
+baseline was simply taken elsewhere -- a false accusation that would have sent
+someone hunting a regression that never happened.
 
 ## Shipping: `tilecov verify-release`
 

@@ -1,7 +1,7 @@
 {
   "name": "flashrsi",
-  "version": 10,
-  "sha256": "8924ec4f1426bb6e21c1114fbacbe8910e670a8eadf84f99579a1df5346ba292",
+  "version": 11,
+  "sha256": "7921e6d09cfe0a0a420aaa8a7b08eb22f46dfc87e03cffe20feb62addf094f11",
   "url": "https://yijunyu.github.io/rsi/flashrsi/SKILL.md",
   "install": "tilecov skill --update",
   "report_to": "https://github.com/yijunyu/yijunyu.github.io/issues/new?labels=feedback"
