@@ -1,6 +1,6 @@
 ---
 name: flashrsi
-version: 14
+version: 15
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
@@ -44,6 +44,43 @@ It now has three severities:
 
 Warnings do not fail the command, because a frozen historical ledger is not a
 broken tool. They do make it impossible to mistake one for the other.
+
+### The queue is a database, and the harnesses are Rust
+
+Two changes with one reason: every defect in this project's own instrumentation
+came from a second implementation of "correct" that drifted from the first.
+
+**The feedback queue is SQLite** (`benchmarks/tilecov/feedback.db`). The JSONL
+file could not express its own rules; the schema can:
+
+- `open` is `NOT NULL CHECK (open IN (0,1))` -- "missing" and "closed" are no
+  longer the same value;
+- a trigger rejects closing a report without a resolution, so "close it to move
+  the count" fails at the database rather than at review;
+- writes are `IMMEDIATE` transactions in WAL mode with a busy timeout, because
+  more than one session files reports against this checkout (observed: F11
+  arrived mid-campaign). Sixteen concurrent filings produce F1..F16 with no
+  errors; the JSONL version lost 7 of 8 to lock contention.
+
+`feedback.jsonl` was imported once and renamed `feedback.jsonl.imported`. Three
+entries (F1, F2, F5) were closed before the resolution rule existed and were
+imported exactly as recorded -- `tilecov feedback --audit` lists them rather than
+inventing a reason.
+
+**The harnesses are Rust.** `maintenance.py`, `canonical_selftest.py`,
+`score.py` and `round_selftest.py` are gone:
+
+| was | now |
+|---|---|
+| `python3 .../maintenance.py` | `tilecov maintain` |
+| `python3 .../score.py` | `tilecov score` |
+| `canonical_selftest.py` | `crates/tilecov_rs/tests/canonical.rs` |
+| `round_selftest.py` | the same file (`round_fires_in_every_direction`) |
+
+One deliberate exception: **`benchmarks/tilecov/goal.py` stays Python**. It is the
+reference this crate is a port of, and `corpus.json` states that a Rust value
+disagreeing with it is the port's bug. Rewriting the oracle in Rust would make
+`axes_parity` a comparison of Rust against Rust -- a number that can only go up.
 
 ### A damaged queue is not an empty one
 
