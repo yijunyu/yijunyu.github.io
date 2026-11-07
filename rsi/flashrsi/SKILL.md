@@ -1,6 +1,6 @@
 ---
 name: flashrsi
-version: 15
+version: 16
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
@@ -77,10 +77,19 @@ inventing a reason.
 | `canonical_selftest.py` | `crates/tilecov_rs/tests/canonical.rs` |
 | `round_selftest.py` | the same file (`round_fires_in_every_direction`) |
 
-One deliberate exception: **`benchmarks/tilecov/goal.py` stays Python**. It is the
-reference this crate is a port of, and `corpus.json` states that a Rust value
-disagreeing with it is the port's bug. Rewriting the oracle in Rust would make
-`axes_parity` a comparison of Rust against Rust -- a number that can only go up.
+**No Python in the pipeline at all.** `tilecov score` used to shell out to
+`goal.py` and compare the two live, which made the oracle a runtime dependency of
+the instrument. The reference's output was captured once into
+`benchmarks/tilecov/rustport/golden/` (axes, kpi line, table, measure manifest)
+and the comparison is against those bytes.
+
+What that trades away, stated plainly: a frozen corpus cannot catch a bug both
+implementations share. What it buys: `score` runs anywhere, and the expected
+values cannot drift when the tree changes underneath the measurement.
+
+Freeze a new golden only when the reference itself changed, and say so in the
+commit -- regenerating it from the Rust binary would make the check compare Rust
+to Rust, which is the one thing it must never do.
 
 ### A damaged queue is not an empty one
 
