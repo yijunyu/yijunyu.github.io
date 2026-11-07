@@ -1,11 +1,26 @@
 ---
 name: flashrsi
-version: 11
+version: 12
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
 
 # FlashRSI tilecov loop
+
+### A damaged queue is not an empty one
+
+`feedback_open` is the number this instrument exists to report, so it must not be
+the one number that improves when its file is damaged. The reader refuses, with
+exit **2**, when:
+
+- a line does not parse (a crash mid-write truncates a line, and the old reader
+  skipped it -- an open report would vanish and the KPI would read 0);
+- an entry has no boolean `open` field (guessing "closed" hides a defect,
+  guessing "open" invents one);
+- `open` is a string, not a boolean.
+
+`maintenance.py` enforces the same three rules, so the committed reader and the
+binary cannot disagree about a broken queue.
 
 ### The ledger must not contradict itself
 
