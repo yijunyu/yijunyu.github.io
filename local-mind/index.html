@@ -686,6 +686,7 @@ sh install --key DS4-… --email you@example.com</div>
   // The curated table is one row per class, so the class has to be visible;
   // otherwise the reader sees four models with no reason four.
   const CLASS = { small: "\u22648B", mid: "~30B", large: "~125B", frontier: "1M" };
+  const CLASS_ORDER = ["small", "mid", "large", "frontier"];
   const rowsEl = document.getElementById("modelrows");
   const noteEl = document.getElementById("tablenote");
   const noteWrapEl = document.getElementById("tablenotewrap");
@@ -805,10 +806,25 @@ sh install --key DS4-… --email you@example.com</div>
     const visible = showAll || picked.length === 0 ? allRows : picked;
     if (pickbarEl) {
       const hidden = allRows.length - picked.length;
+      // Name only the classes this machine actually answers for: a single-row
+      // box must not advertise four classes, and "0 more hidden" with a
+      // "Show all 1" button is worse than saying nothing.
+      const classes = [...new Set(picked.map(r => r.class).filter(Boolean))]
+        .sort((a, b) => CLASS_ORDER.indexOf(a) - CLASS_ORDER.indexOf(b))
+        .map(c => CLASS[c] || c);
       pickbarEl.hidden = picked.length === 0;
-      picktextEl.textContent = showAll
-        ? `All ${allRows.length} measurements.`
-        : `One pick per size class (\u22648B, ~30B, ~125B, 1M/frontier). ${hidden} more measurements hidden.`;
+      if (showAll) {
+        picktextEl.textContent = `All ${allRows.length} measurements.`;
+      } else if (hidden === 0) {
+        picktextEl.textContent = picked.length === 1
+          ? `Every measurement on this machine is shown.`
+          : `Every measurement on this machine is shown (${classes.join(", ")}).`;
+      } else {
+        picktextEl.textContent =
+          `One pick per size class (${classes.join(", ")}). `
+          + (hidden === 1 ? "1 more measurement hidden." : `${hidden} more measurements hidden.`);
+      }
+      showAllBtn.hidden = hidden === 0;
       showAllBtn.textContent = showAll ? "Show picks only" : `Show all ${allRows.length}`;
     }
     rowsEl.innerHTML = sortRows(visible).map(r => {
