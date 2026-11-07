@@ -48,7 +48,14 @@ fi
 
 # Refresh any skill instance already installed for an agent. Absent directories
 # are skipped, so this never installs the skill where it was not asked for.
-"$DEST/tilecov" skill --update || echo "install.sh: could not refresh the skill (offline?)"
+# 0 = refreshed; 1 = binary installed but no skill anywhere (the binary explains
+# what to do); 2 = the manifest could not be fetched, which IS worth a warning.
+"$DEST/tilecov" skill --update
+case $? in
+  0|1) ;;
+  2) echo "install.sh: could not reach the skill manifest -- is this machine online?" ;;
+  *) echo "install.sh: skill refresh failed unexpectedly" ;;
+esac
 
 case ":$PATH:" in
   *":$DEST:"*) : ;;
