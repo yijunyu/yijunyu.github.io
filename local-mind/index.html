@@ -302,6 +302,9 @@
   /* A closed <details> does not print. Opening them for the print is done in
      script; this only keeps the chevrons out of the paper. */
   @media print{ .chev,.allctl{display:none;} }
+  .pickbar{margin:.65rem 0 0;display:flex;gap:.7rem;flex-wrap:wrap;align-items:baseline;font-size:.86rem;color:var(--mut)}
+  .pickbar button{font:inherit;font-size:.82rem;padding:.2rem .6rem;border:1px solid #d7d7d7;border-radius:.4rem;background:#fff;color:#333;cursor:pointer}
+  .pickbar button:hover{background:#f4f4f4}
 </style>
 </head>
 <body>
@@ -368,6 +371,10 @@
         </thead>
         <tbody id="modelrows"></tbody>
       </table>
+    <p class="pickbar" id="pickbar" hidden>
+      <span id="picktext"></span>
+      <button type="button" id="showallbtn">Show all measurements</button>
+    </p>
     </div>
     <details class="more" id="tablenotewrap">
       <summary><span class="chev" aria-hidden="true"></span>Measurement notes and caveats</summary>
@@ -679,6 +686,9 @@ sh install --key DS4-… --email you@example.com</div>
   const noteEl = document.getElementById("tablenote");
   const noteWrapEl = document.getElementById("tablenotewrap");
   const priceEl = document.getElementById("boxprice");
+  const pickbarEl = document.getElementById("pickbar");
+  const picktextEl = document.getElementById("picktext");
+  const showAllBtn = document.getElementById("showallbtn");
   const tabsEl = document.querySelector(".tabs");
 
   // The measurement note is collapsed while it is ordinary detail, and forced
@@ -731,6 +741,11 @@ sh install --key DS4-… --email you@example.com</div>
     prefill:{ first: -1, get: r => rateNum(r.prefill) },
   };
   let sortCol = null, sortDir = 1, curBox = 0;
+  // Curation, not completeness: one pick per size class per machine. The
+  // full measurement set stays in machines.json and is one click away, but
+  // the default is our tradeoff rather than a menu of 48 rows for a reader
+  // to sort through.
+  let showAll = false;
 
   function sortRows(rows) {
     if (!sortCol || !SORTS[sortCol]) return rows;
@@ -781,7 +796,18 @@ sh install --key DS4-… --email you@example.com</div>
       return;
     }
     paintSortHeaders();
-    rowsEl.innerHTML = sortRows(b.rows).map(r => {
+    const allRows = b.rows || [];
+    const picked = allRows.filter(r => r.pick);
+    const visible = showAll || picked.length === 0 ? allRows : picked;
+    if (pickbarEl) {
+      const hidden = allRows.length - picked.length;
+      pickbarEl.hidden = picked.length === 0;
+      picktextEl.textContent = showAll
+        ? `All ${allRows.length} measurements.`
+        : `One pick per size class (\u22648B, ~30B, ~125B, 1M/frontier). ${hidden} more measurements hidden.`;
+      showAllBtn.textContent = showAll ? "Show picks only" : `Show all ${allRows.length}`;
+    }
+    rowsEl.innerHTML = sortRows(visible).map(r => {
       const runs = (r.modes && r.modes.length)
         ? r.modes.map(m => `<span class="pill ${PILL[m][0]}">${PILL[m][1]}</span>`).join(" ")
         : `<span class="na">does not fit</span>`;
@@ -806,6 +832,8 @@ sh install --key DS4-… --email you@example.com</div>
            + `<td class="num">${r.size}</td><td class="num">${cx}</td><td>${eng}</td><td>${runs}</td><td class="num">${d}</td>`
            + `<td class="num">${pf}</td></tr>`;
     }).join("");
+    // Curated on purpose: the default table is one pick per size class, and
+    // the full measurement set is one click away rather than 48 rows of choice.
     // A box with no recorded price says nothing rather than "$0" or "—".
     priceEl.textContent = b.price ? `≈ ${b.price}` : "";
     setNote((b.note || "")
@@ -1089,6 +1117,11 @@ sh install --key DS4-… --email you@example.com</div>
   }
   window.addEventListener("hashchange", revealHash);
   revealHash();
+
+  // The curation is a default, not a veto: one click reveals every measurement.
+  if (showAllBtn) {
+    showAllBtn.addEventListener("click", () => { showAll = !showAll; render(curBox); });
+  }
 
   fetch("machines.json", { cache: "no-cache" })
     .then(r => { if (!r.ok) throw new Error(`machines.json: HTTP ${r.status}`); return r.json(); })
