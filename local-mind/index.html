@@ -302,6 +302,7 @@
   /* A closed <details> does not print. Opening them for the print is done in
      script; this only keeps the chevrons out of the paper. */
   @media print{ .chev,.allctl{display:none;} }
+  .classpill{display:inline-block;margin-left:.35rem;padding:.05rem .45rem;border-radius:.7rem;background:#f0f4ff;color:#345;font-size:.72rem;letter-spacing:.02em;vertical-align:.05rem}
   .pickbar{margin:.65rem 0 0;display:flex;gap:.7rem;flex-wrap:wrap;align-items:baseline;font-size:.86rem;color:var(--mut)}
   .pickbar button{font:inherit;font-size:.82rem;padding:.2rem .6rem;border:1px solid #d7d7d7;border-radius:.4rem;background:#fff;color:#333;cursor:pointer}
   .pickbar button:hover{background:#f4f4f4}
@@ -682,6 +683,9 @@ sh install --key DS4-… --email you@example.com</div>
   // needs one fetch to populate, so failure has to be visible rather than
   // leaving an empty table that looks like "nothing runs".
   const PILL = { gpu: ["p-gpu","GPU"], ssd: ["p-ssd","SSD"], hyb: ["p-hyb","CPU+GPU"] };
+  // The curated table is one row per class, so the class has to be visible;
+  // otherwise the reader sees four models with no reason four.
+  const CLASS = { small: "\u22648B", mid: "~30B", large: "~125B", frontier: "1M" };
   const rowsEl = document.getElementById("modelrows");
   const noteEl = document.getElementById("tablenote");
   const noteWrapEl = document.getElementById("tablenotewrap");
@@ -828,7 +832,9 @@ sh install --key DS4-… --email you@example.com</div>
         : `<span class="na">not read</span>`;
       // The engine is named per row because a rate is meaningless without it.
       const eng = r.engine ? `<span class="eng">${r.engine}</span>` : `<span class="na">not recorded</span>`;
-      return `<tr><td class="fam">${r.name} <span class="variant">${r.params}</span></td>`
+      const cls = r.class && CLASS[r.class]
+        ? ` <span class="classpill">${CLASS[r.class]}</span>` : "";
+      return `<tr><td class="fam">${r.name} <span class="variant">${r.params}</span>${cls}</td>`
            + `<td class="num">${r.size}</td><td class="num">${cx}</td><td>${eng}</td><td>${runs}</td><td class="num">${d}</td>`
            + `<td class="num">${pf}</td></tr>`;
     }).join("");
