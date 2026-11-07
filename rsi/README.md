@@ -26,10 +26,13 @@ curl -fsSL https://yijunyu.github.io/rsi/install.sh | sh
 ```
 
 Installs `tilecov` to `~/.local/bin` (created if missing) and prints the `PATH`
-line if it is not already there. Verify:
+line if it is not already there. It refreshes a skill you already have but will
+not create one for an agent you did not install into, so on a fresh machine it
+tells you the skill is missing rather than claiming 0 updates -- the binary alone
+leaves an agent without instructions. Verify:
 
 ```sh
-tilecov version      # tilecov 0.1.0
+tilecov version      # tilecov 0.2.0
 ```
 
 Published assets: `bin/tilecov-darwin-arm64`. To install elsewhere or from a
