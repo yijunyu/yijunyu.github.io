@@ -1,6 +1,6 @@
 ---
 name: flashrsi
-version: 16
+version: 17
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
 description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
 ---
@@ -187,9 +187,9 @@ The tool refuses (`exit 2`) a ledger whose `schema` is not 1, or with no rows --
 a goal with no measurable rows is not a goal at 100%.
 
 `tilecov ledger --canonical` emits this repo's own rows in the same shape, so you
-can see a filled-in example. `benchmarks/tilecov/rustport/canonical_selftest.py`
-drives a foreign ledger end to end and fails if the tool ever becomes welded to
-tilecov again.
+can see a filled-in example. `crates/tilecov_rs/tests/canonical.rs` drives a
+foreign ledger end to end and fails if the tool ever becomes welded to tilecov
+again.
 
 ## What the tilecov numbers are, and are not
 
@@ -286,9 +286,12 @@ It is installed with `curl -fsSL https://yijunyu.github.io/rsi/install.sh | sh`,
 or built in-tree with `cargo build --release -p tilecov_rs --bin tilecov`
 (`target/release/tilecov`). It locates the tree at run time — `--root <dir>`,
 then `$TILECOV_ROOT`, then walking up for `benchmarks/tilecov/` — so running it
-inside a checkout needs no flags. The Python toolchain stays as the parity
-oracle (`benchmarks/tilecov/rustport/score.py` grades the port) until that score
-is trusted; the round path is the Rust one.
+inside a checkout needs no flags. There is no Python in the instrument: parity
+is graded by `tilecov score` against the frozen goldens in
+`benchmarks/tilecov/rustport/golden`, captured from the Python reference on
+2026-11-07. Never regenerate a golden from the Rust binary -- that turns the
+check into Rust comparing with Rust. Freeze a new one only when the reference
+itself changed, and say so in the commit.
 
 ### 3a. Arm a CONTINUING goal — part of `spec`, not only of `go`
 
