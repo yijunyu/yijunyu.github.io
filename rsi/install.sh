@@ -50,8 +50,14 @@ fi
 # are skipped, so this never installs the skill where it was not asked for.
 # 0 = refreshed; 1 = binary installed but no skill anywhere (the binary explains
 # what to do); 2 = the manifest could not be fetched, which IS worth a warning.
-"$DEST/tilecov" skill --update
-case $? in
+# `|| rc=$?` is load-bearing: under `set -e` a bare non-zero exit aborts the
+# script here, so the case never ran, the "is this machine online?" warning could
+# never print, and the PATH advice below -- the most common install problem --
+# was unreachable on exactly the paths that needed it. Assigning in a condition
+# context keeps set -e from firing. Reported as F33, reproduced, fixed here.
+rc=0
+"$DEST/tilecov" skill --update || rc=$?
+case $rc in
   0|1) ;;
   2) echo "install.sh: could not reach the skill manifest -- is this machine online?" ;;
   *) echo "install.sh: skill refresh failed unexpectedly" ;;
