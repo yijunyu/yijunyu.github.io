@@ -1,0 +1,41 @@
+<!doctype html><meta charset=utf-8><title>Local Mind — Sage S2.1 Flash</title><style>:root{--fg:#111;--mut:#666;--ac:#0a5}*{box-sizing:border-box}body{max-width:46rem;margin:0 auto;padding:3rem 1.2rem;font:16px/1.65 -apple-system,system-ui,Segoe UI,sans-serif;color:var(--fg)}h1{font-size:2rem;margin:.2rem 0}h2{margin-top:2rem}.tag{color:var(--mut);font-size:1.1rem}nav{margin:1.5rem 0;font-size:.95rem}nav a{margin-right:1rem;color:var(--ac);text-decoration:none}a{color:var(--ac)}.pill{display:inline-block;background:#eef;border-radius:1rem;padding:.15rem .7rem;margin:.2rem .3rem .2rem 0;font-size:.9rem}footer{margin-top:3rem;color:var(--mut);font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}pre{white-space:pre-wrap}table{border-collapse:collapse;margin:1rem 0}th,td{border:1px solid #e5e5e5;padding:.4rem .7rem;text-align:left}th{background:#fafafa;font-weight:600}blockquote{margin:1.2rem 0;padding:.8rem 1rem;background:#fffbe6;border-left:4px solid #e8c84a}</style>
+<h1>Sage S2.1 Flash</h1>
+<p class=tag><span class=pill>Catalogued, not measured</span> <span class=pill>No local weights yet</span></p>
+<nav><a href="./">Home</a><a href="./docs.html">Documentation</a><a href="./support.html">Support</a><a href="./privacy.html">Privacy</a></nav>
+<blockquote><b>Status: catalogued, and no local weights exist.</b> This entry records what the publisher ships and what its architecture implies for a local machine. <b>It carries no speed figure of any kind</b>, measured or modelled, and it is not in any build.</blockquote>
+<p>A 320B-parameter mixture-of-experts scientific model from Shanghai AI Laboratory (InternLM), published in bfloat16 safetensors on Hugging Face and ModelScope. Local Mind catalogues the checkpoint; it does not yet hold a copy.</p>
+<h2>What the catalogue records</h2>
+<table>
+<tr><th>Format</th><td>bfloat16 safetensors, 129 shards</td></tr>
+<tr><th>Weight bytes</th><td>642,830,000,000 (about 642.8 GB), from the publisher's own per-file sizes</td></tr>
+<tr><th>Parameters</th><td>320B total, 18B active per token (the publisher's figures)</td></tr>
+<tr><th>Architecture</th><td><code>Glm5NextForConditionalGeneration</code> — the GLM-5.3-Flash architecture</td></tr>
+<tr><th>Depth / width</th><td>45 layers, 4,096 hidden, 288 routed experts, 8 active</td></tr>
+<tr><th>Attention</th><td>34 linear-attention (KDA) layers and 11 full-attention layers; MLA with 1,536 q-rank and 512 KV-rank</td></tr>
+<tr><th>Modality</th><td>text plus a ~0.3B vision tower and eighteen scientific projectors (CIF, DNA, ECG, protein and others)</td></tr>
+<tr><th>Trained context</th><td>1,048,576 tokens</td></tr>
+<tr><th>Licence</th><td>MIT, per the model card</td></tr>
+</table>
+<p>There is no GGUF. Both the Hugging Face and ModelScope repositories ship safetensors only; a search of both hubs for a quantised Sage repository finds none. The FP8 variant on both hubs is 328.5 GB and is still safetensors.</p>
+<h2>What has been verified</h2>
+<ul>
+<li><b>It is the same model as GLM-5.3-Flash on the text path, tensor for tensor.</b> All 58 keys of <code>text_config</code> are identical, and after normalising the <code>model.language_model.</code> prefix the two weight indices share <b>38,423</b> tensor names with <b>zero</b> differences in either direction once GLM's FP8 <code>_scale_inv</code> scales are set aside. Sampled shapes from both files agree exactly.</li>
+<li><b>What Sage adds is outside the decode path.</b> The extra weights are 347 vision tensors and eighteen per-task scientific projectors. Neither is read to decode a text token.</li>
+<li><b>The publisher states the same thing.</b> Its deployment guide opens by saying Sage uses the GLM-5.3-Flash architecture and that the GLM recipes apply with the repository name substituted.</li>
+<li><b>Two deployment requirements, both about tokenisation rather than weights.</b> Every engine must be given <code>--trust-remote-code</code> or the stock tokenizer encodes <code>&lt;|user|&gt;</code>, <code>&lt;tool_call&gt;</code> and <code>&lt;think&gt;</code> as control tokens, and the model can stop early with no warning. vLLM additionally needs the repository's patch, which only reorders tool results before image collection.</li>
+</ul>
+<h2>What is <i>not</i> claimed</h2>
+<p><b>No decode or prefill speed, modelled or measured.</b> This entry is deliberately the one row in the catalogue with an empty rate rather than a projected one, and the reasoning is worth recording, because the obvious projection is available and is not used.</p>
+<p>The architecture identity above makes a projection easy: GLM-5.3-Flash decodes at 24.1 tok/s on this machine from a 96.5 GB Q2 GGUF, and Sage reads the same experts through the same kernels. But that is a claim about a sibling's file, not about these weights, and the difference is not small &mdash; a Q2 conversion of Sage would have to be produced here before it could be loaded at all. A number borrowed across that gap would be a prediction wearing a measurement's clothes.</p>
+<h2>Why it is not measured: the download, not the model</h2>
+<p>Producing a loadable file means fetching all 642.8 GB first, because the shards are bfloat16 and a quantiser cannot be run on a subset. Measured from this box on 2026-11-16, with range requests against the real shards:</p>
+<table>
+<tr><th>Parallel connections</th><td>8</td><td>16</td><td>48</td></tr>
+<tr><th>Throughput</th><td>12.2 MB/s</td><td>24.4 MB/s</td><td>24.4 MB/s</td></tr>
+</table>
+<p>The rate doubles from 8 to 16 connections and then does not move from 16 to 48, so the ceiling is per-connection-to-host and cannot be widened by asking for more. At 24 MB/s, 642.8 GB is about <b>7.6 hours</b> of download before conversion starts. ModelScope was slower on the same probe (1.6 MB/s against 8.9 MB/s for a mirror), so it is not the faster source.</p>
+<p>The converted file is not the obstacle: at the GLM-5.3-Flash bit rate a Q2 of these weights lands near 96.5 GB, which this 128 GB machine has run before. Disk is not the obstacle either, with 22 TB free. It is the eight hours of transfer standing between this catalogue entry and a measurement.</p>
+<p>A measurement will replace this section when the weights are local, converted and served on a quiet machine with internal storage. Until then the row shows <i>not measured</i>.</p>
+<h2>Engines</h2>
+<p>Not applicable yet, and stated so rather than left blank. No engine here loads these weights, and the local llama.cpp conversion tooling is missing its Python dependencies on this machine, so even a local conversion has a setup step in front of it. The publisher's own guidance is 8× H200 for the bfloat16 form, which is a datacentre configuration and not a local one.</p>
+<footer>© 2026 Yijun Yu · <a href="mailto:yijun.yu@gmail.com">yijun.yu@gmail.com</a></footer>
