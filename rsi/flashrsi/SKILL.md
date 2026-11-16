@@ -1,11 +1,137 @@
 ---
 name: flashrsi
-version: 17
+version: 18
 source: https://yijunyu.github.io/rsi/flashrsi/SKILL.md
-description: Continue the FlashRSI tilecov campaign in this repository, or specify it from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise the measured tile-rs coverage goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`.
+description: Continue a FlashRSI campaign in the current folder, or specify one from scratch. Use when the user says "flashrsi go" (resume the loop), "flashrsi spec" (specify KPIs, build the loop, instrument progress, then run it), or otherwise asks to raise a measured goal through repeated benchmarked harness improvements — including "keep going without stopping", which arms a persisted goal so the loop continues across automatic rounds instead of waiting for another `flashrsi go`. Which goal is resolved first (section 0) from `.claude/goal.json` and, when that does not decide, by asking; the tilecov coverage demo is a reference instrument and is never started by default.
 ---
 
 # FlashRSI tilecov loop
+
+### 0. Resolve WHICH goal before doing any work
+
+This skill ships with a **reference demo** — the tile-rs / Mojo coverage ledger in
+this checkout. That demo is an instrument, not an objective. Version 17 and earlier
+started it on `flashrsi go` whenever the word "coverage" appeared, which meant a
+session asked to keep working on some *other* goal in the same folder could be
+found a few rounds later optimising `mojo_numeric` toward 67/67. It happened. So:
+
+**No work, no edit, no round, and no `create_goal` until step 4 below has produced
+a goal and you have said which one it is.** Sections 1-4 of this skill are all
+downstream of this section and must not be read as "therefore start the demo".
+
+Run the four steps in order. Each step names the evidence it produces; a step
+skipped is a step that can select the wrong goal silently.
+
+**1. Read the persisted goal, if any.**
+
+```sh
+cat .claude/goal.json 2>/dev/null
+```
+
+The file may carry a top-level `goal`/`percent`, or a `goals` array. Read **every**
+entry, not the first one. For each entry note `goal`, `percent`, `assessed`, and
+`kpi.name` / `kpi.current` / `kpi.target`. Recent entries first is *not* a rule the
+file guarantees — the array is in whatever order it was written, and the entry
+most relevant to the user's own work is often not index 0.
+
+Also read, if present, `HANDOFF.md` / `GOAL.md` in the folders the user names, and
+this session's own active goal (`get_goal`). These describe sessions that came
+before this one; the user's last instruction outranks them, but they explain why
+the folder is in its present state.
+
+**2. Decide whether `.claude/goal.json` describes THIS invocation.**
+
+It does if **exactly one** entry fits: (a) its goal is about the repo or system the
+user just named, and (b) it is not recorded as complete. Both halves are needed: a
+stale entry for a finished campaign, or one for a different project that happens to
+share the checkout, is not the current goal just because it is in the file.
+
+**Two or more entries fitting is not a decision — it is the ambiguous case, and it
+goes to step 3.** Do not take the first entry, the newest one, or the one whose
+artifacts happen to be present in this checkout; all three are guesses wearing the
+costume of evidence. The commonest shape of this ambiguity is a file holding one
+entry for this session's goal and one for a different session's, and the entry with
+an in-tree ledger is usually not the one the user is asking about.
+
+**3. When the file does not decide, ask. Do not pick the demo.**
+
+Ask the user in one turn — with `ask_user_question` where the harness has it, as a
+plain structured question where it does not — one question, the candidate goals as
+options, and say what you found rather than presenting an open question with no
+evidence behind it:
+
+> `.claude/goal.json` has two goals: (1) MAX emitters 67/67, 95%; (2) vLLM-ascend
+> Rust kernels, 75%. This folder's own history is the second one. Which should
+> this session work on?
+
+The three cases that force a question rather than a choice:
+
+- **two or more plausible entries, and the user's wording fits more than one** —
+  the case above;
+- **the entry the user's words point at is not locally actionable** — a device
+  campaign whose board is off, an HPC target behind a tunnel. **That goal remains
+  the goal.** Print its blocker in the metric block every round and keep working
+  that goal's own software parts; a missing device is a fact about the resource,
+  not permission to change the objective. Do not substitute a locally-actionable
+  demo, and do not treat the absence of an instrument as a reason to go back to
+  step 2. Offer in the same one question: (a) wait for the resource, (b) work the
+  non-device part of that same goal, (c) switch goals explicitly. If the user does
+  not answer, the standing answer is (a) — wait for the resource, still on that
+  goal, and pick work from that goal's own remaining items, never a different
+  goal's;
+- **no entry fits at all** — then there is no goal here to continue, and a demo
+  campaign is the one thing you must not start on your own initiative.
+
+Ask **once** per invocation, bundled into a single question. Do not ask again to
+confirm an answer, and do not re-ask between rounds: an armed goal is the standing
+answer.
+
+This is the one question the loop is allowed to stop for, because it is the *only*
+one that is about which goal is being pursued rather than about permission to
+pursue it. It does not weaken "do not ask for permission to continue": once the
+goal is resolved and armed, continuation stays the default and no later round may
+re-open the choice. If you catch yourself drafting a question whose answer would
+not change *which goal* you work on, it is a permission question — delete it and
+continue.
+
+**4. Record the resolution, then proceed and say which target is running.**
+
+Print one line before the first round, so a wrong resolution is visible in the first
+reply rather than at round 20:
+
+```
+goal      <name> -- resolved from <.claude/goal.json[i] "quoted substring" | ask_user_question | ...>
+target    <the measured KPI and its current value>/<target>
+not-doing <goals found and explicitly excluded -- a blocked goal is NOT excluded; list it as "waiting on <resource>">
+```
+
+The resolution must quote its evidence: the exact substring of `.claude/goal.json`,
+of the user's own words, or of their answer that names this goal. If you cannot
+quote one, you did not resolve it — go back to step 3. Every wrong resolution this
+skill has seen was visible in that quote, and invisible without it.
+
+The **campaign's declared** goal is the one that drives rounds. `round --dry-run`
+prints a line beginning `goal` that is a *generic template* ("raise the measured
+tile-rs coverage, every item backed by its grader"), not a declaration — it says
+nothing about which goal the user wants. Never cite it as the objective, and never
+let its presence end this section early: the line is identical for every ledger. A
+campaign's own `config.json` and the prose in `.claude/goal.json` are not
+declarations of intent either; they record what a previous session wrote down.
+
+If step 3 moved the goal to something other than the reference demo, sections that
+describe the demo's own artifacts (campaigns 0023/0024, `mojo_numeric`, the MAX
+fixtures) apply only through the mechanism they demonstrate — a ledger, a `round`,
+a feedback queue. They are not the work. **The demo is the only goal in this
+checkout with a fully built instrument, and that is precisely why it is the wrong
+one to fall back on when the resolved goal has no ledger yet: building that goal's
+reader is the first iteration, not a reason to adopt the demo.**
+
+The halt is not a one-time event at the start of an invocation. It applies again
+whenever the goal being pursued stops being the one you printed: on a re-typed
+`flashrsi go`, in a resumed or forked session, and at any round whose residue no
+longer belongs to the named goal. Re-print the one line and check it against its
+source — that restores the gate. Asking the user again does not, unless the *goal*
+itself is genuinely in question again.
 
 ### The driver's view must not differ from the terminal's
 
@@ -198,11 +324,12 @@ The tile-rs coverage ledger (**230/239**, nine hardware targets open) is the
 real, measurable, adversarial workload to prove itself against -- something with
 a denominator it can count, exclusions with counterparts, and items that refuse.
 
-Do not assume it is what the user wants. A user who says "run flashrsi" against
-**this** repository is working on the demo; a user with a different benchmark, a
-different KPI or a different product may want the same mechanism pointed
-somewhere else. Ask before spending rounds on coverage the user never asked for,
-and never treat the 230/239 figure as a deliverable.
+Do not assume it is what the user wants, and do not read "run flashrsi in this
+repository" as "run the demo" — that sentence appeared in version 17 and is what
+sent a session off optimising a coverage KPI while the folder's real objective was
+elsewhere. Selection is section 0's job; by the time you are reading this section
+the goal has already been resolved and named. Never treat the 230/239 figure, or
+any demo KPI, as a deliverable.
 
 What transfers to another goal is the mechanism: a ledger-shaped measurement, a
 `round` that refuses a regression and names the next mechanism, a feedback queue
@@ -210,21 +337,33 @@ for defects in the ruler, and a self-updating skill. What does not transfer is
 the denominator -- every new goal needs its own, with a committed reader that
 resolves it.
 
+A goal that is real but not yet ledger-shaped is still a goal. Optimising a model
+on a host that is powered off, or on a board that does not answer, resolves to that
+goal with its blocker printed every round; scaling it to a ledger is the first
+iteration, not a precondition for choosing it. "I cannot measure it yet" has never
+been a reason to adopt a goal that comes with its own ledger.
+
 ## Expansion of `flashrsi spec`
 
 `flashrsi spec` expands to, verbatim:
 
 > specify the KPI's for the goal in flashrsi, and create the feedback loop, print the goal/KPI/progress ratio at each iteration of the loop, and flashrsi go
 
-Carry out all four parts in order.
+Note the phrase "the goal in flashrsi": it refers to the goal already in hand, and
+section 0 is what produces it. **`spec` starts by resolving which goal**, then
+carries out the four parts in order. A `spec` that opens by writing a KPI reader
+for the coverage demo without having done section 0 has specified the wrong goal,
+and every round after it inherits the mistake.
 
 ### 1. Specify the KPIs for the goal
 
 A KPI is a row with a **goal**, a `name`, a `target`, a `current`, a unit, and **the script that reads it**. Write them to the campaign config, not to chat. A KPI with no reader is not specified — it stays prose, is printed as `UNRESOLVED`, and never becomes scope by inference. This repository has paid twice for prose-to-scope guessing; the rule is that only a committed script may resolve a target.
 
-The goal itself is the campaign's declared one, read from the campaign config --
-and for the demo campaign that config says the nine hardware forms are out of
-scope by decision. The denominator is not an instruction. Where `.claude/goal.json` carries a matching `goal` + `kpi` pair, resolve the KPI from its structured fields (`name`, `board`, `condition`, `measured`) and carry its prose `target` through as context only.
+The goal itself is the one section 0 resolved; its campaign config then supplies
+the target and the out-of-scope record. Where no config exists yet, step 1 below
+writes one from the resolved goal rather than borrowing the demo's. (For the demo
+campaign that config says the nine hardware forms are out of scope by decision.)
+The denominator is not an instruction. Where `.claude/goal.json` carries a matching `goal` + `kpi` pair, resolve the KPI from its structured fields (`name`, `board`, `condition`, `measured`) and carry its prose `target` through as context only.
 
 If the campaign's `ACCEPTED_SCOPE.md` or `CLOSE.md` marks a subset out of scope, the **accepted** target — not the raw denominator — is the goal. The ledger's `achievable of achievable` line is a denominator, not a decision: never copy it into an objective, and never arm a goal whose remaining items the accepted scope already declares out of scope.
 
@@ -361,7 +500,7 @@ Read that expansion as three obligations, not one:
 
 - **continue the loop** — carry out the next local iteration. This is authorization to act, not a request for a status report, a plan, or a proposal.
 - **don't stop** — an accepted, verified change ends that iteration, not the run. Pick the next open mechanism and go again.
-- **until the goal is achieved** — "the goal" is the campaign's declared, *measured* target: the tilecov aggregate at full coverage, every item supported by its existing grader and regression controls. "Achieved" means the ledger says so, never that the work felt finished or that the remaining items look hard.
+- **until the goal is achieved** — "the goal" is the one section 0 resolved and you printed, and "achieved" means that goal's ledger says so: every item supported by its existing grader and regression controls. "Achieved" never means the work felt finished or that the remaining items look hard. When section 0 resolved to a goal other than the coverage demo, the demo's aggregate is not the target and reaching full coverage on it does not end this loop.
 
 ### Non-stop operation: arm a PERMANENT goal, then never wait for a human between rounds
 
@@ -371,9 +510,14 @@ continuation rounds, so the next iteration starts by itself. Use it.
 
 **Every `flashrsi` invocation that is a *loop* (not a one-off question) must do this, in order:**
 
-1. **Resolve the KPI from the ledger first** — never arm a goal whose target you have not measured.
+1. **Arm the goal section 0 resolved** — not the demo, and not the one the last round's
+   `next:` line names. The armed objective must be traceable to the resolution line you
+   printed (`goal <name> -- resolved from <source>`); if you cannot point at that source,
+   go back to section 0 and finish it before arming. Arming a goal the user did not ask
+   for is worse than not arming: it converts a one-round mistake into an unbounded run.
+2. **Resolve the KPI from the ledger first** — never arm a goal whose target you have not measured.
    If the reader script is broken, fix the measurement before arming anything.
-2. **`create_goal`** with the campaign's declared objective, resolved at arm time from the campaign
+3. **`create_goal`** with that goal's declared objective, resolved at arm time from the campaign
    config plus the accepted-scope record and filled with the *measured* target — never a literal
    copied from prose. Two shapes:
    - coverage campaign: "raise the accepted tilecov target from `<current>/<target>` to the
@@ -381,18 +525,20 @@ continuation rounds, so the next iteration starts by itself. Use it.
    - device campaign: "reach `<measured>/<target> <unit>` for `<KPI>` on `<part>`, with >=2 identical
      repeats".
 
-   Do not arm at all when the accepted scope already covers the declared goal — complete it or
-   report it instead. Every objective also carries an **explicit permanence clause** (stays active
+   Do not arm at all when the accepted scope already covers **the resolved** goal — complete it or
+   report it instead. That test is about your goal, never the demo's: an in-tree campaign printing
+   `terminal yes` is evidence about that campaign and is never a reason to skip arming a
+   different one. Every objective also carries an **explicit permanence clause** (stays active
    across rounds; never blocked or completed for a transient interruption; re-probe missing
    resources each round). Leave `max_goal_rounds` unset, or set it to >= 100000. One goal per
    campaign — if a campaign closes, complete the old goal and create a new one.
-3. **Run one iteration**, edit + grade + re-measure, and **print the metric block** (section 3 above)
+4. **Run one iteration**, edit + grade + re-measure, and **print the metric block** (section 3 above)
    in the response to *every* round, including continuation rounds. The block is the only thing
    a reader sees while the loop runs unattended, so it is not optional and it is never a summary
    of the previous round — re-read the numbers from the ledger each time.
-4. **Do not ask for permission to continue.** Continuation is the default. Asking "shall I keep
+5. **Do not ask for permission to continue.** Continuation is the default. Asking "shall I keep
    going?" converts a non-stop loop back into a per-turn loop and wastes the round.
-5. **End the round with the next iteration's first action already chosen**, so the continuation
+6. **End the round with the next iteration's first action already chosen**, so the continuation
    has something concrete to do. "Next: <one named mechanism>" is part of the block.
 
 **The goal is permanent by default. Arm it so that it cannot lapse:**
@@ -433,7 +579,7 @@ of the same unchanged number with no new evidence is a signal that the *classifi
 
 The loop below is the method; this paragraph is the stop condition.
 
-Read `benchmarks/tilecov/README.md` and the current campaign config before choosing work. `HANDOFF.md` may be stale; confirm any in-flight claim against current artifacts. Then get the measured state and the open items from `tilecov round` (section 3b), which re-measures the tree and names the next mechanism. Do not assume a historical count is current, and do not run the Python instruments on the round path.
+Read the **resolved** goal's campaign config before choosing work. `benchmarks/tilecov/README.md`, the campaigns under `benchmarks/tilecov/campaigns/`, and the in-tree tilecov ledger are read only when the resolved goal *is* that coverage campaign — when the goal resolved elsewhere, their presence under this root identifies the demo, not your work, and finding them is not finding a goal to work on. `HANDOFF.md` may be stale; confirm any in-flight claim against current artifacts. Then get the measured state and the open items from `tilecov round` (section 3b) **against the resolved goal's own ledger** (`--ledger <path>`, section 2 above): which ledger is the third thing section 0 settles, and a demo ledger's `next:` line is never it. When the resolved goal has no ledger yet, write its producer (see "Pointing the loop at a different goal", steps 1-4) before the first round rather than measuring it through the demo's. Do not assume a historical count is current, and do not run the Python instruments on the round path.
 
 For each iteration:
 
@@ -442,6 +588,10 @@ binary already holds — preserve the campaign's pinned baseline, re-measure the
 full ledger with the same instruments, compare, refuse a regression, record the
 before/after, name the next mechanism — is `tilecov round` (section 3b). Do not
 redo it in prose, and do not re-derive the numbers from the previous message.
+When the resolved goal has no ledger yet this is not an exception and not a
+reason to adopt the demo's: write its producer from "Pointing the loop at a
+different goal" (steps 1-4) before the first round, and measure nothing through
+another goal's ledger in the meantime.
 
 The agent's job is what the binary cannot do:
 
@@ -461,7 +611,7 @@ The agent's job is what the binary cannot do:
    - **Batch the next iteration when it is safe.** The plan is a list of tasks, not a single task: if several of them are independent — disjoint files or regions, separate acceptance tests, no shared instrument change — carry them in ONE iteration and grade them together, rather than spending an iteration per item. Batching is the default when the tasks do not interact; it stops being safe when they share a serialization point (the same match arm, the same refusal text, the same wrapper table) or when one of them changes the instrument, because then a failure in one hides the cause in another.
    - If the classification leaves no class this repository can move, say so with the four external inputs named, and stop rather than manufacturing an iteration.
 
-Use `benchmarks/tilecov/tilers_coverage.py` for tasks and grading and `benchmarks/tilecov/run_rsi.py` for FlashRSI rollouts in an isolated `TILECOV_REPO` worktree. Inspect their current options before launching. The `tile` CLI is the first tool for accelerator-kernel lowering and verification; read the repository's `tile-rs` skill when that work arises.
+When the resolved goal runs its loop through the tilecov instrument, `benchmarks/tilecov/tilers_coverage.py` grades its tasks and `benchmarks/tilecov/run_rsi.py` runs FlashRSI rollouts in an isolated `TILECOV_REPO` worktree; both belong to the reference demo and are not how another goal's rounds are graded. Inspect their current options before launching. The `tile` CLI is the first tool for accelerator-kernel lowering and verification; read the repository's `tile-rs` skill when that work arises.
 
 Do not inflate the score by weakening an oracle, silently dropping unsupported operations, changing the denominator within a campaign, or calling a compile or manifest entry verified. Keep hardware-dependent target items in the goal. Record a missing device as a concrete limit while continuing independent software work. Stop the loop only when the measured goal is fully covered, the user asks to stop, or a real external blocker leaves no meaningful work; report the exact remaining items and evidence in the latter case.
 
