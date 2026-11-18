@@ -311,18 +311,21 @@
           "size": "5.23 GiB (Q4_K_M GGUF)",
           "modes": [],
           "decode": null,
-          "engine": "not measured",
+          "engine": "no loadable GGUF at llama.cpp build 10964",
           "ctx": "256k",
           "ctx_tokens": 262144,
-          "ctx_src": "SenseNova-Loop-9B-Preview-Q4_K_M.gguf qwen35.context_length (262144)"
+          "ctx_src": "SenseNova-Loop-9B-Preview-Q4_K_M.gguf qwen35.context_length (262144); the two public Q4_K_M conversions each fail for a DIFFERENT reason, both read off the loader: AtomicChat declares qwen35 but carries 523 tensors where that arch expects 427 (96 mhc_* hyper-connection tensors it does not define), and annelo declares sensenova_loop, which no upstream llama.cpp architecture list contains"
         },
         {
           "name": "DeepSeek-V4-Pro-Qwen3.5-4B",
           "params": "4B hybrid (32 layers, 8 full-attention, qwen3.5 linear attention elsewhere)",
-          "size": "2.59 GiB (Q4_K_M GGUF)",
-          "modes": [],
-          "decode": null,
-          "engine": "not measured",
+          "size": "2.58 GiB (Q4_K_M GGUF)",
+          "modes": [
+            "gpu"
+          ],
+          "decode": "104.2 tok/s",
+          "prefill": "1552-1619 t/s",
+          "engine": "llama.cpp (llama-bench)",
           "ctx": "256k",
           "ctx_tokens": 262144,
           "ctx_src": "model-Q4_K_M.gguf qwen35.context_length (262144); upstream config.json text_config.max_position_embeddings (262144) agrees"
