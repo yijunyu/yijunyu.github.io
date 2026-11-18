@@ -1,0 +1,42 @@
+<!doctype html><meta charset=utf-8><title>Local Mind — SenseNova-Loop-9B</title><style>:root{--fg:#111;--mut:#666;--ac:#0a5}*{box-sizing:border-box}body{max-width:46rem;margin:0 auto;padding:3rem 1.2rem;font:16px/1.65 -apple-system,system-ui,Segoe UI,sans-serif;color:var(--fg)}h1{font-size:2rem;margin:.2rem 0}h2{margin-top:2rem}.tag{color:var(--mut);font-size:1.1rem}nav{margin:1.5rem 0;font-size:.95rem}nav a{margin-right:1rem;color:var(--ac);text-decoration:none}a{color:var(--ac)}.pill{display:inline-block;background:#eef;border-radius:1rem;padding:.15rem .7rem;margin:.2rem .3rem .2rem 0;font-size:.9rem}footer{margin-top:3rem;color:var(--mut);font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}pre{white-space:pre-wrap}table{border-collapse:collapse;margin:1rem 0}th,td{border:1px solid #e5e5e5;padding:.4rem .7rem;text-align:left}th{background:#fafafa;font-weight:600}blockquote{margin:1.2rem 0;padding:.8rem 1rem;background:#fffbe6;border-left:4px solid #e8c84a}</style>
+<h1>SenseNova-Loop-9B</h1>
+<p class=tag><span class=pill>Catalogued, not measured</span> <span class=pill>No loadable GGUF</span></p>
+<nav><a href="./">Home</a><a href="./docs.html">Documentation</a><a href="./support.html">Support</a><a href="./privacy.html">Privacy</a></nav>
+<blockquote><b>Status: catalogued, and it will not load.</b> The weights are on disk here. No speed figure is quoted, because neither public Q4_K_M conversion can be opened by the installed engine &mdash; and the two fail for <b>different reasons</b>, both read off the loader rather than inferred.</blockquote>
+<p>A 9B multimodal model from SenseNova, published 2026-11-17. Its distinguishing feature is architectural: 32 layers, of which <b>24 are executed twice</b>, so a forward pass performs 56 layer executions from 32 layers of weights. That is a compute-for-memory trade &mdash; a 9B file costs about a 14.6B model's arithmetic, which the card itself calls "inference-equivalent 14.6B".</p>
+<h2>What the catalogue records</h2>
+<table>
+<tr><th>Format</th><td>Q4_K_M GGUF, community conversions</td></tr>
+<tr><th>Weight bytes</th><td>5.23 GiB (AtomicChat conversion), 8.22 GiB (annelo conversion)</td></tr>
+<tr><th>Parameters</th><td>9B, 523 tensors in the GGUF</td></tr>
+<tr><th>Depth</th><td>32 layers, 24 of them reused twice &mdash; 56 executions per forward pass</td></tr>
+<tr><th>Width</th><td>4,096 hidden, 16 attention heads, 4 KV heads</td></tr>
+<tr><th>Attention</th><td>hybrid: three linear-attention layers then one full-attention layer</td></tr>
+<tr><th>Extra mechanism</th><td>two-stream manifold-constrained hyper-connections (<code>mhc_*</code>), 4 tensors per layer</td></tr>
+<tr><th>Trained context</th><td>262,144 tokens, from <code>qwen35.context_length</code></td></tr>
+<tr><th>Licence</th><td>Apache 2.0</td></tr>
+</table>
+<h2>Why it does not load: two conversions, two failures</h2>
+<p>The interesting part of this entry is that "the GGUF is broken" is not one fact. Two public Q4_K_M conversions of the same model fail against llama.cpp build 10964, and the loader's own messages separate them:</p>
+<table>
+<tr><th>Conversion</th><th>Declared architecture</th><th>What the loader said</th></tr>
+<tr><td>AtomicChat</td><td><code>qwen35</code></td><td><code>wrong number of tensors; expected 523, got 427</code></td></tr>
+<tr><td>annelo</td><td><code>sensenova_loop</code></td><td><code>unknown model architecture: 'sensenova_loop'</code></td></tr>
+<tr><td>guideboardlabs</td><td><code>sensenova_loop</code></td><td><code>unknown model architecture: 'sensenova_loop'</code></td></tr>
+</table>
+<p>The first two rows were measured here on 2026-11-18 &mdash; both files are on disk and both loader messages are quoted from runs against them. The guideboardlabs row is a third conversion carrying the same architecture name, reported by the same loader at an earlier attempt; that file was deleted from disk once the AtomicChat one showed <code>qwen35</code> was the more promising label, so its message is not re-verified in this write-up.</p>
+<p>The second and third are the honest case: the converter wrote the model's real architecture name, and upstream llama.cpp has no such architecture &mdash; the installed runtime's architecture list carries no <code>sensenova*</code> entry at all, so these files need an engine change, not a flag.</p>
+<p>The first is the one worth understanding. AtomicChat's file <b>declares <code>qwen35</code></b> &mdash; an architecture the engine does support &mdash; and the header parses cleanly all the way through its 48 metadata keys and its context length. It fails later, at tensor mapping, because the file carries <b>523 tensors where <code>qwen35</code> expects 427</b>. The 96 extra are the <code>mhc_attn.*</code> and <code>mhc_ffn.*</code> hyper-connection weights, four per reused layer across 24 layers. So the conversion took a qwen3.5-shaped stack and bolted the loop mechanism on without extending the architecture definition to define it.</p>
+<blockquote>This is why the entry is catalogue-only <b>and</b> why it should not be read as "the model does not work". A 9B model of this shape would fit on this machine many times over; what is missing is an engine that implements its architecture, not memory or disk.</blockquote>
+<h2>What has been verified</h2>
+<ul>
+<li><b>The metadata parses.</b> Architecture, 32 blocks, 4,096 embedding, 16 heads, 4 KV heads, 262,144 context, Apache 2.0 &mdash; all read out of the GGUF header directly, without loading the model.</li>
+<li><b>Two conversions were loaded here and failed; a third reports the same architecture error.</b> The two failure modes above are the complete set: one architecture mismatch at the tensor table, and one architecture the engine does not know.</li>
+<li><b>The tensor inventory is the reason the first file fails.</b> Comparing its suffixes against a known-good <code>qwen35</code> file (see <a href="./deepseek-v4-pro-qwen35-4b.html">DeepSeek-V4-Pro-Qwen3.5-4B</a>) shows the 24 shared suffixes plus <code>mhc_attn</code> and <code>mhc_ffn</code> and nothing else &mdash; the extra 96 tensors exactly.</li>
+</ul>
+<h2>What is <i>not</i> claimed</h2>
+<p><b>No decode or prefill rate, measured or modelled.</b> The loop mechanism makes an obvious projection tempting &mdash; 32 layers of weights but 56 layer executions, so a decode rate lower than a plain 9B by roughly the ratio of executions to layers &mdash; and that projection is <i>not</i> used here. It would be a claim about a model no engine here can run.</p>
+<p>Also not claimed: that a fixed conversion is close. Someone would have to add <code>sensenova_loop</code> to an engine, or produce a GGUF that expresses the loop within an architecture the engine already has. Neither exists today, and this entry will be replaced with a measurement if one does.</p>
+<h2>Engines</h2>
+<p>None here loads it. The publisher ships an official AWQ 4-bit release and points at llama.cpp, LM Studio and Jan, but the GGUF conversions those tools consume are the ones that fail above &mdash; so the recommendation is real for some future conversion and not for the files currently published.</p>
+<footer>© 2026 Yijun Yu · <a href="mailto:yijun.yu@gmail.com">yijun.yu@gmail.com</a></footer>
