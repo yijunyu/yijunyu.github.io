@@ -329,6 +329,17 @@
           "ctx": "256k",
           "ctx_tokens": 262144,
           "ctx_src": "model-Q4_K_M.gguf qwen35.context_length (262144); upstream config.json text_config.max_position_embeddings (262144) agrees"
+        },
+        {
+          "name": "Maxwell-V1-Flash",
+          "params": "35B-A3B MoE, 45 layers, 256 experts (12 active) + 2 shared, block-sparse attention",
+          "size": "19.36 GiB (Q4_K/IQ4_XS GGUF)",
+          "modes": [],
+          "decode": null,
+          "engine": "no loadable GGUF at llama.cpp build 10964",
+          "ctx": "512k",
+          "ctx_tokens": 524288,
+          "ctx_src": "Maxwell-V1-Flash-Q4_0.gguf maxwell_moe.context_length (524288), read from the file header; the model card says 262144 is the configured window, so the two disagree and the file's value is recorded"
         }
       ],
       "os": "mac",
