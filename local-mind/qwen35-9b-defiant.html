@@ -1,0 +1,39 @@
+<!doctype html><meta charset=utf-8><title>Local Mind — Qwen3.5-9B Defiant</title><style>:root{--fg:#111;--mut:#666;--ac:#0a5}*{box-sizing:border-box}body{max-width:46rem;margin:0 auto;padding:3rem 1.2rem;font:16px/1.65 -apple-system,system-ui,Segoe UI,sans-serif;color:var(--fg)}h1{font-size:2rem;margin:.2rem 0}h2{margin-top:2rem}.tag{color:var(--mut);font-size:1.1rem}nav{margin:1.5rem 0;font-size:.95rem}nav a{margin-right:1rem;color:var(--ac);text-decoration:none}a{color:var(--ac)}.pill{display:inline-block;background:#eef;border-radius:1rem;padding:.15rem .7rem;margin:.2rem .3rem .2rem 0;font-size:.9rem}footer{margin-top:3rem;color:var(--mut);font-size:.85rem;border-top:1px solid #eee;padding-top:1rem}pre{white-space:pre-wrap}table{border-collapse:collapse;margin:1rem 0}th,td{border:1px solid #e5e5e5;padding:.4rem .7rem;text-align:left}th{background:#fafafa;font-weight:600}blockquote{margin:1.2rem 0;padding:.8rem 1rem;background:#fffbe6;border-left:4px solid #e8c84a}</style>
+<h1>Qwen3.5-9B Defiant</h1>
+<p class=tag><span class=pill>Measured</span> <span class=pill>Provisional</span> <span class=pill>Text only here</span></p>
+<nav><a href="./">Home</a><a href="./docs.html">Documentation</a><a href="./support.html">Support</a><a href="./privacy.html">Privacy</a></nav>
+<blockquote><b>On an M1 Ultra 128 GB: 42.5&nbsp;tok/s decode, 888&nbsp;t/s prefill at 512 tokens.</b> The weights are on internal NVMe and the rate is measured with llama-bench on the exact catalogued file. It is marked provisional because the host was not idle and decode spread 10% across three processes, so 42.5 is a floor at the default thread count rather than a quiet-box rate.</blockquote>
+<p>A 9B dense fine-tune of <a href="https://huggingface.co/Qwen/Qwen3.5-9B">Qwen/Qwen3.5-9B</a> published by DavidAU, in GGUF form, with a multi-token-prediction (MTP) layer. Local Mind catalogues the MTP <code>Q4_K_M</code> build and measures it; the upstream repository also ships non-MTP quants and vision projectors that this entry does not cover.</p>
+<h2>What the catalogue records</h2>
+<table>
+<tr><th>Repository</th><td><code>DavidAU/Qwen3.5-9B-The-Defiant-Fable-Uncensored-Heretic-NEO-IMATRIX-MAX-MTP-GGUF</code></td></tr>
+<tr><th>File</th><td><code>Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-MTP-Q4_K_M.gguf</code></td></tr>
+<tr><th>Weight bytes</th><td>6,979,975,392 (6.50 GiB), the LFS size from the repository API</td></tr>
+<tr><th>SHA-256</th><td><code>d7eb4fac9389d53fa576f64a6ff53e914a00bc7705dc354d1065887565147320</code></td></tr>
+<tr><th>Quantisation</th><td>Q4_K_M, with the MTP tensors at Q8_0 per the model card</td></tr>
+<tr><th>Architecture</th><td><code>qwen35</code> — dense, no expert tensors in the header</td></tr>
+<tr><th>Depth / width</th><td>32 transformer blocks + 1 nextn (MTP) block, 4,096 hidden, 12,288 feed-forward, 16 query / 4 KV heads</td></tr>
+<tr><th>Attention</th><td>hybrid: 24 linear-attention blocks and 8 full-attention blocks (<code>full_attention_interval</code> 4)</td></tr>
+<tr><th>Vocabulary</th><td>248,320</td></tr>
+<tr><th>Trained context</th><td>262,144 tokens, from <code>qwen35.context_length</code> in the file header</td></tr>
+<tr><th>Licence</th><td>Apache-2.0 — the base model's licence, which the derivative's own tags agree with</td></tr>
+</table>
+<p>The architecture line is read from the GGUF header rather than from the publisher's prose, by HTTP range request over the first 30&nbsp;MB of the file. That read is also what establishes it is dense: the header carries no <code>expert_count</code> or <code>expert_used_count</code>, so the row prices on its whole 6.50&nbsp;GiB per token rather than on an active-expert fraction.</p>
+<h2>The measurement</h2>
+<table>
+<tr><th></th><th>run 1</th><th>run 2</th><th>run 3</th><th>quoted</th></tr>
+<tr><th>pp512 (t/s)</th><td>877.29 ± 9.84</td><td>888.06 ± 0.41</td><td>888.85 ± 1.44</td><td><b>888</b></td></tr>
+<tr><th>tg128 (tok/s)</th><td>41.83 ± 2.48</td><td>46.09 ± 5.79</td><td>42.48 ± 2.90</td><td><b>42.5</b></td></tr>
+</table>
+<p>Three <b>separate processes</b>, each at <code>llama-bench -p 512 -n 128 -r 3 -ngl 99</code>, on stock llama.cpp build <code>b29c606e2</code> (10964), default thread count (16), the catalogued file on internal NVMe, fully offloaded. Separate processes rather than one process with more repetitions, because this site's earlier lesson is that run-to-run variance is larger than repetition-to-repetition variance and a single process hides it. The quoted figures are the medians; the ranges are shown above rather than averaged away.</p>
+<p>Two conditions keep this row provisional, and both move the result by more than the differences worth reporting:</p>
+<ul>
+<li><b>The host was not idle.</b> Two unrelated <code>llama-server</code> processes held about 93&nbsp;GB resident on this 128&nbsp;GB machine while the benchmark ran. Decode is resident after load, so it is the less exposed of the two figures, but the 10% spread across identical runs is the cost of the load.</li>
+<li><b>Thread count matters here more than on a plain dense model.</b> The same file at <code>-t 8</code> measured 54.0&nbsp;tok/s decode against 41.8&ndash;46.1 at the default 16. That is the hybrid linear-attention blocks doing work the thread count changes; it is why the row quotes the default configuration and calls the figure a floor rather than a peak.</li>
+</ul>
+<p>A quiet-box re-measurement will replace this badge when the machine is free. Until then the app's own estimate for this row is the same measured floor, and it is marked modelled in the app because the app has not run the file itself.</p>
+<h2>MTP, and what this number is not</h2>
+<p>The catalogued file is the MTP variant: the header declares <code>qwen35.nextn_predict_layers = 1</code>, and the repository ships the same quants without that layer beside it. <b>llama-bench wires no drafter</b>, so the 42.5&nbsp;tok/s is ordinary decode on the MTP file and does not depend on speculative decoding; the nextn block is not read per token unless a drafter is enabled. The publisher's own figures — about 130&nbsp;t/s regular and up to 185&nbsp;t/s MTP for <code>Q4_K_S</code> on an RTX&nbsp;5090 under LM Studio — are his, on different hardware and a different engine, and are not carried here. The model card's quality claims are self-reported with no independent reproduction checked, and this page makes no quality claim at all.</p>
+<h2>Vision</h2>
+<p>The upstream repository is image-text-to-text and ships <code>mmproj-BF16/F16/F32</code> projectors as separate files. A catalogue row in Local Mind names exactly one file, so this entry is the text model; image prompting is not catalogued and was not tested.</p>
+<footer>© 2026 Yijun Yu · <a href="mailto:yijun.yu@gmail.com">yijun.yu@gmail.com</a></footer>
