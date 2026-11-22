@@ -524,7 +524,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "m1u: explicit does-not-fit row (2026-11-22)"
+   ],
    "note": "Kimi-K3 has an m1u row; K3.1-Pro is a different release",
    "fit": {
     "kv_estimate": "MLA 93 layers x (512+64) x 2B",
@@ -568,7 +570,8 @@
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "meituan-longcat/LongCat-2.5",
@@ -589,7 +592,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "m1u: explicit does-not-fit row (2026-11-22)"
+   ],
    "fit": {
     "kv_estimate": "MLA 38 layers x (512+64) x 2B",
     "kv_f16_bytes_per_token": 43776,
@@ -632,7 +637,8 @@
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "OVHaiLLM/Olala-v1.0-mini-7A1B",
@@ -1386,7 +1392,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "m1u: explicit does-not-fit row (2026-11-22)"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 70 global layers x 2 x 8 kv x 192 hd x 2B",
     "kv_f16_bytes_per_token": 430080,
@@ -1429,7 +1437,8 @@
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "mistralai/Mistral-Large-4-1T-A52B",
@@ -1450,7 +1459,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "m1u: explicit does-not-fit row (2026-11-22)"
+   ],
    "fit": {
     "kv_estimate": "MLA 72 layers x (512+64) x 2B",
     "kv_f16_bytes_per_token": 82944,
@@ -1493,7 +1504,8 @@
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "LiquidAI/LFM2.5-24B-A2B",
@@ -2082,7 +2094,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "m1u: explicit does-not-fit row (2026-11-22)"
+   ],
    "fit": {
     "kv_estimate": "MLA 61 layers x (512+64) x 2B",
     "kv_f16_bytes_per_token": 70272,
@@ -2125,7 +2139,8 @@
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "deepseek-ai/DeepSeek-V4-Flash",
@@ -2234,7 +2249,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "m1u: explicit does-not-fit row (2026-11-22)"
+   ],
    "fit": {
     "kv_estimate": "empirical V4.1 llama.cpp KV (12.9 GB at 1M, 40 layers) scaled to 61 layers",
     "kv_f16_bytes_per_token": 18761,
@@ -2277,7 +2294,8 @@
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "MiniMaxAI/MiniMax-M3",
@@ -2776,7 +2794,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "m1u: explicit does-not-fit row (2026-11-22)"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 23 global layers x 2 x 4 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 94208,
@@ -2819,7 +2839,8 @@
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "Qwen/Qwen3.6-35B-A3B",

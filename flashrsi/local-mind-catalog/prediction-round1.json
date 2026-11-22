@@ -1,0 +1,13 @@
+{
+ "round": 1,
+ "written": "2026-11-22T20:59:16.696Z",
+ "policy": "claude-opus-5.5",
+ "edit": "measurement harness: a published rate must pass two probes run on the same server process: a greedy 17x23 correctness probe and a streaming OpenAI tool-call probe (tools=[get_weather], tool_choice auto) whose arguments must parse as JSON; plus explicit does-not-fit rows for the 7 candidates whose smallest supported format exceeds every box",
+ "predicted": {
+  "metric": "C",
+  "from": 0.28,
+  "direction": "up",
+  "magnitude": "+0.14 from does-not-fit rows alone (21/50 = 0.42); 0.55-0.65 if the amd395 and m1u batches land",
+  "note": "the probes should reject at least one engine/model pair that llama-bench alone would have published (Strata on M4 already showed the failure shape)"
+ }
+}
