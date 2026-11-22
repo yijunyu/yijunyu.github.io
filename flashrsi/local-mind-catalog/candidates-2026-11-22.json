@@ -135,8 +135,36 @@
    "ctx_tokens_declared": null,
    "ctx_src": null,
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 79.2,
+      "variant_or_setting": "bash only",
+      "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+      "source_date": "2026-11-21 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 71.6,
+      "variant_or_setting": "Terminal-Bench 2.1; Inkling 2 Mini in pi v0.83.0",
+      "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+      "source_date": "2026-11-21 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 5.6,
+      "variant_or_setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+      "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+      "source_date": "2026-11-21 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card says the model is intended for \"agentic and tool-use systems\" but gives no explicit native function-calling statement or parser. SWE-bench Pro v2 and Multilingual also reported, not recorded.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_baseline_note": "not covered: base row had modes [] (no engine); only the AtomicChat uncensored derivative had rates",
@@ -222,8 +250,11 @@
    "ctx_tokens_declared": null,
    "ctx_src": null,
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [],
+    "notes": "Card coding rows: only SWE-bench Pro v2 (Hard) 86.3% and Terminal-Bench Science v0.1 5.7%, neither of which is a target benchmark. No SWE-V, TB 1.0/2.x/4.0, Aider or LCB number for this model. Mentions \"agentic and tool-use systems\" but no explicit native tool-calling statement.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -288,8 +319,20 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "tencent/Hy4-flash/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 19.2,
+      "variant_or_setting": "Terminal-Bench 4.0; Claude Code harness, up to 500 turns, 13h timeout (benchmark.png table on card)",
+      "source_url": "https://huggingface.co/tencent/Hy4-flash/resolve/main/assets/benchmark.png",
+      "source_date": "2026-11-19 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Score read from a benchmark image embedded in the card. The card shows vLLM --tool-call-parser hy_v4 with --enable-auto-tool-choice.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -365,8 +408,28 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "tencent/Hy4/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 44.4,
+      "variant_or_setting": "Terminal-Bench 4.0; Claude Code harness (benchmark.jpg / benchmark-appendix.jpg on card)",
+      "source_url": "https://huggingface.co/tencent/Hy4/resolve/main/assets/benchmark-appendix.jpg",
+      "source_date": "2026-11-20 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 44.4,
+      "variant_or_setting": "Terminal-Bench 4.0; Tencent table on Hy4-flash card",
+      "source_url": "https://huggingface.co/tencent/Hy4-flash/resolve/main/assets/benchmark.png",
+      "source_date": "2026-11-19 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Read from images on the card. tool-call-parser hy_v4, and the card describes tool use.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -431,8 +494,20 @@
    "ctx_tokens_declared": null,
    "ctx_src": null,
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 59.55,
+      "variant_or_setting": "Terminal-Bench 2.1 (harness not stated in text)",
+      "source_url": "https://huggingface.co/sensenova/SenseNova-Loop-9B",
+      "source_date": "2026-11-20 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Repo is gated: raw README returned 401, so the rendered public HF page was read instead. LiveCodeBench V6 appears only as a loop-ablation delta (+1.04pp), with no absolute value. The chat template contains a <tool_call> format, but the card text makes no explicit native tool-calling claim.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -519,8 +594,28 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "moonshotai/Kimi-K3.1-Pro/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 65.7,
+      "variant_or_setting": "Terminal-Bench 4.0; Claude Code harness, max effort",
+      "source_url": "https://huggingface.co/moonshotai/Kimi-K3.1-Pro",
+      "source_date": "2026-11-05 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 65.7,
+      "variant_or_setting": "Terminal-Bench 4.0 (reported; Tencent own test 66.8)",
+      "source_url": "https://huggingface.co/tencent/Hy4/resolve/main/assets/benchmark-appendix.jpg",
+      "source_date": "2026-11-20 (HF card last modified)",
+      "reported_by": "third-party (Tencent Hy4 card)"
+     }
+    ],
+    "notes": "Card documents passing tool_calls back in multi-turn use. Terminal-Bench-Science 0.1 (38.1) not recorded.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -587,8 +682,28 @@
    "ctx_tokens_declared": 524288,
    "ctx_src": "meituan-longcat/LongCat-2.5/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 88.4,
+      "variant_or_setting": "Terminal-Bench 2.1; Claude Code v2.1.280, 512K, avg of 3 runs",
+      "source_url": "https://huggingface.co/meituan-longcat/LongCat-2.5",
+      "source_date": "2026-11-10 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 38.5,
+      "variant_or_setting": "Terminal-Bench 4.0; Claude Code v2.1.280",
+      "source_url": "https://huggingface.co/meituan-longcat/LongCat-2.5",
+      "source_date": "2026-11-10 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card includes a tool_calls example.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -654,8 +769,11 @@
    "ctx_tokens_declared": 100000,
    "ctx_src": "OVHaiLLM/Olala-v1.0-mini-7A1B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [],
+    "notes": "Card code benchmarks are HumanEval+ and MBPP+ only, so no SWE-V/TB/Aider/LCB. Tagged tool-calling, with --tool-call-parser olala and BFCL V3 reported.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -740,8 +858,28 @@
    "ctx_tokens_declared": 524288,
    "ctx_src": "Nanbeige/Nanbeige4.3-33B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 80.9,
+      "variant_or_setting": "Terminal-Bench 2.1; Terminus 2",
+      "source_url": "https://huggingface.co/Nanbeige/Nanbeige4.3-33B",
+      "source_date": "2026-10-28 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 23.8,
+      "variant_or_setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+      "source_url": "https://huggingface.co/Nanbeige/Nanbeige4.3-33B",
+      "source_date": "2026-10-28 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card documents a tools template and tool_call_format, plus --tool-call-parser qwen3_coder. SWE-bench Pro 60.3 not recorded.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -825,8 +963,36 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "deepseek-ai/DeepSeek-V4.1-Flash-1017/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 42.3,
+      "variant_or_setting": "Terminal-Bench 4.0; Claude Code harness",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017",
+      "source_date": "2026-11-10 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 40,
+      "variant_or_setting": "Terminal-Bench 4.0; Tencent own test (Claude Code)",
+      "source_url": "https://huggingface.co/tencent/Hy4-flash/resolve/main/assets/benchmark.png",
+      "source_date": "2026-11-19 (HF card last modified)",
+      "reported_by": "third-party (Tencent Hy4-flash card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 31,
+      "variant_or_setting": "Terminal-Bench 4.0; Artificial Analysis Coding Agent Index (chart on Mistral blog)",
+      "source_url": "https://mistral.ai/news/mistral-large-4-oss/",
+      "source_date": null,
+      "reported_by": "third-party (Artificial Analysis via Mistral blog)"
+     }
+    ],
+    "notes": "The card encoding reference covers tool calling. A Kimi K3.1 card note gives a DeepSeek internal TB-Science figure, which is not recorded.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -894,8 +1060,20 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "MiniMaxAI/MiniMax-M3.1-Flash/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 38.1,
+      "variant_or_setting": "Terminal-Bench 4.0; Codex 0.149.1",
+      "source_url": "https://huggingface.co/MiniMaxAI/MiniMax-M3.1-Flash",
+      "source_date": "2026-11-05 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card makes no explicit tool-calling statement (it describes agentic workflows).",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -971,8 +1149,36 @@
    "ctx_tokens_declared": 524288,
    "ctx_src": "maxwell-model/Maxwell-V1-Flash/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 85.66,
+      "variant_or_setting": "LiveCodeBench v6 pass@1 (64K gen)",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 65.4,
+      "variant_or_setting": "Claude Code harness, pass@1",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 58.65,
+      "variant_or_setting": "Terminal-Bench 2.1 (table row \"Terminal-Bench (mean@5)\"; footnote names 2.1)",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "LCB v6 pass@8 is 93.74. Card mentions function-calling training and --tool-call-parser qwen3_coder.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -1059,8 +1265,36 @@
    "ctx_tokens_declared": 131072,
    "ctx_src": "JetBrains/Mellum2.1-12B-A2.5B-Thinking/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 82,
+      "variant_or_setting": "LiveCodeBench v6",
+      "source_url": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
+      "source_date": "2026-10-07 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 47,
+      "variant_or_setting": "harness not stated in table",
+      "source_url": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
+      "source_date": "2026-10-07 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 17.4,
+      "variant_or_setting": "Terminal-Bench 2.1",
+      "source_url": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
+      "source_date": "2026-10-07 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card: \"Use it for complex agentic tasks, such as ... calling tools\".",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -1145,8 +1379,20 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "XHToken/Spark-X2.6-4B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 62.8,
+      "variant_or_setting": "SWE Verified, thinking=high (all_benchmark.svg on card)",
+      "source_url": "https://huggingface.co/XHToken/Spark-X2.6-4B/resolve/main/images/all_benchmark.svg",
+      "source_date": "2026-11-06 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Read from an SVG image on the card. --tool-call-parser spark25, and BFCL-V4 is reported.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -1231,8 +1477,11 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "InternScience/Sage-A1.5/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [],
+    "notes": "Card coding rows: only SWE-bench Pro 61.2 and Multilingual 72.7 (mini-SWE-agent), neither a target benchmark. Card says it natively supports function calling.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -1315,8 +1564,28 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "XiaomiMiMo/MiMo-V2.6-Flash-RL/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 87.6,
+      "variant_or_setting": "Terminal-Bench 2.1 (column \"MiMo-V2.6 Flash\")",
+      "source_url": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Flash-RL",
+      "source_date": "2026-10-28 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 28.8,
+      "variant_or_setting": "Terminal-Bench 4.0 (column \"MiMo-V2.6 Flash\")",
+      "source_url": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Flash-RL",
+      "source_date": "2026-10-28 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card calls this \"the efficiency-balanced checkpoint of the MiMo-V2.6 series\", and its own table labels the column \"MiMo-V2.6 Flash\". --tool-call-parser mimo.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -1387,8 +1656,28 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "XiaomiMiMo/MiMo-V2.6-Pro-RL/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 89.9,
+      "variant_or_setting": "Terminal-Bench 2.1 (column \"MiMo-V2.6 Pro\")",
+      "source_url": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "source_date": "2026-10-28 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 34.9,
+      "variant_or_setting": "Terminal-Bench 4.0 (column \"MiMo-V2.6 Pro\")",
+      "source_url": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+      "source_date": "2026-10-28 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "--tool-call-parser mimo.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -1454,8 +1743,20 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "mistralai/Mistral-Large-4-1T-A52B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 41.4,
+      "variant_or_setting": "Terminal-Bench 4.0; Artificial Analysis Coding Agent Index (blog text: \"improved ... to 41%\")",
+      "source_url": "https://mistral.ai/news/mistral-large-4-oss/",
+      "source_date": null,
+      "reported_by": "third-party (Artificial Analysis, published on Mistral blog)"
+     }
+    ],
+    "notes": "The HF card gives only the AA Coding Agent Index (48%, aggregate). The blog chart also shows \"ML4 Preview - self reported\" at 28. Card: \"Instruct and Reasoning functionalities with function calls\".",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -1521,8 +1822,20 @@
    "ctx_tokens_declared": 131072,
    "ctx_src": "LiquidAI/LFM2.5-24B-A2B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 51,
+      "variant_or_setting": "OpenCode harness",
+      "source_url": "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B",
+      "source_date": "2026-11-03 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card: recommended \"for agents that need to reason, call tools\".",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -1606,8 +1919,60 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "zai-org/GLM-5.3/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 88.2,
+      "variant_or_setting": "Terminal-Bench 2.1; Claude Code 2.1.207",
+      "source_url": "https://huggingface.co/zai-org/GLM-5.3",
+      "source_date": "2026-10-14 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 28.3,
+      "variant_or_setting": "Terminal-Bench 3.0; Claude Code 2.1.207, avg@3",
+      "source_url": "https://huggingface.co/zai-org/GLM-5.3",
+      "source_date": "2026-10-14 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 41.8,
+      "variant_or_setting": "Terminal-Bench 4.0 (max); as listed on Kimi K3.1 Pro card",
+      "source_url": "https://huggingface.co/moonshotai/Kimi-K3.1-Pro",
+      "source_date": "2026-11-05 (HF card last modified)",
+      "reported_by": "third-party (Moonshot Kimi K3.1 Pro card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 37.9,
+      "variant_or_setting": "Terminal-Bench 4.0; DeepSeek table",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017",
+      "source_date": "2026-11-10 (HF card last modified)",
+      "reported_by": "third-party (DeepSeek V4.1-Flash-1017 card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 42.9,
+      "variant_or_setting": "Terminal-Bench 4.0; Tencent own test",
+      "source_url": "https://huggingface.co/tencent/Hy4/resolve/main/assets/benchmark-appendix.jpg",
+      "source_date": "2026-11-20 (HF card last modified)",
+      "reported_by": "third-party (Tencent Hy4 card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 40,
+      "variant_or_setting": "Terminal-Bench 4.0; Artificial Analysis (chart on Mistral blog)",
+      "source_url": "https://mistral.ai/news/mistral-large-4-oss/",
+      "source_date": null,
+      "reported_by": "third-party (Artificial Analysis via Mistral blog)"
+     }
+    ],
+    "notes": "The card has no tool-calling statement. Third-party TB4.0 figures disagree: 37.9 to 42.9.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -1672,8 +2037,28 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "zai-org/GLM-5.3-Flash/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 84.3,
+      "variant_or_setting": "Terminal-Bench 2.1; Claude Code 2.1.207 (bench_53.png on card)",
+      "source_url": "https://raw.githubusercontent.com/zai-org/GLM-5/refs/heads/main/resources/bench_53.png",
+      "source_date": "2026-10-15 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 35.4,
+      "variant_or_setting": "Terminal-Bench 4.0; Tencent test",
+      "source_url": "https://huggingface.co/tencent/Hy4-flash/resolve/main/assets/benchmark.png",
+      "source_date": "2026-11-19 (HF card last modified)",
+      "reported_by": "third-party (Tencent Hy4-flash card)"
+     }
+    ],
+    "notes": "Vendor score read from the benchmark image linked in the card.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -1748,8 +2133,44 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "Qwen/Qwen3.8-Flash-Next/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 91.9,
+      "variant_or_setting": "LiveCodeBench v6",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
+      "source_date": "2026-11-07 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 29.5,
+      "variant_or_setting": "Terminal-Bench 4.0; Tencent test",
+      "source_url": "https://huggingface.co/tencent/Hy4-flash/resolve/main/assets/benchmark.png",
+      "source_date": "2026-11-19 (HF card last modified)",
+      "reported_by": "third-party (Tencent Hy4-flash card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 83.4,
+      "variant_or_setting": "Terminal-Bench 2.1; Ornith table",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-122B-FP8",
+      "source_date": "2026-10-21 (HF card last modified)",
+      "reported_by": "third-party (Ornith-1.5-122B card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 82.8,
+      "variant_or_setting": "OpenHands, anti-hack (\"non-hack\"); Ornith table",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-122B-FP8",
+      "source_date": "2026-10-21 (HF card last modified)",
+      "reported_by": "third-party (Ornith-1.5-122B card)"
+     }
+    ],
+    "notes": "The vendor card has no SWE-V or TB row. It reports SWE-bench Pro 62.5 and Multilingual 81.0. Tool calling is mentioned only for the hosted variant (\"official built-in tools\").",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -1835,8 +2256,28 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "RecursiveSI/flint/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 74.2,
+      "variant_or_setting": "mini-swe-agent, avg pass@1 over >=5 attempts",
+      "source_url": "https://huggingface.co/RecursiveSI/flint",
+      "source_date": "2026-10-21 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 54.9,
+      "variant_or_setting": "Terminal-Bench 2.1; Terminus 2; web-retrieval solutions counted as failures",
+      "source_url": "https://huggingface.co/RecursiveSI/flint",
+      "source_date": "2026-10-21 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card: \"supports ... multi-turn tool use\". SWE-bench Pro v2 89.7 not recorded.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -1918,8 +2359,20 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "openbmb/MiniCPM-V-4.7-35B-A3B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 56.57,
+      "variant_or_setting": "LiveCodeBench-v6, instruct mode (overall_performance_35ba3b_language.png on card)",
+      "source_url": "https://raw.githubusercontent.com/OpenBMB/MiniCPM-o/main/assets/minicpmv4.7/overall_performance_35ba3b_language.png",
+      "source_date": "2026-11-03 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Read from an image on the card. Card has a tool calling example.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -2007,8 +2460,28 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "ornith-ai/Ornith-1.5-122B-FP8/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 84.5,
+      "variant_or_setting": "OpenHands, anti-hack safeguards (\"non-hack\"), 256K",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-122B-FP8",
+      "source_date": "2026-10-21 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 81.2,
+      "variant_or_setting": "Terminal-Bench 2.1; Claude Code 2.1.126, avg of 5 runs",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-122B-FP8",
+      "source_date": "2026-10-21 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "The card reports Ornith-1.5-122B, so the FP8 repo is assumed to be the same model. Card has a tool-call parser.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -2089,8 +2562,11 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "moonshotai/Kimi-K2.7-Code/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [],
+    "notes": "Card coding benchmarks are Kimi Code Bench v2, Program Bench and MLS Bench Lite, so no SWE-V/TB/Aider/LCB. MCP-Atlas and MCPMark are reported, but there is no explicit tool-calling statement.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -2156,8 +2632,108 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "deepseek-ai/DeepSeek-V4-Flash/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 79,
+      "variant_or_setting": "V4-Flash Max reasoning",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+      "source_date": "2026-06-22 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 78.6,
+      "variant_or_setting": "V4-Flash High",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+      "source_date": "2026-06-22 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 73.7,
+      "variant_or_setting": "V4-Flash Non-Think",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+      "source_date": "2026-06-22 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 56.9,
+      "variant_or_setting": "Terminal-Bench 2.0 (Acc), V4-Flash Max",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+      "source_date": "2026-06-22 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 56.6,
+      "variant_or_setting": "Terminal-Bench 2.0, V4-Flash High",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+      "source_date": "2026-06-22 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 49.1,
+      "variant_or_setting": "Terminal-Bench 2.0, V4-Flash Non-Think",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+      "source_date": "2026-06-22 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 91.6,
+      "variant_or_setting": "LiveCodeBench Pass@1 (window not stated), V4-Flash Max",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+      "source_date": "2026-06-22 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 88.4,
+      "variant_or_setting": "LiveCodeBench Pass@1, V4-Flash High",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+      "source_date": "2026-06-22 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 55.2,
+      "variant_or_setting": "LiveCodeBench Pass@1, V4-Flash Non-Think",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+      "source_date": "2026-06-22 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 54.2,
+      "variant_or_setting": "Terminal-Bench 2.1; \"DS-v4-Flash 284B-A13B\" column",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 73.5,
+      "variant_or_setting": "\"DS-v4-Flash 284B-A13B\" column",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 90.9,
+      "variant_or_setting": "LiveCodeBench v6; \"DS-v4-Flash\" column",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)"
+     }
+    ],
+    "notes": "Scores for \"DeepSeek-V4-Flash-0731\" on other cards are a later checkpoint and are not recorded. The card has no tool-calling statement.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -2244,8 +2820,20 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "deepseek-ai/DeepSeek-V4-Pro-0813/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 87.9,
+      "variant_or_setting": "Terminal-Bench 2.1",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-0813",
+      "source_date": "2026-08-13 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card has no tool-calling statement.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -2311,8 +2899,11 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "MiniMaxAI/MiniMax-M3/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [],
+    "notes": "Card has no benchmark numbers. The linked tech report arXiv:2606.13392 HTML was checked and holds only pretraining SWE perplexity-style rows, no SWE-V/TB.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -2383,8 +2974,60 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 51.56,
+      "variant_or_setting": "harness-level coding-agent result",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 24.58,
+      "variant_or_setting": "Terminal-Bench 2.1",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 78.3,
+      "variant_or_setting": "LiveCodeBench v6 pass@1",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "third-party (Maxwell-V1-Flash card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 23.1,
+      "variant_or_setting": "Terminal-Bench 2.1 mean@5",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "third-party (Maxwell-V1-Flash card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 42.6,
+      "variant_or_setting": "Claude Code harness",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "third-party (Maxwell-V1-Flash card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 53.4,
+      "variant_or_setting": "OpenCode harness",
+      "source_url": "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B",
+      "source_date": "2026-11-03 (HF card last modified)",
+      "reported_by": "third-party (LiquidAI LFM2.5 card)"
+     }
+    ],
+    "notes": "Card has --tool-call-parser and tool-calling docs.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -2471,8 +3114,60 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 60.47,
+      "variant_or_setting": "OpenHands (footnote: SWE Bench Verified (OpenHands))",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+      "source_date": "2026-08-25 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 31,
+      "variant_or_setting": "Terminal Bench Core 2.0 (Harbor)",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+      "source_date": "2026-08-25 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 25.78,
+      "variant_or_setting": "Terminal Bench (hard subset)",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+      "source_date": "2026-08-25 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 81.19,
+      "variant_or_setting": "LiveCodeBench v5 (2024-07 to 2024-12)",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+      "source_date": "2026-08-25 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 63.08,
+      "variant_or_setting": "\"Nemotron 3 Super\" column",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "vendor (NVIDIA, on Nemotron 3.5 Lightning card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 39.61,
+      "variant_or_setting": "Terminal-Bench 2.1; \"Nemotron 3 Super\" column",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "vendor (NVIDIA, on Nemotron 3.5 Lightning card)"
+     }
+    ],
+    "notes": "Also SWE-Bench (OpenCode) 59.20 and (Codex) 53.73. The card does not say these are Verified, so they are not recorded as SWE-V. Card mentions tool calling.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -2553,8 +3248,36 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 70.7,
+      "variant_or_setting": "",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 56.4,
+      "variant_or_setting": "Terminal-Bench 2.1",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 89,
+      "variant_or_setting": "LiveCodeBench v6",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card has tool-call-parser/tool-calling docs. Laguna-S-2.1 card repeats TB2.1 56.4.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -2619,8 +3342,28 @@
    "ctx_tokens_declared": 202752,
    "ctx_src": "zai-org/GLM-4.7-Flash/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 59.2,
+      "variant_or_setting": "",
+      "source_url": "https://huggingface.co/zai-org/GLM-4.7-Flash",
+      "source_date": "2026-01-29 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 64,
+      "variant_or_setting": "LCB v6",
+      "source_url": "https://huggingface.co/zai-org/GLM-4.7-Flash",
+      "source_date": "2026-01-29 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "--tool-call-parser glm47 --enable-auto-tool-choice. Card mentions Terminal Bench 2 preserved-thinking but its table has no TB value for this model.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -2703,8 +3446,84 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "Qwen/Qwen3.8-27B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 73,
+      "variant_or_setting": "Terminal-Bench 2.1 (Terminus)",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.8-27B",
+      "source_date": "2026-11-07 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 90.3,
+      "variant_or_setting": "LiveCodeBench v6",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.8-27B",
+      "source_date": "2026-11-07 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 77.8,
+      "variant_or_setting": "bash only; Inkling table",
+      "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+      "source_date": "2026-11-21 (HF card last modified)",
+      "reported_by": "third-party (Thinking Machines Inkling-2-Mini card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 73,
+      "variant_or_setting": "Terminal-Bench 2.1; Inkling table",
+      "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+      "source_date": "2026-11-21 (HF card last modified)",
+      "reported_by": "third-party (Thinking Machines Inkling-2-Mini card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 5.6,
+      "variant_or_setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+      "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+      "source_date": "2026-11-21 (HF card last modified)",
+      "reported_by": "third-party (Thinking Machines Inkling-2-Mini card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 76.8,
+      "variant_or_setting": "OpenHands, anti-hack; \"Qwen3.8 (27B dense)\"",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-122B-FP8",
+      "source_date": "2026-10-21 (HF card last modified)",
+      "reported_by": "third-party (Ornith-1.5-122B card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 71.9,
+      "variant_or_setting": "Terminal-Bench 2.1; \"Qwen3.8 (27B dense)\"",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-122B-FP8",
+      "source_date": "2026-10-21 (HF card last modified)",
+      "reported_by": "third-party (Ornith-1.5-122B card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 6.3,
+      "variant_or_setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+      "source_url": "https://huggingface.co/Nanbeige/Nanbeige4.3-33B",
+      "source_date": "2026-10-28 (HF card last modified)",
+      "reported_by": "third-party (Nanbeige4.3 card)"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 63.62,
+      "variant_or_setting": "LiveCodeBench-v6, instruct mode",
+      "source_url": "https://raw.githubusercontent.com/OpenBMB/MiniCPM-o/main/assets/minicpmv4.7/overall_performance_35ba3b_language.png",
+      "source_date": null,
+      "reported_by": "third-party (OpenBMB MiniCPM-V-4.7 card image)"
+     }
+    ],
+    "notes": "The vendor card reports QwenSWEBench (79.0, in-house) rather than SWE-V. Card has no explicit native tool-calling statement.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -2789,8 +3608,11 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "Qwen/Qwen3.8-2.4T-A95B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "unstated",
+    "tool_call_probe": "not run",
+    "published_scores": [],
+    "notes": "The card table column is \"Qwen3.8-Max\", described as \"the official version based on Qwen3.8-2.4T-A95B with more features\", which is a different (hosted) variant, so it was skipped. That column gives TB2.1 86.6 and QwenSWEBench 80.7.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -2856,8 +3678,108 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "Qwen/Qwen3.6-35B-A3B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 73.4,
+      "variant_or_setting": "",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+      "source_date": "2026-11-07 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 51.5,
+      "variant_or_setting": "Terminal-Bench 2.0",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+      "source_date": "2026-11-07 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 80.4,
+      "variant_or_setting": "LiveCodeBench v6",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+      "source_date": "2026-11-07 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 70.12,
+      "variant_or_setting": "Nemotron table",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron 3.5 Lightning card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 44.38,
+      "variant_or_setting": "Terminal-Bench 2.1",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron 3.5 Lightning card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 63.4,
+      "variant_or_setting": "Claude Code harness",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "third-party (Maxwell-V1-Flash card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 47.42,
+      "variant_or_setting": "Terminal-Bench 2.1 mean@5",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "third-party (Maxwell-V1-Flash card)"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 85.32,
+      "variant_or_setting": "LiveCodeBench v6 pass@1",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "third-party (Maxwell-V1-Flash card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 66.2,
+      "variant_or_setting": "OpenCode harness",
+      "source_url": "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B",
+      "source_date": "2026-11-03 (HF card last modified)",
+      "reported_by": "third-party (LiquidAI LFM2.5 card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 52.5,
+      "variant_or_setting": "Terminal-Bench 2.1 (Terminus-2)",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "third-party (Ornith-1.5-35B card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 49.2,
+      "variant_or_setting": "Terminal-Bench 2.1 (Claude Code)",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "third-party (Ornith-1.5-35B card)"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 54.29,
+      "variant_or_setting": "LiveCodeBench-v6, instruct (non-thinking) mode",
+      "source_url": "https://raw.githubusercontent.com/OpenBMB/MiniCPM-o/main/assets/minicpmv4.7/overall_performance_35ba3b_language.png",
+      "source_date": null,
+      "reported_by": "third-party (OpenBMB MiniCPM-V-4.7 card image)"
+     }
+    ],
+    "notes": "Card has a \"Tool Use\" section with a serving command. Third-party SWE-V results vary widely by harness (63.4 to 70.1).",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -2945,8 +3867,76 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "Qwen/Qwen3.5-9B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 65.6,
+      "variant_or_setting": "LiveCodeBench v6",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "source_date": "2026-03-02 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 53.1,
+      "variant_or_setting": "reported as from public model cards/papers (*)",
+      "source_url": "https://huggingface.co/XHToken/Spark-X2.6-4B/resolve/main/images/all_benchmark.svg",
+      "source_date": null,
+      "reported_by": "third-party (XHToken Spark-X2.6 card image)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 53.2,
+      "variant_or_setting": "Ornith table",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-9B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "third-party (Ornith-1.5-9B card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 21.3,
+      "variant_or_setting": "Terminal-Bench 2.1 (Terminus-2)",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-9B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "third-party (Ornith-1.5-9B card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 18.9,
+      "variant_or_setting": "Terminal-Bench 2.1 (Claude Code)",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-9B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "third-party (Ornith-1.5-9B card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 50,
+      "variant_or_setting": "Mellum table, column \"Qwen3.5 (9B)\"",
+      "source_url": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
+      "source_date": "2026-10-07 (HF card last modified)",
+      "reported_by": "third-party (JetBrains Mellum2.1 card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 21.7,
+      "variant_or_setting": "Terminal-Bench 2.1",
+      "source_url": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
+      "source_date": "2026-10-07 (HF card last modified)",
+      "reported_by": "third-party (JetBrains Mellum2.1 card)"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 75.4,
+      "variant_or_setting": "LiveCodeBench v6 (differs from vendor 65.6)",
+      "source_url": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
+      "source_date": "2026-10-07 (HF card last modified)",
+      "reported_by": "third-party (JetBrains Mellum2.1 card)"
+     }
+    ],
+    "notes": "The vendor card has no SWE-V/TB row. It has a \"Tool Calling\" category and a \"Tool Use\" serving section.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -3031,8 +4021,28 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "Qwen/Qwen3.5-4B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 55.8,
+      "variant_or_setting": "LiveCodeBench v6",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.5-4B",
+      "source_date": "2026-03-02 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 38.8,
+      "variant_or_setting": "reported as from public model cards/papers (*)",
+      "source_url": "https://huggingface.co/XHToken/Spark-X2.6-4B/resolve/main/images/all_benchmark.svg",
+      "source_date": null,
+      "reported_by": "third-party (XHToken Spark-X2.6 card image)"
+     }
+    ],
+    "notes": "Same card structure as Qwen3.5-9B.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -3117,8 +4127,60 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "Qwen/Qwen3-Coder-30B-A3B-Instruct/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 51.6,
+      "variant_or_setting": "OpenHands, 500 turns (and 100 turns: 51.6) (card image)",
+      "source_url": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen3-Coder/qwen3-coder-30a3-main.jpg",
+      "source_date": "2025-12-03 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 31.3,
+      "variant_or_setting": "\"Terminal-Bench\", version not stated (2025-07 release, so the original TB)",
+      "source_url": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen3-Coder/qwen3-coder-30a3-main.jpg",
+      "source_date": "2025-12-03 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Aider polyglot",
+      "value": 33.3,
+      "variant_or_setting": "Aider-Polyglot (card image)",
+      "source_url": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen3-Coder/qwen3-coder-30a3-main.jpg",
+      "source_date": "2025-12-03 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 51.6,
+      "variant_or_setting": "OpenHands + Qwen3-Coder-30B-A3B-Instruct (verified split)",
+      "source_url": "https://www.swebench.com/",
+      "source_date": "2025-08-05 (submission date)",
+      "reported_by": "third-party leaderboard (SWE-bench official; submission by OpenHands)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 52.2,
+      "variant_or_setting": "EntroPO + R2E + Qwen3-Coder-30B-A3B-Instruct (fine-tuned system)",
+      "source_url": "https://www.swebench.com/",
+      "source_date": "2025-09-01 (submission date)",
+      "reported_by": "third-party leaderboard (SWE-bench official)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 60.4,
+      "variant_or_setting": "EntroPO + R2E + Qwen3-Coder-30B-A3B-Instruct, TTS (fine-tuned + test-time scaling)",
+      "source_url": "https://www.swebench.com/",
+      "source_date": "2025-09-01 (submission date)",
+      "reported_by": "third-party leaderboard (SWE-bench official)"
+     }
+    ],
+    "notes": "Vendor numbers were read from the card image. The EntroPO entries are of a fine-tuned derivative system, not the stock checkpoint. Card: \"specially designed function call format\", with a tools example.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -3200,8 +4262,36 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "ornith-ai/Ornith-1.5-35B-A3B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 79,
+      "variant_or_setting": "OpenHands, anti-hack",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 67.8,
+      "variant_or_setting": "Terminal-Bench 2.1 (Terminus-2)",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 68.5,
+      "variant_or_setting": "Terminal-Bench 2.1 (Claude Code)",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card has tool-call parser and tool-calling docs.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -3284,8 +4374,36 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "ornith-ai/Ornith-1.5-9B/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 70.6,
+      "variant_or_setting": "OpenHands, anti-hack",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-9B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 46.2,
+      "variant_or_setting": "Terminal-Bench 2.1 (Terminus-2)",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-9B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 47,
+      "variant_or_setting": "Terminal-Bench 2.1 (Claude Code)",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-9B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card has a tool-call parser.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -3370,8 +4488,36 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "ornith-ai/Ornith-1.5-397B-FP8/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 86,
+      "variant_or_setting": "OpenHands, anti-hack",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-397B-FP8",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 86.1,
+      "variant_or_setting": "Terminal-Bench 2.1 (Terminus-2)",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-397B-FP8",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 85.2,
+      "variant_or_setting": "Terminal-Bench 2.1 (Claude Code)",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-397B-FP8",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "The card reports Ornith-1.5-397B, so the FP8 repo is assumed to be the same model. Card has a tool-call parser.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -3442,8 +4588,60 @@
    "ctx_tokens_declared": 131072,
    "ctx_src": "openai/gpt-oss-20b/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 60.7,
+      "variant_or_setting": "reasoning high (Figure 2, gpt-oss model card paper)",
+      "source_url": "https://arxiv.org/html/2508.10925",
+      "source_date": "2025-08 (arXiv 2508.10925v1)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 52.44,
+      "variant_or_setting": "Nemotron table",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron 3.5 Lightning card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 15.17,
+      "variant_or_setting": "Terminal-Bench 2.1",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron 3.5 Lightning card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 34,
+      "variant_or_setting": "GLM table",
+      "source_url": "https://huggingface.co/zai-org/GLM-4.7-Flash",
+      "source_date": "2026-01-29 (HF card last modified)",
+      "reported_by": "third-party (Z.ai GLM-4.7-Flash card)"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 61,
+      "variant_or_setting": "LCB v6",
+      "source_url": "https://huggingface.co/zai-org/GLM-4.7-Flash",
+      "source_date": "2026-01-29 (HF card last modified)",
+      "reported_by": "third-party (Z.ai GLM-4.7-Flash card)"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 74.6,
+      "variant_or_setting": "LiveCodeBench v6",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "source_date": "2026-03-02 (HF card last modified)",
+      "reported_by": "third-party (Qwen3.5-9B card)"
+     }
+    ],
+    "notes": "The HF card has no benchmark table. Card: \"native capabilities for function calling\". Third-party SWE-V ranges from 34.0 to 52.4.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -3527,8 +4725,76 @@
    "ctx_tokens_declared": 131072,
    "ctx_src": "openai/gpt-oss-120b/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 62.4,
+      "variant_or_setting": "reasoning high (Figure 2, gpt-oss model card paper)",
+      "source_url": "https://arxiv.org/html/2508.10925",
+      "source_date": "2025-08 (arXiv 2508.10925v1)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Aider polyglot",
+      "value": 41.8,
+      "variant_or_setting": "gpt-oss-120b (high), diff format; percent well-formed 79.1",
+      "source_url": "https://raw.githubusercontent.com/Aider-AI/aider/main/aider/website/_data/polyglot_leaderboard.yml",
+      "source_date": "2025-08-06 (entry date)",
+      "reported_by": "third-party leaderboard (Aider polyglot)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 26,
+      "variant_or_setting": "bash-only leaderboard, mini-SWE-agent v1.7.0",
+      "source_url": "https://www.swebench.com/",
+      "source_date": "2025-08-07 (submission date)",
+      "reported_by": "third-party leaderboard (SWE-bench official, bash-only)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 41.9,
+      "variant_or_setting": "OpenHands; Nemotron Super table",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+      "source_date": "2026-08-25 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron-3-Super card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 18.7,
+      "variant_or_setting": "Terminal Bench Core 2.0",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+      "source_date": "2026-08-25 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron-3-Super card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 18.7,
+      "variant_or_setting": "Terminal-Bench 2.0 (official leaderboard, per Laguna-XS card)",
+      "source_url": "https://huggingface.co/poolside/Laguna-XS-2.1",
+      "source_date": "2026-08-19 (HF card last modified)",
+      "reported_by": "third-party (poolside Laguna-XS-2.1 card citing TB leaderboard)"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 88,
+      "variant_or_setting": "LiveCodeBench v5 (2024-07 to 2024-12)",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+      "source_date": "2026-08-25 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron-3-Super card)"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 82.7,
+      "variant_or_setting": "LiveCodeBench v6",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+      "source_date": "2026-03-02 (HF card last modified)",
+      "reported_by": "third-party (Qwen3.5-9B card)"
+     }
+    ],
+    "notes": "The HF card has no benchmark table. Card: \"native capabilities for function calling\". tbench.ai is JS-rendered, so it was not readable directly.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -3609,8 +4875,84 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "google/gemma-4-26B-A4B-it/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 77.1,
+      "variant_or_setting": "LiveCodeBench v6",
+      "source_url": "https://huggingface.co/google/gemma-4-26B-A4B-it",
+      "source_date": "2026-07-20 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 57.4,
+      "variant_or_setting": "Nemotron table",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron 3.5 Lightning card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 37.22,
+      "variant_or_setting": "Terminal-Bench 2.1",
+      "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "source_date": "2026-08-24 (HF card last modified)",
+      "reported_by": "third-party (NVIDIA Nemotron 3.5 Lightning card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 17.4,
+      "variant_or_setting": "Qwen table",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+      "source_date": "2026-11-07 (HF card last modified)",
+      "reported_by": "third-party (Qwen3.6-35B-A3B card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 34.2,
+      "variant_or_setting": "Terminal-Bench 2.0",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+      "source_date": "2026-11-07 (HF card last modified)",
+      "reported_by": "third-party (Qwen3.6-35B-A3B card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 39.2,
+      "variant_or_setting": "Claude Code harness",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "third-party (Maxwell-V1-Flash card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 38.43,
+      "variant_or_setting": "Terminal-Bench 2.1 mean@5",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "third-party (Maxwell-V1-Flash card)"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 85.96,
+      "variant_or_setting": "LiveCodeBench v6 pass@1",
+      "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+      "source_date": "2026-11-14 (HF card last modified)",
+      "reported_by": "third-party (Maxwell-V1-Flash card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 25.8,
+      "variant_or_setting": "OpenCode harness",
+      "source_url": "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B",
+      "source_date": "2026-11-03 (HF card last modified)",
+      "reported_by": "third-party (LiquidAI LFM2.5 card)"
+     }
+    ],
+    "notes": "Card: \"Function Calling - Native support for structured tool use\". Third-party SWE-V is inconsistent (17.4 to 57.4).",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -3695,8 +5037,92 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "google/gemma-4-31B-it/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 80,
+      "variant_or_setting": "LiveCodeBench v6",
+      "source_url": "https://huggingface.co/google/gemma-4-31B-it",
+      "source_date": "2026-07-20 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 46.1,
+      "variant_or_setting": "bash only",
+      "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+      "source_date": "2026-11-21 (HF card last modified)",
+      "reported_by": "third-party (Thinking Machines Inkling-2-Mini card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 43.4,
+      "variant_or_setting": "Terminal-Bench 2.1 (pi harness)",
+      "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+      "source_date": "2026-11-21 (HF card last modified)",
+      "reported_by": "third-party (Thinking Machines Inkling-2-Mini card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 0,
+      "variant_or_setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+      "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+      "source_date": "2026-11-21 (HF card last modified)",
+      "reported_by": "third-party (Thinking Machines Inkling-2-Mini card)"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 52,
+      "variant_or_setting": "Qwen table",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+      "source_date": "2026-11-07 (HF card last modified)",
+      "reported_by": "third-party (Qwen3.6-35B-A3B card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 42.9,
+      "variant_or_setting": "Terminal-Bench 2.0",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+      "source_date": "2026-11-07 (HF card last modified)",
+      "reported_by": "third-party (Qwen3.6-35B-A3B card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 42.1,
+      "variant_or_setting": "Terminal-Bench 2.1 (Terminus-2)",
+      "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
+      "source_date": "2026-08-23 (HF card last modified)",
+      "reported_by": "third-party (Ornith-1.5-35B card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 47.2,
+      "variant_or_setting": "Terminal-Bench 2.1 (Terminus 2)",
+      "source_url": "https://huggingface.co/Nanbeige/Nanbeige4.3-33B",
+      "source_date": "2026-10-28 (HF card last modified)",
+      "reported_by": "third-party (Nanbeige4.3 card)"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 0,
+      "variant_or_setting": "Terminal-Bench 4.0",
+      "source_url": "https://huggingface.co/Nanbeige/Nanbeige4.3-33B",
+      "source_date": "2026-10-28 (HF card last modified)",
+      "reported_by": "third-party (Nanbeige4.3 card)"
+     },
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 71.24,
+      "variant_or_setting": "LiveCodeBench-v6, instruct mode",
+      "source_url": "https://raw.githubusercontent.com/OpenBMB/MiniCPM-o/main/assets/minicpmv4.7/overall_performance_35ba3b_language.png",
+      "source_date": null,
+      "reported_by": "third-party (OpenBMB MiniCPM-V-4.7 card image)"
+     }
+    ],
+    "notes": "Card: native function calling.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -3778,8 +5204,28 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "google/gemma-4-12B-it/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "LiveCodeBench",
+      "value": 72,
+      "variant_or_setting": "LiveCodeBench v6 (\"Gemma 4 12B Unified\")",
+      "source_url": "https://huggingface.co/google/gemma-4-12B-it",
+      "source_date": "2026-10-30 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 44.2,
+      "variant_or_setting": "\"Gemma4 12B\", marked * (from public model cards/papers)",
+      "source_url": "https://huggingface.co/XHToken/Spark-X2.6-4B/resolve/main/images/all_benchmark.svg",
+      "source_date": null,
+      "reported_by": "third-party (XHToken Spark-X2.6 card image)"
+     }
+    ],
+    "notes": "The card covers the \"Gemma 4 12B Unified\" model and states native function calling.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
@@ -3864,8 +5310,20 @@
    "ctx_tokens_declared": 1048576,
    "ctx_src": "poolside/Laguna-S-2.1/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 70.2,
+      "variant_or_setting": "Terminal-Bench 2.1; poolside agent harness",
+      "source_url": "https://huggingface.co/poolside/Laguna-S-2.1",
+      "source_date": "2026-07-21 (card: \"Benchmarks as of 21 July 2026\")",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card has no SWE-V. It reports SWE-bench Multilingual 78.5 and Pro 59.4. --tool-call-parser poolside_v1.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -3952,8 +5410,28 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "poolside/Laguna-XS-2.1/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 70.9,
+      "variant_or_setting": "Harbor + poolside pool harness, 500 steps, patched images",
+      "source_url": "https://huggingface.co/poolside/Laguna-XS-2.1",
+      "source_date": "2026-08-19 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 37.5,
+      "variant_or_setting": "Terminal-Bench 2.0",
+      "source_url": "https://huggingface.co/poolside/Laguna-XS-2.1",
+      "source_date": "2026-08-19 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card: interleaved thinking between tool calls.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "covered",
    "coverage_after_round0": "covered",
@@ -4039,8 +5517,28 @@
    "ctx_tokens_declared": 262144,
    "ctx_src": "poolside/Laguna-M.1/config.json max_position_embeddings",
    "coding_agent": {
-    "tool_calls": "claimed by card or chat template; NOT probed here yet",
-    "published_scores": "not collected in round 0"
+    "tool_calling_card": "yes",
+    "tool_call_probe": "not run",
+    "published_scores": [
+     {
+      "benchmark": "SWE-bench Verified",
+      "value": 74.6,
+      "variant_or_setting": "pool agent harness, 500 steps, patched images",
+      "source_url": "https://huggingface.co/poolside/Laguna-M.1",
+      "source_date": "2026-07-14 (HF card last modified)",
+      "reported_by": "vendor"
+     },
+     {
+      "benchmark": "Terminal-Bench",
+      "value": 45.8,
+      "variant_or_setting": "Terminal-Bench 2.0",
+      "source_url": "https://huggingface.co/poolside/Laguna-M.1",
+      "source_date": "2026-07-14 (HF card last modified)",
+      "reported_by": "vendor"
+     }
+    ],
+    "notes": "Card: interleaved thinking between tool calls.",
+    "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
