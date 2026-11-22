@@ -29,6 +29,35 @@
           "source": "prospective"
         }
       ]
+    },
+    {
+      "root_cause": "a rate is published on the strength of a throughput instrument that never checks the answer, so a fast wrong engine passes",
+      "attempts": [
+        {
+          "action": "measurement harness: every published rate must pass, on a server of the same build, a greedy 17x23 probe and a streaming OpenAI tool-call probe with JSON-parsable arguments (flashrsi/local-mind-catalog/toolprobe.py); plus explicit does-not-fit rows for the 7 candidates no box can hold",
+          "rationale": "Strata 0.2.19 on the M4 passed its own selfcheck and bench at 28.5 tok/s while every served reply was token id 0; llama-bench alone would have published it",
+          "predicted": {
+            "direction": "up",
+            "magnitude": "0.28 -> 0.42 from does-not-fit rows, 0.55-0.65 with the amd395/m1u batches",
+            "metric": "C",
+            "note": "written in prediction-round1.json at 20:59 before any round-1 measurement; also predicted the probes would reject at least one pair llama-bench would have published"
+          },
+          "observed": {
+            "delta": "+0.36",
+            "metric": "C",
+            "note": "C landed inside the predicted range (7 does-not-fit rows, 11 amd395 rows, mlx-serve on m1u and m2max). The second half did not realise: every model that loaded passed both probes; the rows withheld this round were withheld for spread (Mellum, Ornith-9B), missing architectures (Olala, SenseNova) and a box that went unresponsive on an 82 GB load, not by the probes.",
+            "value": 0.64,
+            "verdict": "partial"
+          },
+          "provenance": {
+            "domain": "local-mind-catalog",
+            "benchmark": "candidates-2026-11-22 (frozen, 50 upstream LLMs: 25 latest + 25 popular; rules and sources inside the file)",
+            "policy": "claude-opus-5.5",
+            "round": 1
+          },
+          "source": "prospective"
+        }
+      ]
     }
   ]
 }

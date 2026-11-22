@@ -573,7 +573,7 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "tried on amd395 with the publisher's own GGUF: llama.cpp b12633 has no 'sensenova_loop' architecture",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
@@ -837,7 +837,7 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "tried on amd395: llama.cpp b12633 has no 'olala' architecture",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
@@ -1358,7 +1358,7 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 but NOT published: the three processes disagreed (42.7 +/- 41, 52.7 +/- 26, 92.5)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
@@ -1380,7 +1380,7 @@
    "ctx_src": "XHToken/Spark-X2.6-4B/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
     "published_scores": [
      {
       "benchmark": "SWE-bench Verified",
@@ -1396,7 +1396,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "amd395: Spark-X2.6-4B llama.cpp Vulkan b12633 (65.12 tok/s), 2026-11-22"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 9 global layers x 2 x 4 kv x 256 hd x 2B + 27 sliding (window 512); linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 36864,
@@ -1456,12 +1458,13 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 65.12 tok/s (Vulkan, b12633)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "InternScience/Sage-A1.5",
@@ -1478,14 +1481,16 @@
    "ctx_src": "InternScience/Sage-A1.5/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
     "published_scores": [],
     "notes": "Card coding rows: only SWE-bench Pro 61.2 and Multilingual 72.7 (mini-SWE-agent), neither a target benchmark. Card says it natively supports function calling.",
     "collected": "2026-11-22 from model cards and public leaderboards; vendor-reported unless reported_by says otherwise; read only, not replicated"
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "amd395: Sage-A1.5 llama.cpp Vulkan b12633 (70.5 tok/s), 2026-11-22"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 10 global layers x 2 x 2 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 20480,
@@ -1543,12 +1548,13 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 70.5 tok/s (Vulkan, b12633)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "XiaomiMiMo/MiMo-V2.6-Flash-RL",
@@ -1823,7 +1829,7 @@
    "ctx_src": "LiquidAI/LFM2.5-24B-A2B/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
     "published_scores": [
      {
       "benchmark": "SWE-bench Verified",
@@ -1839,7 +1845,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "amd395: LFM2.5-24B-A2B llama.cpp Vulkan b12633 (108.77 tok/s), 2026-11-22"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 10 global layers x 2 x 8 kv x 64 hd x 2B; linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 20480,
@@ -1898,12 +1906,13 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 108.77 tok/s (Vulkan, b12633)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "zai-org/GLM-5.3",
@@ -2257,7 +2266,7 @@
    "ctx_src": "RecursiveSI/flint/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
     "published_scores": [
      {
       "benchmark": "SWE-bench Verified",
@@ -2281,7 +2290,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "amd395: flint llama.cpp Vulkan b12633 (60.94 tok/s), 2026-11-22"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 14 global layers x 2 x 4 kv x 128 hd x 2B + 35 sliding (window 513); linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 28672,
@@ -2338,12 +2349,13 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 60.94 tok/s (Vulkan, b12633)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "openbmb/MiniCPM-V-4.7-35B-A3B",
@@ -3343,7 +3355,7 @@
    "ctx_src": "zai-org/GLM-4.7-Flash/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
     "published_scores": [
      {
       "benchmark": "SWE-bench Verified",
@@ -3367,7 +3379,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "amd395: GLM-4.7-Flash llama.cpp Vulkan b12633 (64.86 tok/s), 2026-11-22"
+   ],
    "fit": {
     "kv_estimate": "MLA 47 layers x (512+64) x 2B",
     "kv_f16_bytes_per_token": 54144,
@@ -3425,12 +3439,13 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 64.86 tok/s (Vulkan, b12633)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "Qwen/Qwen3.8-27B",
@@ -3868,7 +3883,7 @@
    "ctx_src": "Qwen/Qwen3.5-9B/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
     "published_scores": [
      {
       "benchmark": "LiveCodeBench",
@@ -3940,7 +3955,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "amd395: Qwen3.5-9B llama.cpp Vulkan b12633 (36.21 tok/s), 2026-11-22"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 8 global layers x 2 x 4 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 32768,
@@ -4000,12 +4017,13 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 36.21 tok/s (Vulkan, b12633)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "Qwen/Qwen3.5-4B",
@@ -4022,7 +4040,7 @@
    "ctx_src": "Qwen/Qwen3.5-4B/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
     "published_scores": [
      {
       "benchmark": "LiveCodeBench",
@@ -4046,7 +4064,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "amd395: Qwen3.5-4B llama.cpp Vulkan b12633 (61.31 tok/s), 2026-11-22"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 8 global layers x 2 x 4 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 32768,
@@ -4106,12 +4126,13 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 61.31 tok/s (Vulkan, b12633)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
@@ -4128,7 +4149,7 @@
    "ctx_src": "Qwen/Qwen3-Coder-30B-A3B-Instruct/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
     "published_scores": [
      {
       "benchmark": "SWE-bench Verified",
@@ -4184,7 +4205,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "amd395: Qwen3-Coder-30B-A3B-Instruct llama.cpp Vulkan b12633 (85.93 tok/s), 2026-11-22"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 48 global layers x 2 x 4 kv x 128 hd x 2B",
     "kv_f16_bytes_per_token": 98304,
@@ -4241,12 +4264,13 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 85.93 tok/s (Vulkan, b12633)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "ornith-ai/Ornith-1.5-35B-A3B",
@@ -4353,7 +4377,7 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "download failed once on amd395 (transient); queued for re-run",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
@@ -4467,7 +4491,7 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 but NOT published: 17.35 tok/s, half the Qwen3.5-9B rate on the same architecture and size, so a same-window control is required first",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
@@ -4589,7 +4613,7 @@
    "ctx_src": "openai/gpt-oss-20b/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
     "published_scores": [
      {
       "benchmark": "SWE-bench Verified",
@@ -4645,7 +4669,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "amd395: gpt-oss-20b llama.cpp Vulkan b12633 (24.64 tok/s), 2026-11-22"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 12 global layers x 2 x 8 kv x 64 hd x 2B + 12 sliding (window 128); linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 24576,
@@ -4704,12 +4730,13 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 24.64 tok/s (Vulkan, b12633)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "openai/gpt-oss-120b",
@@ -5038,7 +5065,7 @@
    "ctx_src": "google/gemma-4-31B-it/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
     "published_scores": [
      {
       "benchmark": "LiveCodeBench",
@@ -5126,7 +5153,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "amd395: gemma-4-31B-it llama.cpp Vulkan b12633 (11.06 tok/s), 2026-11-22"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 10 global layers x 2 x 16 kv x 256 hd x 2B + 50 sliding (window 1024); linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 163840,
@@ -5183,12 +5212,13 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 11.06 tok/s (Vulkan, b12633)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "google/gemma-4-12B-it",
@@ -5205,7 +5235,7 @@
    "ctx_src": "google/gemma-4-12B-it/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
     "published_scores": [
      {
       "benchmark": "LiveCodeBench",
@@ -5229,7 +5259,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "amd395: gemma-4-12B-it llama.cpp Vulkan b12633 (25.93 tok/s), 2026-11-22"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 8 global layers x 2 x 8 kv x 256 hd x 2B + 40 sliding (window 1024); linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 65536,
@@ -5289,12 +5321,13 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on amd395 25.93 tok/s (Vulkan, b12633)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round1": "covered"
   },
   {
    "id": "poolside/Laguna-S-2.1",
