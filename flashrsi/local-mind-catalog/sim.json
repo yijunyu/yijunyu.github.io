@@ -1,0 +1,34 @@
+{
+  "campaign": "local-mind-catalog",
+  "entries": [
+    {
+      "root_cause": "the fit rule counts a Mac box total memory, while Metal can only give a model its working set, so small Macs are over-placed",
+      "attempts": [
+        {
+          "action": "fit rule: m4mini capacity = 11.4 GB (its Metal working set: llama.cpp recommendedMaxWorkingSetSize 12,713 MB, Strata workSet 11.8 GiB) instead of 16 GB; other boxes keep total memory",
+          "rationale": "the existing 14.5 GB MiniCPM-V row on m4mini had to run hybrid (32/40 layers) while 10.7 GB files run fully resident, which a 16 GB budget cannot explain and an ~11.4 GB working set does",
+          "predicted": {
+            "direction": "flat",
+            "magnitude": "0",
+            "metric": "C",
+            "note": "written with the edit (18:08), before kpi.py first ran but after the round-0 Inkling measurements; predicts C unchanged by the edit and fewer m4mini placements"
+          },
+          "observed": {
+            "delta": "0 from this edit (0.26 -> 0.28 came from the Inkling-2-Mini measurements)",
+            "metric": "C",
+            "note": "m4mini Q4_K_M placements drop for every 20-36B candidate; the 8.49 GB Inkling IQ2_XXS file ran resident on m4mini at pp512/tg128, consistent with the cap. Same round: Strata 0.2.19 on m4mini served token id 0 for every reply while its own --bench and --selfcheck passed, so a correctness probe (17 x 23) now gates every published rate.",
+            "value": 0.28,
+            "verdict": "no-effect"
+          },
+          "provenance": {
+            "domain": "local-mind-catalog",
+            "benchmark": "candidates-2026-11-22 (frozen, 50 upstream LLMs: 25 latest + 25 popular; rules and sources inside the file)",
+            "policy": "claude-opus-5.5",
+            "round": 0
+          },
+          "source": "prospective"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3716 @@
+{
+ "campaign": "local-mind-catalog",
+ "frozen": "2026-11-22",
+ "round": 0,
+ "policy": "claude-opus-5.5 (this session, catalog-maintainer subagent)",
+ "discovery": {
+  "sources": [
+   "https://huggingface.co/api/models?sort=trendingScore&direction=-1&limit=200&filter=text-generation (fetched 2026-11-22)",
+   "https://huggingface.co/api/models?sort=trendingScore&direction=-1&limit=200&filter=gguf",
+   "https://huggingface.co/api/models?sort=trendingScore&direction=-1&limit=60&filter=image-text-to-text",
+   "https://huggingface.co/api/models?sort=downloads&direction=-1&limit=200&filter=text-generation",
+   "https://huggingface.co/api/models?author=<org>&sort=createdAt&limit=25 for 31 publishers incl. every family already in machines.json",
+   "per-candidate https://huggingface.co/api/models/<id>?expand[]=safetensors... and <id>/resolve/main/config.json"
+  ],
+  "rules": {
+   "latest": "upstream (original-publisher) instruct/chat text LLM created 2026-08-24..2026-11-22 (90 days), >=3B params, likes>=150 or 30-day downloads>=100k",
+   "popular": "upstream instruct text LLM created >=2025-07, older than 90 days, likes>=1000 or 30-day downloads>=300k; a family slot is taken by its newest version",
+   "suitability": "runnable through a catalogue engine (llama.cpp, MLX, Strata, ds4, vLLM) and plausibly a coding agent; tool-call probe and published coding scores are NOT yet collected (round 1+)",
+   "coverage": "covered = a measured row of the SAME upstream model (any quantisation of its weights) on a machine it fits, or an explicit does-not-fit row; a derivative fine-tune row does not cover its base; a catalogue-only row with no engine (modes []) is not a does-not-fit claim and does not count"
+  },
+  "excluded": [
+   {
+    "what": "DeepSeek-V4.1-Flash (0910)",
+    "why": "superseded by DeepSeek-V4.1-Flash-1017 (same family and size)"
+   },
+   {
+    "what": "DeepSeek-V4-Pro (0422)",
+    "why": "superseded by DeepSeek-V4-Pro-0813"
+   },
+   {
+    "what": "moonshotai/Kimi-K3",
+    "why": "superseded by Kimi-K3.1-Pro (same size)"
+   },
+   {
+    "what": "tencent/Hy3",
+    "why": "superseded by Hy4 / Hy4-flash"
+   },
+   {
+    "what": "zai-org/GLM-5.2, GLM-5.1, GLM-5",
+    "why": "superseded by GLM-5.3 / GLM-5.3-Flash"
+   },
+   {
+    "what": "MiniMaxAI/MiniMax-M2.5",
+    "why": "superseded by MiniMax-M3"
+   },
+   {
+    "what": "deepseek-ai/DeepSeek-V3.2",
+    "why": "superseded by the V4 family"
+   },
+   {
+    "what": "Qwen/Qwen3-4B, Qwen3-8B, Qwen3-14B, Qwen3-32B (2025)",
+    "why": "superseded by Qwen3.5-4B / Qwen3.5-9B / Qwen3.8-27B; their catalogue rows stay published"
+   },
+   {
+    "what": "zai-org/GLM-4.5-Air, poolside/Laguna-XS.2, ornith Ornith-1.0, JetBrains Mellum2",
+    "why": "superseded by a newer version of the same family"
+   },
+   {
+    "what": "inclusionAI/Ling-3.1-flash-1019 (99 likes), stepfun-ai/Step-5-Preview (147 likes)",
+    "why": "below the latest-rule popularity threshold"
+   },
+   {
+    "what": "baidu/ERNIE-5.5-Flash-Base",
+    "why": "base model only, no instruct release"
+   },
+   {
+    "what": "internlm/Sage-S2.1-Flash, internlm/Intern-S2-397B",
+    "why": "scientific multimodal models, not coding-agent models (Sage-S2.1-Flash keeps its catalogue row)"
+   },
+   {
+    "what": "microsoft/Aion-1.0-Instruct-2.3B, LiquidAI/LFM3-1.7B, openbmb/MiniCPM5-2B, KRAFTON/Raon-1-nano",
+    "why": "under 3B parameters (Raon-1-nano: size not verified, excluded by its name)"
+   },
+   {
+    "what": "derivative fine-tunes and re-quantisations (base_model points at another publisher): Edge0-145B, NousResearch/Arete-27B, ConwayResearch/Underdog-Saluki-27B, RadixArk/DaisyRose-27B, Cloudflare/clef, prism-ml/Ternary-Bonsai-2-27B, nvidia Nemotron-3.5-Bolt-E4B, XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B, harness-hub adapters, all uncensored/abliterated/heretic uploads, and catalogue derivatives (Inkling-2-Mini-Uncensored, Qwen3.5-9B Defiant, DeepSeek-V4-Pro-Qwen3.5-4B, Apex-35B, Muse Glimmer 30B)",
+    "why": "the candidate is the upstream release; a derivative row never covers its base. Derivative rows stay published outside the KPI"
+   },
+   {
+    "what": "TTS, ASR, OCR, image, video and embedding models",
+    "why": "not text LLMs"
+   }
+  ]
+ },
+ "fit_rule": {
+  "formula": "(weights + f16 KV at 32,768 tokens) x 1.1 <= box memory; formats gated per box (a2: only w8a8 via vLLM-Ascend or q4_0 via llama.cpp CANN; Macs/gb10/amd395: GGUF/MLX)",
+  "box_memory_gb": {
+   "m1u": 128,
+   "m2max": 64,
+   "m4mini": 11.4,
+   "gb10": 128,
+   "amd395": 128,
+   "a2": 512
+  },
+  "m4mini_note": "m4mini uses its Metal working set, not its 16 GB: recommendedMaxWorkingSetSize reads 12,713 MB (llama.cpp, 2026-11-22) and Strata reports workSet 11.8 GiB; 11.4 GB decimal is used, consistent with the 14.5 GB MiniCPM-V file running hybrid there. This is the round-0 harness edit.",
+  "bpw": {
+   "Q4_K_M": 4.85,
+   "Q2_K_XL": 2.9,
+   "IQ1_S": 1.9,
+   "w8a8": 8.5,
+   "q4_0": 4.5
+  },
+  "caveats": [
+   "weights are params x bpw / 8 from the HF safetensors total, an ESTIMATE; a measured file size in machines.json always wins (DeepSeek-V4-Flash: 87 GB measured vs 105 GB estimated at Q2_K_XL)",
+   "models whose exports stream a table from disk (DeepSeek-V4.1 engram/n-gram, Qwen3.8 MTP per-layer embedding) run resident with less than their file size; the estimate does not model that, which is why V4.1-Flash-1017 shows a2-only while it is measured on m1u and amd395",
+   "KV for Inkling-2-Mini counts all 48 loop visits at full attention, an upper bound: its 1,024-token sliding window is not in config.json",
+   "linear-attention / SSM layers carry constant state and are ignored"
+  ]
+ },
+ "kpi": {
+  "C_baseline": {
+   "covered": 13,
+   "candidates": 50,
+   "value": 0.26,
+   "measured_from": "machines.json at 9286bf4 (rows existing before this round)"
+  },
+  "C_after_round0": {
+   "covered": 14,
+   "candidates": 50,
+   "value": 0.28,
+   "change": "Inkling-2-Mini base measured on m4mini and m1u (llama.cpp), 2026-11-22, by user instruction"
+  }
+ },
+ "candidates": [
+  {
+   "id": "thinkingmachines/Inkling-2-Mini",
+   "rule": "latest",
+   "source": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+   "created": "2026-11-17",
+   "downloads_30d": 23543,
+   "likes": 4451,
+   "license": "apache-2.0",
+   "params_b": 26.4,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Inkling2LoopForConditionalGeneration",
+   "ctx_tokens_declared": null,
+   "ctx_src": null,
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_baseline_note": "not covered: base row had modes [] (no engine); only the AtomicChat uncensored derivative had rates",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m4mini: Inkling-2-Mini UD-IQ2_XXS (llama.cpp, 2026-11-22)",
+    "m1u: Inkling-2-Mini UD-IQ2_XXS (llama.cpp, 2026-11-22)"
+   ],
+   "fit": {
+    "kv_estimate": "GQA f16: 48 global layers x 2 x 8 kv x 128 hd x 2B",
+    "kv_f16_bytes_per_token": 196608,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 16,
+      "kv_32k_gb": 6.44,
+      "need_gb": 24.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 9.6,
+      "kv_32k_gb": 6.44,
+      "need_gb": 17.6,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 6.3,
+      "kv_32k_gb": 6.44,
+      "need_gb": 14,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 28,
+      "kv_32k_gb": 6.44,
+      "need_gb": 37.9,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 14.8,
+      "kv_32k_gb": 6.44,
+      "need_gb": 23.4,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "thinkingmachines/Inkling-2-Small",
+   "rule": "latest",
+   "source": "https://huggingface.co/thinkingmachines/Inkling-2-Small",
+   "created": "2026-11-04",
+   "downloads_30d": 48974,
+   "likes": 659,
+   "license": "apache-2.0",
+   "params_b": 594.1,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Inkling2ForConditionalGeneration",
+   "ctx_tokens_declared": null,
+   "ctx_src": null,
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 48 global layers x 2 x 8 kv x 128 hd x 2B",
+    "kv_f16_bytes_per_token": 196608,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 360.1,
+      "kv_32k_gb": 6.44,
+      "need_gb": 403.2,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 215.3,
+      "kv_32k_gb": 6.44,
+      "need_gb": 244,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 141.1,
+      "kv_32k_gb": 6.44,
+      "need_gb": 162.3,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 631.2,
+      "kv_32k_gb": 6.44,
+      "need_gb": 701.4,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 334.2,
+      "kv_32k_gb": 6.44,
+      "need_gb": 374.7,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "tencent/Hy4-flash",
+   "rule": "latest",
+   "source": "https://huggingface.co/tencent/Hy4-flash",
+   "created": "2026-11-17",
+   "downloads_30d": 6617,
+   "likes": 593,
+   "license": "other",
+   "params_b": 220.3,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "HYV4FlashForConditionalGeneration",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "tencent/Hy4-flash/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "MLA 12 layers x (512+64) x 2B + 30 sliding layers (window 512)",
+    "kv_f16_bytes_per_token": 13824,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 133.5,
+      "kv_32k_gb": 0.58,
+      "need_gb": 147.5,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 79.8,
+      "kv_32k_gb": 0.58,
+      "need_gb": 88.5,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 52.3,
+      "kv_32k_gb": 0.58,
+      "need_gb": 58.2,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 234,
+      "kv_32k_gb": 0.58,
+      "need_gb": 258.1,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 123.9,
+      "kv_32k_gb": 0.58,
+      "need_gb": 136.9,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "tencent/Hy4",
+   "rule": "latest",
+   "source": "https://huggingface.co/tencent/Hy4",
+   "created": "2026-10-29",
+   "downloads_30d": 1355,
+   "likes": 220,
+   "license": "other",
+   "params_b": 774.4,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "HYV4VLForConditionalGeneration",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "tencent/Hy4/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "MLA 78 layers x (512+64) x 2B",
+    "kv_f16_bytes_per_token": 89856,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 469.5,
+      "kv_32k_gb": 2.94,
+      "need_gb": 519.7,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 280.7,
+      "kv_32k_gb": 2.94,
+      "need_gb": 312,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 183.9,
+      "kv_32k_gb": 2.94,
+      "need_gb": 205.6,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 822.8,
+      "kv_32k_gb": 2.94,
+      "need_gb": 908.4,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 435.6,
+      "kv_32k_gb": 2.94,
+      "need_gb": 482.4,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "sensenova/SenseNova-Loop-9B",
+   "rule": "latest",
+   "source": "https://huggingface.co/sensenova/SenseNova-Loop-9B",
+   "created": "2026-11-17",
+   "downloads_30d": 1863,
+   "likes": 481,
+   "license": "apache-2.0",
+   "params_b": 9.7,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": null,
+   "ctx_tokens_declared": null,
+   "ctx_src": null,
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [
+    "m1u: catalogue-only row, modes [] because no engine loads it (not a does-not-fit claim)"
+   ],
+   "fit": {
+    "kv_estimate": "no config: assumed 32 GQA layers kv8 hd128",
+    "kv_f16_bytes_per_token": 131072,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 5.9,
+      "kv_32k_gb": 4.29,
+      "need_gb": 11.2,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 3.5,
+      "kv_32k_gb": 4.29,
+      "need_gb": 8.6,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 2.3,
+      "kv_32k_gb": 4.29,
+      "need_gb": 7.2,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 10.3,
+      "kv_32k_gb": 4.29,
+      "need_gb": 16,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 5.4,
+      "kv_32k_gb": 4.29,
+      "need_gb": 10.7,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "moonshotai/Kimi-K3.1-Pro",
+   "rule": "latest",
+   "source": "https://huggingface.co/moonshotai/Kimi-K3.1-Pro",
+   "created": "2026-11-02",
+   "downloads_30d": 70495,
+   "likes": 2396,
+   "license": "other",
+   "params_b": 2780.1,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "KimiK31ForConditionalGeneration",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "moonshotai/Kimi-K3.1-Pro/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "note": "Kimi-K3 has an m1u row; K3.1-Pro is a different release",
+   "fit": {
+    "kv_estimate": "MLA 93 layers x (512+64) x 2B",
+    "kv_f16_bytes_per_token": 107136,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 1685.4,
+      "kv_32k_gb": 3.51,
+      "need_gb": 1857.8,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 1007.8,
+      "kv_32k_gb": 3.51,
+      "need_gb": 1112.4,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 660.3,
+      "kv_32k_gb": 3.51,
+      "need_gb": 730.2,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 2953.9,
+      "kv_32k_gb": 3.51,
+      "need_gb": 3253.1,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 1563.8,
+      "kv_32k_gb": 3.51,
+      "need_gb": 1724.1,
+      "fits": []
+     }
+    }
+   }
+  },
+  {
+   "id": "meituan-longcat/LongCat-2.5",
+   "rule": "latest",
+   "source": "https://huggingface.co/meituan-longcat/LongCat-2.5",
+   "created": "2026-11-04",
+   "downloads_30d": 3106,
+   "likes": 278,
+   "license": "mit",
+   "params_b": 1779.8,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "LongcatCausalLM",
+   "ctx_tokens_declared": 524288,
+   "ctx_src": "meituan-longcat/LongCat-2.5/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "MLA 38 layers x (512+64) x 2B",
+    "kv_f16_bytes_per_token": 43776,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 1079,
+      "kv_32k_gb": 1.43,
+      "need_gb": 1188.5,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 645.2,
+      "kv_32k_gb": 1.43,
+      "need_gb": 711.3,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 422.7,
+      "kv_32k_gb": 1.43,
+      "need_gb": 466.5,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 1891,
+      "kv_32k_gb": 1.43,
+      "need_gb": 2081.7,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 1001.1,
+      "kv_32k_gb": 1.43,
+      "need_gb": 1102.8,
+      "fits": []
+     }
+    }
+   }
+  },
+  {
+   "id": "OVHaiLLM/Olala-v1.0-mini-7A1B",
+   "rule": "latest",
+   "source": "https://huggingface.co/OVHaiLLM/Olala-v1.0-mini-7A1B",
+   "created": "2026-10-30",
+   "downloads_30d": 62806,
+   "likes": 242,
+   "license": "apache-2.0",
+   "params_b": 6.8,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "OlalaForCausalLM",
+   "ctx_tokens_declared": 100000,
+   "ctx_src": "OVHaiLLM/Olala-v1.0-mini-7A1B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 36 global layers x 2 x 8 kv x 128 hd x 2B",
+    "kv_f16_bytes_per_token": 147456,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 4.1,
+      "kv_32k_gb": 4.83,
+      "need_gb": 9.8,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 2.5,
+      "kv_32k_gb": 4.83,
+      "need_gb": 8,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 1.6,
+      "kv_32k_gb": 4.83,
+      "need_gb": 7.1,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 7.2,
+      "kv_32k_gb": 4.83,
+      "need_gb": 13.2,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 3.8,
+      "kv_32k_gb": 4.83,
+      "need_gb": 9.5,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "Nanbeige/Nanbeige4.3-33B",
+   "rule": "latest",
+   "source": "https://huggingface.co/Nanbeige/Nanbeige4.3-33B",
+   "created": "2026-10-24",
+   "downloads_30d": 25637,
+   "likes": 1098,
+   "license": "apache-2.0",
+   "params_b": 33.1,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "LlamaForCausalLM",
+   "ctx_tokens_declared": 524288,
+   "ctx_src": "Nanbeige/Nanbeige4.3-33B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "amd395: Nanbeige4.3-33B"
+   ],
+   "fit": {
+    "kv_estimate": "GQA f16: 52 global layers x 2 x 8 kv x 128 hd x 2B",
+    "kv_f16_bytes_per_token": 212992,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 20.1,
+      "kv_32k_gb": 6.98,
+      "need_gb": 29.8,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 12,
+      "kv_32k_gb": 6.98,
+      "need_gb": 20.9,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 7.9,
+      "kv_32k_gb": 6.98,
+      "need_gb": 16.3,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 35.2,
+      "kv_32k_gb": 6.98,
+      "need_gb": 46.4,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 18.6,
+      "kv_32k_gb": 6.98,
+      "need_gb": 28.2,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+   "rule": "latest",
+   "source": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017",
+   "created": "2026-10-17",
+   "downloads_30d": 515306,
+   "likes": 5843,
+   "license": "mit",
+   "params_b": 763.2,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "DeepseekV41ForCausalLM",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "deepseek-ai/DeepSeek-V4.1-Flash-1017/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m1u: DeepSeek-V4.1-Flash Coder (GSQ-RCO-Coder IQ2_XXS export of 1017)",
+    "amd395: DeepSeek-V4.1-Flash Coder"
+   ],
+   "fit": {
+    "kv_estimate": "empirical V4.1 llama.cpp KV (12.9 GB at 1M, 40 layers) scaled to 40 layers",
+    "kv_f16_bytes_per_token": 12302,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 462.7,
+      "kv_32k_gb": 0.4,
+      "need_gb": 509.4,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 276.7,
+      "kv_32k_gb": 0.4,
+      "need_gb": 304.8,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 181.3,
+      "kv_32k_gb": 0.4,
+      "need_gb": 199.8,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 810.9,
+      "kv_32k_gb": 0.4,
+      "need_gb": 892.4,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 429.3,
+      "kv_32k_gb": 0.4,
+      "need_gb": 472.7,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "MiniMaxAI/MiniMax-M3.1-Flash",
+   "rule": "latest",
+   "source": "https://huggingface.co/MiniMaxAI/MiniMax-M3.1-Flash",
+   "created": "2026-10-17",
+   "downloads_30d": 147888,
+   "likes": 611,
+   "license": "other",
+   "params_b": 220.5,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "MiniMaxM3SparseForConditionalGeneration",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "MiniMaxAI/MiniMax-M3.1-Flash/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 60 global layers x 2 x 4 kv x 128 hd x 2B",
+    "kv_f16_bytes_per_token": 122880,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 133.7,
+      "kv_32k_gb": 4.03,
+      "need_gb": 151.5,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 79.9,
+      "kv_32k_gb": 4.03,
+      "need_gb": 92.3,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 52.4,
+      "kv_32k_gb": 4.03,
+      "need_gb": 62,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 234.3,
+      "kv_32k_gb": 4.03,
+      "need_gb": 262.1,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 124,
+      "kv_32k_gb": 4.03,
+      "need_gb": 140.9,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "maxwell-model/Maxwell-V1-Flash",
+   "rule": "latest",
+   "source": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+   "created": "2026-10-13",
+   "downloads_30d": 3317,
+   "likes": 341,
+   "license": "apache-2.0",
+   "params_b": 36.8,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "MaxwellMoeForCausalLM",
+   "ctx_tokens_declared": 524288,
+   "ctx_src": "maxwell-model/Maxwell-V1-Flash/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m1u: Maxwell-V1-Flash (provisional, USB volume)"
+   ],
+   "fit": {
+    "kv_estimate": "GQA f16: 45 global layers x 2 x 4 kv x 64 hd x 2B",
+    "kv_f16_bytes_per_token": 46080,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 22.3,
+      "kv_32k_gb": 1.51,
+      "need_gb": 26.2,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 13.3,
+      "kv_32k_gb": 1.51,
+      "need_gb": 16.3,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 8.7,
+      "kv_32k_gb": 1.51,
+      "need_gb": 11.3,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 39.1,
+      "kv_32k_gb": 1.51,
+      "need_gb": 44.7,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 20.7,
+      "kv_32k_gb": 1.51,
+      "need_gb": 24.4,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "JetBrains/Mellum2.1-12B-A2.5B-Thinking",
+   "rule": "latest",
+   "source": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
+   "created": "2026-09-20",
+   "downloads_30d": 32119,
+   "likes": 207,
+   "license": "apache-2.0",
+   "params_b": 12.1,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "MellumForCausalLM",
+   "ctx_tokens_declared": 131072,
+   "ctx_src": "JetBrains/Mellum2.1-12B-A2.5B-Thinking/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 7 global layers x 2 x 4 kv x 128 hd x 2B + 21 sliding (window 1024); linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 14336,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 7.4,
+      "kv_32k_gb": 0.51,
+      "need_gb": 8.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 4.4,
+      "kv_32k_gb": 0.51,
+      "need_gb": 5.4,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 2.9,
+      "kv_32k_gb": 0.51,
+      "need_gb": 3.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 12.9,
+      "kv_32k_gb": 0.51,
+      "need_gb": 14.8,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 6.8,
+      "kv_32k_gb": 0.51,
+      "need_gb": 8.1,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "XHToken/Spark-X2.6-4B",
+   "rule": "latest",
+   "source": "https://huggingface.co/XHToken/Spark-X2.6-4B",
+   "created": "2026-10-19",
+   "downloads_30d": 35202,
+   "likes": 1073,
+   "license": "apache-2.0",
+   "params_b": 4.1,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Spark2_5ForCausalLM",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "XHToken/Spark-X2.6-4B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 9 global layers x 2 x 4 kv x 256 hd x 2B + 27 sliding (window 512); linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 36864,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 2.5,
+      "kv_32k_gb": 1.26,
+      "need_gb": 4.1,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 1.5,
+      "kv_32k_gb": 1.26,
+      "need_gb": 3,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 1,
+      "kv_32k_gb": 1.26,
+      "need_gb": 2.5,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 4.4,
+      "kv_32k_gb": 1.26,
+      "need_gb": 6.2,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 2.3,
+      "kv_32k_gb": 1.26,
+      "need_gb": 3.9,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "InternScience/Sage-A1.5",
+   "rule": "latest",
+   "source": "https://huggingface.co/InternScience/Sage-A1.5",
+   "created": "2026-10-15",
+   "downloads_30d": 25866,
+   "likes": 414,
+   "license": "apache-2.0",
+   "params_b": 36,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen3_5MoeForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "InternScience/Sage-A1.5/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 10 global layers x 2 x 2 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 20480,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 21.8,
+      "kv_32k_gb": 0.67,
+      "need_gb": 24.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 13,
+      "kv_32k_gb": 0.67,
+      "need_gb": 15.1,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 8.5,
+      "kv_32k_gb": 0.67,
+      "need_gb": 10.1,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 38.2,
+      "kv_32k_gb": 0.67,
+      "need_gb": 42.8,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 20.2,
+      "kv_32k_gb": 0.67,
+      "need_gb": 23,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "XiaomiMiMo/MiMo-V2.6-Flash-RL",
+   "rule": "latest",
+   "source": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Flash-RL",
+   "created": "2026-09-21",
+   "downloads_30d": 43138,
+   "likes": 600,
+   "license": "mit",
+   "params_b": 310.8,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "MiMoV2ForCausalLM",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "XiaomiMiMo/MiMo-V2.6-Flash-RL/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 48 global layers x 2 x 4 kv x 192 hd x 2B",
+    "kv_f16_bytes_per_token": 147456,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 188.4,
+      "kv_32k_gb": 4.83,
+      "need_gb": 212.6,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 112.6,
+      "kv_32k_gb": 4.83,
+      "need_gb": 129.2,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 73.8,
+      "kv_32k_gb": 4.83,
+      "need_gb": 86.5,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 330.2,
+      "kv_32k_gb": 4.83,
+      "need_gb": 368.5,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 174.8,
+      "kv_32k_gb": 4.83,
+      "need_gb": 197.6,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "XiaomiMiMo/MiMo-V2.6-Pro-RL",
+   "rule": "latest",
+   "source": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+   "created": "2026-09-21",
+   "downloads_30d": 31483,
+   "likes": 831,
+   "license": "mit",
+   "params_b": 1024.2,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "MiMoV2ForCausalLM",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "XiaomiMiMo/MiMo-V2.6-Pro-RL/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 70 global layers x 2 x 8 kv x 192 hd x 2B",
+    "kv_f16_bytes_per_token": 430080,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 620.9,
+      "kv_32k_gb": 14.09,
+      "need_gb": 698.5,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 371.3,
+      "kv_32k_gb": 14.09,
+      "need_gb": 423.9,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 243.3,
+      "kv_32k_gb": 14.09,
+      "need_gb": 283.1,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 1088.2,
+      "kv_32k_gb": 14.09,
+      "need_gb": 1212.6,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 576.1,
+      "kv_32k_gb": 14.09,
+      "need_gb": 649.2,
+      "fits": []
+     }
+    }
+   }
+  },
+  {
+   "id": "mistralai/Mistral-Large-4-1T-A52B",
+   "rule": "latest",
+   "source": "https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B",
+   "created": "2026-09-30",
+   "downloads_30d": 21093,
+   "likes": 1679,
+   "license": "other",
+   "params_b": 1000,
+   "params_src": "model name (1T-A52B); the HF API returned no safetensors total",
+   "architecture": "MistralLarge4ForConditionalGeneration",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "mistralai/Mistral-Large-4-1T-A52B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "MLA 72 layers x (512+64) x 2B",
+    "kv_f16_bytes_per_token": 82944,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 606.3,
+      "kv_32k_gb": 2.72,
+      "need_gb": 669.9,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 362.5,
+      "kv_32k_gb": 2.72,
+      "need_gb": 401.7,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 237.5,
+      "kv_32k_gb": 2.72,
+      "need_gb": 264.2,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 1062.5,
+      "kv_32k_gb": 2.72,
+      "need_gb": 1171.7,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 562.5,
+      "kv_32k_gb": 2.72,
+      "need_gb": 621.7,
+      "fits": []
+     }
+    }
+   }
+  },
+  {
+   "id": "LiquidAI/LFM2.5-24B-A2B",
+   "rule": "latest",
+   "source": "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B",
+   "created": "2026-10-12",
+   "downloads_30d": 27219,
+   "likes": 626,
+   "license": "other",
+   "params_b": 24,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Lfm2MoeForCausalLM",
+   "ctx_tokens_declared": 131072,
+   "ctx_src": "LiquidAI/LFM2.5-24B-A2B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 10 global layers x 2 x 8 kv x 64 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 20480,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 14.5,
+      "kv_32k_gb": 0.67,
+      "need_gb": 16.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 8.7,
+      "kv_32k_gb": 0.67,
+      "need_gb": 10.3,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 5.7,
+      "kv_32k_gb": 0.67,
+      "need_gb": 7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 25.5,
+      "kv_32k_gb": 0.67,
+      "need_gb": 28.8,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 13.5,
+      "kv_32k_gb": 0.67,
+      "need_gb": 15.6,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "zai-org/GLM-5.3",
+   "rule": "latest",
+   "source": "https://huggingface.co/zai-org/GLM-5.3",
+   "created": "2026-08-25",
+   "downloads_30d": 1382366,
+   "likes": 2521,
+   "license": "other",
+   "params_b": 753.3,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "GlmMoeDsaForCausalLM",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "zai-org/GLM-5.3/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "MLA 78 layers x (512+64) x 2B",
+    "kv_f16_bytes_per_token": 89856,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 456.7,
+      "kv_32k_gb": 2.94,
+      "need_gb": 505.6,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 273.1,
+      "kv_32k_gb": 2.94,
+      "need_gb": 303.6,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 178.9,
+      "kv_32k_gb": 2.94,
+      "need_gb": 200,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 800.4,
+      "kv_32k_gb": 2.94,
+      "need_gb": 883.7,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 423.7,
+      "kv_32k_gb": 2.94,
+      "need_gb": 469.4,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "zai-org/GLM-5.3-Flash",
+   "rule": "latest",
+   "source": "https://huggingface.co/zai-org/GLM-5.3-Flash",
+   "created": "2026-08-25",
+   "downloads_30d": 6400485,
+   "likes": 3303,
+   "license": "mit",
+   "params_b": 321.3,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Glm5NextForConditionalGeneration",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "zai-org/GLM-5.3-Flash/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m1u: GLM-5.3-Flash"
+   ],
+   "fit": {
+    "kv_estimate": "MLA 11 layers x (512+64) x 2B",
+    "kv_f16_bytes_per_token": 12672,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 194.8,
+      "kv_32k_gb": 0.42,
+      "need_gb": 214.7,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 116.5,
+      "kv_32k_gb": 0.42,
+      "need_gb": 128.6,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 76.3,
+      "kv_32k_gb": 0.42,
+      "need_gb": 84.4,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 341.4,
+      "kv_32k_gb": 0.42,
+      "need_gb": 376,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 180.7,
+      "kv_32k_gb": 0.42,
+      "need_gb": 199.3,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "Qwen/Qwen3.8-Flash-Next",
+   "rule": "latest",
+   "source": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
+   "created": "2026-08-24",
+   "downloads_30d": 2417260,
+   "likes": 7429,
+   "license": "other",
+   "params_b": 180,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen4ExpForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "Qwen/Qwen3.8-Flash-Next/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m1u: three rows (llama.cpp, Strata, ds4+MTP)",
+    "m2max: MTP row"
+   ],
+   "fit": {
+    "kv_estimate": "GQA f16: 12 global layers x 2 x 2 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 24576,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 109.1,
+      "kv_32k_gb": 0.81,
+      "need_gb": 120.9,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 65.2,
+      "kv_32k_gb": 0.81,
+      "need_gb": 72.7,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 42.7,
+      "kv_32k_gb": 0.81,
+      "need_gb": 47.9,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 191.2,
+      "kv_32k_gb": 0.81,
+      "need_gb": 211.3,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 101.2,
+      "kv_32k_gb": 0.81,
+      "need_gb": 112.3,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "RecursiveSI/flint",
+   "rule": "latest",
+   "source": "https://huggingface.co/RecursiveSI/flint",
+   "created": "2026-10-21",
+   "downloads_30d": 61297,
+   "likes": 1439,
+   "license": "apache-2.0",
+   "params_b": 39.8,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "FlintForCausalLM",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "RecursiveSI/flint/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 14 global layers x 2 x 4 kv x 128 hd x 2B + 35 sliding (window 513); linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 28672,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 24.1,
+      "kv_32k_gb": 0.98,
+      "need_gb": 27.6,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 14.4,
+      "kv_32k_gb": 0.98,
+      "need_gb": 16.9,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 9.4,
+      "kv_32k_gb": 0.98,
+      "need_gb": 11.5,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 42.3,
+      "kv_32k_gb": 0.98,
+      "need_gb": 47.6,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 22.4,
+      "kv_32k_gb": 0.98,
+      "need_gb": 25.7,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "openbmb/MiniCPM-V-4.7-35B-A3B",
+   "rule": "latest",
+   "source": "https://huggingface.co/openbmb/MiniCPM-V-4.7-35B-A3B",
+   "created": "2026-10-07",
+   "downloads_30d": 868538,
+   "likes": 1124,
+   "license": "apache-2.0",
+   "params_b": 35.2,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "MiniCPMV4_7ForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "openbmb/MiniCPM-V-4.7-35B-A3B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m1u",
+    "m2max",
+    "m4mini",
+    "amd395"
+   ],
+   "fit": {
+    "kv_estimate": "GQA f16: 10 global layers x 2 x 2 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 20480,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 21.3,
+      "kv_32k_gb": 0.67,
+      "need_gb": 24.2,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 12.8,
+      "kv_32k_gb": 0.67,
+      "need_gb": 14.8,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 8.4,
+      "kv_32k_gb": 0.67,
+      "need_gb": 9.9,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 37.4,
+      "kv_32k_gb": 0.67,
+      "need_gb": 41.9,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 19.8,
+      "kv_32k_gb": 0.67,
+      "need_gb": 22.5,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "ornith-ai/Ornith-1.5-122B-FP8",
+   "rule": "latest",
+   "source": "https://huggingface.co/ornith-ai/Ornith-1.5-122B-FP8",
+   "created": "2026-10-20",
+   "downloads_30d": 572626,
+   "likes": 46,
+   "license": "mit",
+   "params_b": 125.1,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen3_5MoeForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "ornith-ai/Ornith-1.5-122B-FP8/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 12 global layers x 2 x 2 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 24576,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 75.8,
+      "kv_32k_gb": 0.81,
+      "need_gb": 84.3,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 45.3,
+      "kv_32k_gb": 0.81,
+      "need_gb": 50.8,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 29.7,
+      "kv_32k_gb": 0.81,
+      "need_gb": 33.6,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 132.9,
+      "kv_32k_gb": 0.81,
+      "need_gb": 147.1,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 70.4,
+      "kv_32k_gb": 0.81,
+      "need_gb": 78.3,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "moonshotai/Kimi-K2.7-Code",
+   "rule": "popular",
+   "source": "https://huggingface.co/moonshotai/Kimi-K2.7-Code",
+   "created": "2026-06-11",
+   "downloads_30d": 323244,
+   "likes": 1433,
+   "license": "other",
+   "params_b": 1026.9,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "KimiK25ForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "moonshotai/Kimi-K2.7-Code/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "MLA 61 layers x (512+64) x 2B",
+    "kv_f16_bytes_per_token": 70272,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 622.5,
+      "kv_32k_gb": 2.3,
+      "need_gb": 687.3,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 372.2,
+      "kv_32k_gb": 2.3,
+      "need_gb": 412,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 243.9,
+      "kv_32k_gb": 2.3,
+      "need_gb": 270.8,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 1091.1,
+      "kv_32k_gb": 2.3,
+      "need_gb": 1202.7,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 577.6,
+      "kv_32k_gb": 2.3,
+      "need_gb": 637.9,
+      "fits": []
+     }
+    }
+   }
+  },
+  {
+   "id": "deepseek-ai/DeepSeek-V4-Flash",
+   "rule": "popular",
+   "source": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+   "created": "2026-04-22",
+   "downloads_30d": 1079419,
+   "likes": 2419,
+   "license": "mit",
+   "params_b": 290.9,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "DeepseekV4ForCausalLM",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "deepseek-ai/DeepSeek-V4-Flash/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m1u",
+    "m2max",
+    "gb10",
+    "amd395",
+    "a2 x2"
+   ],
+   "fit": {
+    "kv_estimate": "empirical V4.1 llama.cpp KV (12.9 GB at 1M, 40 layers) scaled to 43 layers",
+    "kv_f16_bytes_per_token": 13225,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 176.4,
+      "kv_32k_gb": 0.43,
+      "need_gb": 194.5,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 105.5,
+      "kv_32k_gb": 0.43,
+      "need_gb": 116.5,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 69.1,
+      "kv_32k_gb": 0.43,
+      "need_gb": 76.5,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 309.1,
+      "kv_32k_gb": 0.43,
+      "need_gb": 340.5,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 163.7,
+      "kv_32k_gb": 0.43,
+      "need_gb": 180.5,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "deepseek-ai/DeepSeek-V4-Pro-0813",
+   "rule": "popular",
+   "source": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro-0813",
+   "created": "2026-08-13",
+   "downloads_30d": 41514,
+   "likes": 923,
+   "license": "mit",
+   "params_b": 1650.5,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "DeepseekV4ForCausalLM",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "deepseek-ai/DeepSeek-V4-Pro-0813/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "empirical V4.1 llama.cpp KV (12.9 GB at 1M, 40 layers) scaled to 61 layers",
+    "kv_f16_bytes_per_token": 18761,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 1000.6,
+      "kv_32k_gb": 0.61,
+      "need_gb": 1101.4,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 598.3,
+      "kv_32k_gb": 0.61,
+      "need_gb": 658.8,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 392,
+      "kv_32k_gb": 0.61,
+      "need_gb": 431.9,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 1753.7,
+      "kv_32k_gb": 0.61,
+      "need_gb": 1929.7,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 928.4,
+      "kv_32k_gb": 0.61,
+      "need_gb": 1021.9,
+      "fits": []
+     }
+    }
+   }
+  },
+  {
+   "id": "MiniMaxAI/MiniMax-M3",
+   "rule": "popular",
+   "source": "https://huggingface.co/MiniMaxAI/MiniMax-M3",
+   "created": "2026-06-02",
+   "downloads_30d": 192247,
+   "likes": 1606,
+   "license": "other",
+   "params_b": 427,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "MiniMaxM3SparseForConditionalGeneration",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "MiniMaxAI/MiniMax-M3/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 60 global layers x 2 x 4 kv x 128 hd x 2B",
+    "kv_f16_bytes_per_token": 122880,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 258.9,
+      "kv_32k_gb": 4.03,
+      "need_gb": 289.2,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 154.8,
+      "kv_32k_gb": 4.03,
+      "need_gb": 174.7,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 101.4,
+      "kv_32k_gb": 4.03,
+      "need_gb": 116,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 453.7,
+      "kv_32k_gb": 4.03,
+      "need_gb": 503.5,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 240.2,
+      "kv_32k_gb": 4.03,
+      "need_gb": 268.7,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+   "rule": "popular",
+   "source": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+   "created": "2026-08-01",
+   "downloads_30d": 793684,
+   "likes": 280,
+   "license": "other",
+   "params_b": 31.6,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "NemotronHForCausalLM",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m1u: Nemotron 3.5 Lightning (MLX stock)"
+   ],
+   "fit": {
+    "kv_estimate": "GQA f16: 6 global layers x 2 x 2 kv x 128 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 6144,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 19.1,
+      "kv_32k_gb": 0.2,
+      "need_gb": 21.3,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 11.4,
+      "kv_32k_gb": 0.2,
+      "need_gb": 12.8,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 7.5,
+      "kv_32k_gb": 0.2,
+      "need_gb": 8.5,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 33.6,
+      "kv_32k_gb": 0.2,
+      "need_gb": 37.1,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 17.8,
+      "kv_32k_gb": 0.2,
+      "need_gb": 19.8,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+   "rule": "popular",
+   "source": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+   "created": "2026-03-10",
+   "downloads_30d": 815268,
+   "likes": 440,
+   "license": "other",
+   "params_b": 123.6,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "NemotronHForCausalLM",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 8 global layers x 2 x 2 kv x 128 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 8192,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 74.9,
+      "kv_32k_gb": 0.27,
+      "need_gb": 82.7,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 44.8,
+      "kv_32k_gb": 0.27,
+      "need_gb": 49.6,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 29.4,
+      "kv_32k_gb": 0.27,
+      "need_gb": 32.6,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 131.3,
+      "kv_32k_gb": 0.27,
+      "need_gb": 144.8,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 69.5,
+      "kv_32k_gb": 0.27,
+      "need_gb": 76.8,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+   "rule": "popular",
+   "source": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+   "created": "2026-06-03",
+   "downloads_30d": 918295,
+   "likes": 389,
+   "license": "other",
+   "params_b": 560.5,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "NemotronHForCausalLM",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "no config: assumed 32 GQA layers kv8 hd128",
+    "kv_f16_bytes_per_token": 131072,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 339.8,
+      "kv_32k_gb": 4.29,
+      "need_gb": 378.5,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 203.2,
+      "kv_32k_gb": 4.29,
+      "need_gb": 228.2,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 133.1,
+      "kv_32k_gb": 4.29,
+      "need_gb": 151.2,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 595.6,
+      "kv_32k_gb": 4.29,
+      "need_gb": 659.8,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 315.3,
+      "kv_32k_gb": 4.29,
+      "need_gb": 351.5,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "zai-org/GLM-4.7-Flash",
+   "rule": "popular",
+   "source": "https://huggingface.co/zai-org/GLM-4.7-Flash",
+   "created": "2026-01-19",
+   "downloads_30d": 1174186,
+   "likes": 1912,
+   "license": "mit",
+   "params_b": 31.2,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Glm4MoeLiteForCausalLM",
+   "ctx_tokens_declared": 202752,
+   "ctx_src": "zai-org/GLM-4.7-Flash/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "MLA 47 layers x (512+64) x 2B",
+    "kv_f16_bytes_per_token": 54144,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 18.9,
+      "kv_32k_gb": 1.77,
+      "need_gb": 22.8,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 11.3,
+      "kv_32k_gb": 1.77,
+      "need_gb": 14.4,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 7.4,
+      "kv_32k_gb": 1.77,
+      "need_gb": 10.1,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 33.2,
+      "kv_32k_gb": 1.77,
+      "need_gb": 38.4,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 17.6,
+      "kv_32k_gb": 1.77,
+      "need_gb": 21.3,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "Qwen/Qwen3.8-27B",
+   "rule": "popular",
+   "source": "https://huggingface.co/Qwen/Qwen3.8-27B",
+   "created": "2026-08-05",
+   "downloads_30d": 6297396,
+   "likes": 20856,
+   "license": "apache-2.0",
+   "params_b": 27.8,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen3_5ForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "Qwen/Qwen3.8-27B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "amd395: Qwen3.8-27B"
+   ],
+   "fit": {
+    "kv_estimate": "GQA f16: 16 global layers x 2 x 4 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 65536,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 16.8,
+      "kv_32k_gb": 2.15,
+      "need_gb": 20.9,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 10.1,
+      "kv_32k_gb": 2.15,
+      "need_gb": 13.4,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 6.6,
+      "kv_32k_gb": 2.15,
+      "need_gb": 9.6,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 29.5,
+      "kv_32k_gb": 2.15,
+      "need_gb": 34.8,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 15.6,
+      "kv_32k_gb": 2.15,
+      "need_gb": 19.6,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "Qwen/Qwen3.8-2.4T-A95B",
+   "rule": "popular",
+   "source": "https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B",
+   "created": "2026-08-08",
+   "downloads_30d": 29589,
+   "likes": 1410,
+   "license": "other",
+   "params_b": 2446.2,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen3_5MoeForCausalLM",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "Qwen/Qwen3.8-2.4T-A95B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 23 global layers x 2 x 4 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 94208,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 1483,
+      "kv_32k_gb": 3.09,
+      "need_gb": 1634.7,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 886.7,
+      "kv_32k_gb": 3.09,
+      "need_gb": 978.8,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 581,
+      "kv_32k_gb": 3.09,
+      "need_gb": 642.5,
+      "fits": []
+     },
+     "w8a8": {
+      "weights_gb": 2599.1,
+      "kv_32k_gb": 3.09,
+      "need_gb": 2862.4,
+      "fits": []
+     },
+     "q4_0": {
+      "weights_gb": 1376,
+      "kv_32k_gb": 3.09,
+      "need_gb": 1517,
+      "fits": []
+     }
+    }
+   }
+  },
+  {
+   "id": "Qwen/Qwen3.6-35B-A3B",
+   "rule": "popular",
+   "source": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+   "created": "2026-04-15",
+   "downloads_30d": 3623698,
+   "likes": 3166,
+   "license": "apache-2.0",
+   "params_b": 36,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen3_5MoeForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "Qwen/Qwen3.6-35B-A3B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m1u",
+    "m2max",
+    "m4mini x2",
+    "amd395"
+   ],
+   "fit": {
+    "kv_estimate": "GQA f16: 10 global layers x 2 x 2 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 20480,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 21.8,
+      "kv_32k_gb": 0.67,
+      "need_gb": 24.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 13,
+      "kv_32k_gb": 0.67,
+      "need_gb": 15.1,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 8.5,
+      "kv_32k_gb": 0.67,
+      "need_gb": 10.1,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 38.2,
+      "kv_32k_gb": 0.67,
+      "need_gb": 42.8,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 20.2,
+      "kv_32k_gb": 0.67,
+      "need_gb": 23,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "Qwen/Qwen3.5-9B",
+   "rule": "popular",
+   "source": "https://huggingface.co/Qwen/Qwen3.5-9B",
+   "created": "2026-02-27",
+   "downloads_30d": 6339054,
+   "likes": 2436,
+   "license": "apache-2.0",
+   "params_b": 9.7,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen3_5ForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "Qwen/Qwen3.5-9B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 8 global layers x 2 x 4 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 32768,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 5.9,
+      "kv_32k_gb": 1.07,
+      "need_gb": 7.6,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 3.5,
+      "kv_32k_gb": 1.07,
+      "need_gb": 5,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 2.3,
+      "kv_32k_gb": 1.07,
+      "need_gb": 3.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 10.3,
+      "kv_32k_gb": 1.07,
+      "need_gb": 12.5,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 5.4,
+      "kv_32k_gb": 1.07,
+      "need_gb": 7.2,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "Qwen/Qwen3.5-4B",
+   "rule": "popular",
+   "source": "https://huggingface.co/Qwen/Qwen3.5-4B",
+   "created": "2026-02-27",
+   "downloads_30d": 4122871,
+   "likes": 1275,
+   "license": "apache-2.0",
+   "params_b": 4.7,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen3_5ForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "Qwen/Qwen3.5-4B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 8 global layers x 2 x 4 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 32768,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 2.8,
+      "kv_32k_gb": 1.07,
+      "need_gb": 4.3,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 1.7,
+      "kv_32k_gb": 1.07,
+      "need_gb": 3,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 1.1,
+      "kv_32k_gb": 1.07,
+      "need_gb": 2.4,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 5,
+      "kv_32k_gb": 1.07,
+      "need_gb": 6.6,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 2.6,
+      "kv_32k_gb": 1.07,
+      "need_gb": 4.1,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+   "rule": "popular",
+   "source": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+   "created": "2025-07-31",
+   "downloads_30d": 1953049,
+   "likes": 1349,
+   "license": "apache-2.0",
+   "params_b": 30.5,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen3MoeForCausalLM",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "Qwen/Qwen3-Coder-30B-A3B-Instruct/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 48 global layers x 2 x 4 kv x 128 hd x 2B",
+    "kv_f16_bytes_per_token": 98304,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 18.5,
+      "kv_32k_gb": 3.22,
+      "need_gb": 23.9,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 11.1,
+      "kv_32k_gb": 3.22,
+      "need_gb": 15.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 7.3,
+      "kv_32k_gb": 3.22,
+      "need_gb": 11.5,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 32.4,
+      "kv_32k_gb": 3.22,
+      "need_gb": 39.2,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 17.2,
+      "kv_32k_gb": 3.22,
+      "need_gb": 22.4,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "ornith-ai/Ornith-1.5-35B-A3B",
+   "rule": "popular",
+   "source": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
+   "created": "2026-08-18",
+   "downloads_30d": 358587,
+   "likes": 846,
+   "license": "mit",
+   "params_b": 36,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen3_5MoeForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "ornith-ai/Ornith-1.5-35B-A3B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 10 global layers x 2 x 2 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 20480,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 21.8,
+      "kv_32k_gb": 0.67,
+      "need_gb": 24.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 13,
+      "kv_32k_gb": 0.67,
+      "need_gb": 15.1,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 8.5,
+      "kv_32k_gb": 0.67,
+      "need_gb": 10.1,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 38.2,
+      "kv_32k_gb": 0.67,
+      "need_gb": 42.8,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 20.2,
+      "kv_32k_gb": 0.67,
+      "need_gb": 23,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "ornith-ai/Ornith-1.5-9B",
+   "rule": "popular",
+   "source": "https://huggingface.co/ornith-ai/Ornith-1.5-9B",
+   "created": "2026-08-18",
+   "downloads_30d": 600924,
+   "likes": 470,
+   "license": "mit",
+   "params_b": 9.7,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen3_5ForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "ornith-ai/Ornith-1.5-9B/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 8 global layers x 2 x 4 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 32768,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 5.9,
+      "kv_32k_gb": 1.07,
+      "need_gb": 7.6,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 3.5,
+      "kv_32k_gb": 1.07,
+      "need_gb": 5,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 2.3,
+      "kv_32k_gb": 1.07,
+      "need_gb": 3.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 10.3,
+      "kv_32k_gb": 1.07,
+      "need_gb": 12.5,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 5.4,
+      "kv_32k_gb": 1.07,
+      "need_gb": 7.2,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "ornith-ai/Ornith-1.5-397B-FP8",
+   "rule": "popular",
+   "source": "https://huggingface.co/ornith-ai/Ornith-1.5-397B-FP8",
+   "created": "2026-08-18",
+   "downloads_30d": 431365,
+   "likes": 59,
+   "license": "mit",
+   "params_b": 403.4,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Qwen3_5MoeForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "ornith-ai/Ornith-1.5-397B-FP8/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 15 global layers x 2 x 2 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 30720,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 244.6,
+      "kv_32k_gb": 1.01,
+      "need_gb": 270.1,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 146.2,
+      "kv_32k_gb": 1.01,
+      "need_gb": 162,
+      "fits": []
+     },
+     "IQ1_S": {
+      "weights_gb": 95.8,
+      "kv_32k_gb": 1.01,
+      "need_gb": 106.5,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 428.6,
+      "kv_32k_gb": 1.01,
+      "need_gb": 472.6,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 226.9,
+      "kv_32k_gb": 1.01,
+      "need_gb": 250.7,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "openai/gpt-oss-20b",
+   "rule": "popular",
+   "source": "https://huggingface.co/openai/gpt-oss-20b",
+   "created": "2025-08-04",
+   "downloads_30d": 5561797,
+   "likes": 5338,
+   "license": "apache-2.0",
+   "params_b": 20.9,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "GptOssForCausalLM",
+   "ctx_tokens_declared": 131072,
+   "ctx_src": "openai/gpt-oss-20b/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 12 global layers x 2 x 8 kv x 64 hd x 2B + 12 sliding (window 128); linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 24576,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 12.7,
+      "kv_32k_gb": 0.81,
+      "need_gb": 14.8,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 7.6,
+      "kv_32k_gb": 0.81,
+      "need_gb": 9.2,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 5,
+      "kv_32k_gb": 0.81,
+      "need_gb": 6.4,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 22.2,
+      "kv_32k_gb": 0.81,
+      "need_gb": 25.3,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 11.8,
+      "kv_32k_gb": 0.81,
+      "need_gb": 13.8,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "openai/gpt-oss-120b",
+   "rule": "popular",
+   "source": "https://huggingface.co/openai/gpt-oss-120b",
+   "created": "2025-08-04",
+   "downloads_30d": 2342224,
+   "likes": 5552,
+   "license": "apache-2.0",
+   "params_b": 116.8,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "GptOssForCausalLM",
+   "ctx_tokens_declared": 131072,
+   "ctx_src": "openai/gpt-oss-120b/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 18 global layers x 2 x 8 kv x 64 hd x 2B + 18 sliding (window 128); linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 36864,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 70.8,
+      "kv_32k_gb": 1.21,
+      "need_gb": 79.2,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 42.4,
+      "kv_32k_gb": 1.21,
+      "need_gb": 47.9,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 27.7,
+      "kv_32k_gb": 1.21,
+      "need_gb": 31.9,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 124.1,
+      "kv_32k_gb": 1.21,
+      "need_gb": 137.9,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 65.7,
+      "kv_32k_gb": 1.21,
+      "need_gb": 73.6,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "google/gemma-4-26B-A4B-it",
+   "rule": "popular",
+   "source": "https://huggingface.co/google/gemma-4-26B-A4B-it",
+   "created": "2026-03-11",
+   "downloads_30d": 4767226,
+   "likes": 1797,
+   "license": "apache-2.0",
+   "params_b": 25.8,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Gemma4ForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "google/gemma-4-26B-A4B-it/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m4mini: Gemma 4 26B-A4B IQ2_M"
+   ],
+   "fit": {
+    "kv_estimate": "GQA f16: 5 global layers x 2 x 8 kv x 256 hd x 2B + 25 sliding (window 1024); linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 40960,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 15.6,
+      "kv_32k_gb": 1.55,
+      "need_gb": 18.9,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 9.4,
+      "kv_32k_gb": 1.55,
+      "need_gb": 12,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 6.1,
+      "kv_32k_gb": 1.55,
+      "need_gb": 8.4,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 27.4,
+      "kv_32k_gb": 1.55,
+      "need_gb": 31.9,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 14.5,
+      "kv_32k_gb": 1.55,
+      "need_gb": 17.7,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "google/gemma-4-31B-it",
+   "rule": "popular",
+   "source": "https://huggingface.co/google/gemma-4-31B-it",
+   "created": "2026-03-11",
+   "downloads_30d": 5832821,
+   "likes": 4446,
+   "license": "apache-2.0",
+   "params_b": 31.3,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Gemma4ForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "google/gemma-4-31B-it/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 10 global layers x 2 x 16 kv x 256 hd x 2B + 50 sliding (window 1024); linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 163840,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 19,
+      "kv_32k_gb": 6.21,
+      "need_gb": 27.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 11.3,
+      "kv_32k_gb": 6.21,
+      "need_gb": 19.3,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 7.4,
+      "kv_32k_gb": 6.21,
+      "need_gb": 15,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 33.2,
+      "kv_32k_gb": 6.21,
+      "need_gb": 43.4,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 17.6,
+      "kv_32k_gb": 6.21,
+      "need_gb": 26.2,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "google/gemma-4-12B-it",
+   "rule": "popular",
+   "source": "https://huggingface.co/google/gemma-4-12B-it",
+   "created": "2026-05-23",
+   "downloads_30d": 1535826,
+   "likes": 1756,
+   "license": "apache-2.0",
+   "params_b": 12,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "Gemma4UnifiedForConditionalGeneration",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "google/gemma-4-12B-it/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 8 global layers x 2 x 8 kv x 256 hd x 2B + 40 sliding (window 1024); linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 65536,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 7.3,
+      "kv_32k_gb": 2.48,
+      "need_gb": 10.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 4.3,
+      "kv_32k_gb": 2.48,
+      "need_gb": 7.5,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 2.8,
+      "kv_32k_gb": 2.48,
+      "need_gb": 5.9,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 12.7,
+      "kv_32k_gb": 2.48,
+      "need_gb": 16.7,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 6.7,
+      "kv_32k_gb": 2.48,
+      "need_gb": 10.1,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "poolside/Laguna-S-2.1",
+   "rule": "popular",
+   "source": "https://huggingface.co/poolside/Laguna-S-2.1",
+   "created": "2026-07-13",
+   "downloads_30d": 361713,
+   "likes": 1085,
+   "license": "openmdw-1.1",
+   "params_b": 117.6,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "LagunaForCausalLM",
+   "ctx_tokens_declared": 1048576,
+   "ctx_src": "poolside/Laguna-S-2.1/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m1u",
+    "m2max"
+   ],
+   "fit": {
+    "kv_estimate": "GQA f16: 12 global layers x 2 x 8 kv x 128 hd x 2B + 36 sliding (window 512); linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 49152,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 71.3,
+      "kv_32k_gb": 1.69,
+      "need_gb": 80.3,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 42.6,
+      "kv_32k_gb": 1.69,
+      "need_gb": 48.7,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 27.9,
+      "kv_32k_gb": 1.69,
+      "need_gb": 32.6,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 124.9,
+      "kv_32k_gb": 1.69,
+      "need_gb": 139.3,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 66.1,
+      "kv_32k_gb": 1.69,
+      "need_gb": 74.6,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "poolside/Laguna-XS-2.1",
+   "rule": "popular",
+   "source": "https://huggingface.co/poolside/Laguna-XS-2.1",
+   "created": "2026-06-20",
+   "downloads_30d": 442889,
+   "likes": 271,
+   "license": "openmdw-1.1",
+   "params_b": 33.4,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "LagunaForCausalLM",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "poolside/Laguna-XS-2.1/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "covered",
+   "coverage_after_round0": "covered",
+   "rows": [
+    "m1u",
+    "amd395"
+   ],
+   "fit": {
+    "kv_estimate": "GQA f16: 10 global layers x 2 x 8 kv x 128 hd x 2B + 30 sliding (window 512); linear/SSM layers carry constant state, ignored",
+    "kv_f16_bytes_per_token": 40960,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 20.3,
+      "kv_32k_gb": 1.41,
+      "need_gb": 23.8,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "Q2_K_XL": {
+      "weights_gb": 12.1,
+      "kv_32k_gb": 1.41,
+      "need_gb": 14.9,
+      "fits": [
+       "m1u",
+       "m2max",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 7.9,
+      "kv_32k_gb": 1.41,
+      "need_gb": 10.3,
+      "fits": [
+       "m1u",
+       "m2max",
+       "m4mini",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 35.5,
+      "kv_32k_gb": 1.41,
+      "need_gb": 40.6,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 18.8,
+      "kv_32k_gb": 1.41,
+      "need_gb": 22.2,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "poolside/Laguna-M.1",
+   "rule": "popular",
+   "source": "https://huggingface.co/poolside/Laguna-M.1",
+   "created": "2026-06-15",
+   "downloads_30d": 501195,
+   "likes": 151,
+   "license": "apache-2.0",
+   "params_b": 225.8,
+   "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
+   "architecture": "LagunaForCausalLM",
+   "ctx_tokens_declared": 262144,
+   "ctx_src": "poolside/Laguna-M.1/config.json max_position_embeddings",
+   "coding_agent": {
+    "tool_calls": "claimed by card or chat template; NOT probed here yet",
+    "published_scores": "not collected in round 0"
+   },
+   "coverage_baseline": "not covered",
+   "coverage_after_round0": "not covered",
+   "rows": [],
+   "fit": {
+    "kv_estimate": "GQA f16: 70 global layers x 2 x 8 kv x 128 hd x 2B",
+    "kv_f16_bytes_per_token": 286720,
+    "quants": {
+     "Q4_K_M": {
+      "weights_gb": 136.9,
+      "kv_32k_gb": 9.4,
+      "need_gb": 160.9,
+      "fits": []
+     },
+     "Q2_K_XL": {
+      "weights_gb": 81.9,
+      "kv_32k_gb": 9.4,
+      "need_gb": 100.4,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "IQ1_S": {
+      "weights_gb": 53.6,
+      "kv_32k_gb": 9.4,
+      "need_gb": 69.3,
+      "fits": [
+       "m1u",
+       "gb10",
+       "amd395"
+      ]
+     },
+     "w8a8": {
+      "weights_gb": 239.9,
+      "kv_32k_gb": 9.4,
+      "need_gb": 274.2,
+      "fits": [
+       "a2"
+      ]
+     },
+     "q4_0": {
+      "weights_gb": 127,
+      "kv_32k_gb": 9.4,
+      "need_gb": 150,
+      "fits": [
+       "a2"
+      ]
+     }
+    }
+   }
+  }
+ ]
+}

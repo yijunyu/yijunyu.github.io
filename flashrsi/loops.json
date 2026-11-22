@@ -1,0 +1,41 @@
+{
+ "version": 1,
+ "note": "Goals are LOCAL to the repository crsi runs in. This file declares the catalog-maintainer CRSI campaign for the Local Mind catalogue in ~/yijunyu.github.io. `owned` is exclusive to this loop; nothing here owns a path in any ds4-rs repository.",
+ "loops": [
+  {
+   "campaign": "local-mind-catalog",
+   "session": "catalog-maintainer",
+   "worktree": "/Users/yijun/yijunyu.github.io",
+   "active": true,
+   "owned": [
+    "local-mind/machines.json",
+    "local-mind/model-catalogue.html",
+    "local-mind/docs.html",
+    "flashrsi/local-mind-catalog/"
+   ],
+   "shared": [
+    "local-mind/"
+   ],
+   "read_only": [],
+   "landing": "direct-to-main, committed locally; push only when the user authorises publishing in that session",
+   "conflict": null,
+   "policy": "claude-opus-5.5",
+   "policy_source": "the catalog-maintainer subagent session that declared this campaign, 2026-11-22, launched from -Users-yijun-ds4-rs-metal; model id claude-opus-5-5. Round 0 only; later rounds record their own policy.",
+   "benchmark": "candidates-2026-11-22 (frozen, 50 upstream LLMs: 25 latest + 25 popular; rules and sources inside the file)",
+   "kpi": "C = covered / candidates over the newest frozen candidates file; covered = a measured row of the same upstream model on a box it fits, or an explicit does-not-fit row. Secondary: share of picks on the Pareto front (decode, memory, context, coding capability), GB of benchmark weights on the internal disk",
+   "kpi_reader": "python3 flashrsi/local-mind-catalog/kpi.py",
+   "harness": [
+    "flashrsi/local-mind-catalog/candidates-2026-11-22.json (discovery list, fit rule, coverage rule)",
+    "flashrsi/local-mind-catalog/kpi.py",
+    "~/.claude/agents/catalog-maintainer.md (role: measurement method, retirement and Pareto rules)"
+   ],
+   "sim": "flashrsi/local-mind-catalog/sim.json",
+   "device": {
+    "host": "m1u",
+    "slots": 1,
+    "purpose": "one measurement at a time on the Studio, never beside a ds4-server or bench/v41_* job; mini and the M2 Max laptop are preferred where the model fits"
+   },
+   "standing": "C baseline 13/50 = 0.26 from rows existing at 9286bf4; 14/50 = 0.28 after round 0 (Inkling-2-Mini base measured)"
+  }
+ ]
+}

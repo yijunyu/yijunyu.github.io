@@ -1,0 +1,23 @@
+{
+  "campaign": "local-mind-catalog",
+  "source_policy": "claude-opus-5.5",
+  "target_campaign": "local-mind-catalog-claude-opus-5-5",
+  "target_policy": "claude-opus-5.5",
+  "created": "2026-11-22T18:10:16Z",
+  "benchmark": "candidates-2026-11-22 (frozen, 50 upstream LLMs: 25 latest + 25 popular; rules and sources inside the file)",
+  "harness": [
+    "flashrsi/local-mind-catalog/candidates-2026-11-22.json (discovery list, fit rule, coverage rule)",
+    "flashrsi/local-mind-catalog/kpi.py",
+    "~/.claude/agents/catalog-maintainer.md (role: measurement method, retirement and Pareto rules)"
+  ],
+  "kpi": "C = covered/candidates over the frozen candidates file",
+  "kpi_reader": "python3 flashrsi/local-mind-catalog/kpi.py",
+  "conditions": [
+    "cold-start",
+    "harness-transfer",
+    "problem-only",
+    "full-sim"
+  ],
+  "promotion": "target final held-out minus target STARTING held-out > 0 with the memory present, and the four conditions run matched on target policy, tasks, rounds and candidate budget. The STARTING held-out is measured at the start of the target session, not taken from the source ledger: the KPI is the engine, the machine drifts 10-20% between half-hours, and a number carried across a session is not a baseline. A target that scores below its own starting held-out is negative transfer and is reported as such, not credited.",
+  "stop": "the KPI reaches its target, or the budget is spent, or two consecutive rounds record no realised prediction."
+}
