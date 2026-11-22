@@ -136,7 +136,7 @@
    "ctx_src": null,
    "coding_agent": {
     "tool_calling_card": "unstated",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed: mlx-serve on m1u and m2max, llama.cpp on m2max (2026-11-22)",
     "published_scores": [
      {
       "benchmark": "SWE-bench Verified",
@@ -229,9 +229,9 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "measured on m4mini 16.2 tok/s and m1u 14.3 tok/s (build 225a534); m2max 12.6 tok/s with Low Power Mode ON, not published",
+    "llama.cpp": "measured on m4mini 16.2, m1u 14.3 (build 225a534), m2max 21.2 tok/s (release b12633, Low Power Mode off)",
     "Strata": "tried on m4mini (loads, every reply token id 0, upstream #6630), m1u and m2max (Metal kernel ink_moe_gu_situ fails to compile, upstream #6608); no rate",
-    "mlx-serve": "measured on m1u 59.8 tok/s / 558 t/s (17.31 GB 4-bit, tool probe ok); m2max 28.3 tok/s with Low Power Mode ON, not published; m4mini not tried (pack exceeds the ~11.4 GB working set; box serves Inkling in production)",
+    "mlx-serve": "measured on m1u 59.8 tok/s and m2max 44.5 tok/s (Low Power Mode off), 17.31 GB 4-bit, tool probe ok on both; m4mini not tried (pack exceeds its ~11.4 GB working set; box serves Inkling in production)",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised)",
     "other": []
    }
