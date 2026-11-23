@@ -105,7 +105,8 @@
    "KV for Inkling-2-Mini counts all 48 loop visits at full attention, an upper bound: its 1,024-token sliding window is not in config.json",
    "linear-attention / SSM layers carry constant state and are ignored"
   ],
-  "ctx_reader": "flashrsi/local-mind-catalog/ctx_reader.py: GGUF <arch>.context_length, then config.json max_position_embeddings, text_config.max_position_embeddings, text_config.model_max_length, model_max_length, then any nested *.max_position_embeddings, always reporting the key path it read"
+  "ctx_reader": "flashrsi/local-mind-catalog/ctx_reader.py: GGUF <arch>.context_length, then config.json max_position_embeddings, text_config.max_position_embeddings, text_config.model_max_length, model_max_length, then any nested *.max_position_embeddings, always reporting the key path it read",
+  "round2_edit": "From round 2 a candidate is placed by the SMALLEST PUBLISHED file of its weights (fit.smallest_published), not by params x nominal bpw; the A2 keeps a params x 4.5 bpw q4_0 estimate because no q4_0 file is published for these models."
  },
  "kpi": {
   "C_baseline": {
@@ -296,6 +297,15 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 171.7,
+     "file": "unsloth/Inkling-2-Small-GGUF UD-IQ1_S",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [],
+     "a2_q4_0_estimate_gb": 334.2,
+     "fits_a2_q4_0": true,
+     "verdict": "fits no Local Mind machine; only the Atlas A2 by the q4_0 estimate"
     }
    },
    "engine_coverage": {
@@ -385,6 +395,19 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 62,
+     "file": "strata-engine/Hy4-Flash-Strata SQ-64 (Strata only; smallest GGUF AngelSlim IQ2_AH 135.0)",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [
+      "m1u",
+      "gb10",
+      "amd395"
+     ],
+     "a2_q4_0_estimate_gb": 123.9,
+     "fits_a2_q4_0": true,
+     "verdict": "fits m1u, gb10, amd395"
     }
    },
    "engine_coverage": {
@@ -471,6 +494,15 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 230.5,
+     "file": "AngelSlim/Hy4-GGUF STQ1_0",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [],
+     "a2_q4_0_estimate_gb": 435.6,
+     "fits_a2_q4_0": true,
+     "verdict": "fits no Local Mind machine; only the Atlas A2 by the q4_0 estimate"
     }
    },
    "engine_coverage": {
@@ -571,6 +603,21 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 5.8,
+     "file": "sensenova/SenseNova-Loop-9B-GGUF Q4_K_M (no engine loads it)",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [
+      "m1u",
+      "m2max",
+      "m4mini",
+      "gb10",
+      "amd395"
+     ],
+     "a2_q4_0_estimate_gb": 5.5,
+     "fits_a2_q4_0": true,
+     "verdict": "fits m1u, m2max, m4mini, gb10, amd395"
     }
    },
    "engine_coverage": {
@@ -835,6 +882,21 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 6,
+     "file": "OVHaiLLM/Olala-v1.0-mini-7A1B-GGUF q5_k_m (no engine loads it)",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [
+      "m1u",
+      "m2max",
+      "m4mini",
+      "gb10",
+      "amd395"
+     ],
+     "a2_q4_0_estimate_gb": 3.8,
+     "fits_a2_q4_0": true,
+     "verdict": "fits m1u, m2max, m4mini, gb10, amd395"
     }
    },
    "engine_coverage": {
@@ -1126,6 +1188,15 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 129.4,
+     "file": "unsloth/MiniMax-M3.1-Flash-GGUF UD-IQ1_M",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [],
+     "a2_q4_0_estimate_gb": 124,
+     "fits_a2_q4_0": true,
+     "verdict": "fits no Local Mind machine; only the Atlas A2 by the q4_0 estimate"
     }
    },
    "engine_coverage": {
@@ -1267,7 +1338,7 @@
    "ctx_src": "JetBrains/Mellum2.1-12B-A2.5B-Thinking/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on m1u llama-server b12633 (2026-11-23)",
     "published_scores": [
      {
       "benchmark": "LiveCodeBench",
@@ -1299,7 +1370,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "m1u: Mellum2.1-12B-A2.5B-Thinking llama.cpp b12633 (122.98 tok/s), 2026-11-23"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 7 global layers x 2 x 4 kv x 128 hd x 2B + 21 sliding (window 1024); linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 14336,
@@ -1356,15 +1429,31 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 8.1,
+     "file": "JetBrains/Mellum2.1-12B-A2.5B-Thinking-GGUF Q4_K_M",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [
+      "m1u",
+      "m2max",
+      "m4mini",
+      "gb10",
+      "amd395"
+     ],
+     "a2_q4_0_estimate_gb": 6.8,
+     "fits_a2_q4_0": true,
+     "verdict": "fits m1u, m2max, m4mini, gb10, amd395"
     }
    },
    "engine_coverage": {
-    "llama.cpp": "measured on amd395 but NOT published: the three processes disagreed (42.7 +/- 41, 52.7 +/- 26, 92.5)",
+    "llama.cpp": "measured on m1u 122.98 tok/s (b12633 Metal, 2026-11-23)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round2": "covered"
   },
   {
    "id": "XHToken/Spark-X2.6-4B",
@@ -1639,6 +1728,15 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": null,
+     "file": "no GGUF, MLX or Strata export found on 2026-11-23 (unsloth, bartowski, mlx-community searched)",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [],
+     "a2_q4_0_estimate_gb": 174.8,
+     "fits_a2_q4_0": true,
+     "verdict": "no local export exists"
     }
    },
    "engine_coverage": {
@@ -2023,6 +2121,15 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 216.7,
+     "file": "unsloth/GLM-5.3-GGUF UD-IQ1_S",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [],
+     "a2_q4_0_estimate_gb": 423.7,
+     "fits_a2_q4_0": true,
+     "verdict": "fits no Local Mind machine; only the Atlas A2 by the q4_0 estimate"
     }
    },
    "engine_coverage": {
@@ -2551,6 +2658,20 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 40.4,
+     "file": "unsloth/Ornith-1.5-122B-GGUF UD-IQ1_M",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [
+      "m1u",
+      "m2max",
+      "gb10",
+      "amd395"
+     ],
+     "a2_q4_0_estimate_gb": 70.4,
+     "fits_a2_q4_0": true,
+     "verdict": "fits m1u, m2max, gb10, amd395"
     }
    },
    "engine_coverage": {
@@ -2963,6 +3084,15 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 129.3,
+     "file": "unsloth/MiniMax-M3-GGUF UD-IQ1_M",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [],
+     "a2_q4_0_estimate_gb": 240.2,
+     "fits_a2_q4_0": true,
+     "verdict": "fits no Local Mind machine; only the Atlas A2 by the q4_0 estimate"
     }
    },
    "engine_coverage": {
@@ -3237,6 +3367,19 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 52.7,
+     "file": "unsloth/NVIDIA-Nemotron-3-Super-120B-A12B-GGUF UD-IQ1_M",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [
+      "m1u",
+      "gb10",
+      "amd395"
+     ],
+     "a2_q4_0_estimate_gb": 69.5,
+     "fits_a2_q4_0": true,
+     "verdict": "fits m1u, gb10, amd395"
     }
    },
    "engine_coverage": {
@@ -3331,6 +3474,15 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 188,
+     "file": "unsloth/NVIDIA-Nemotron-3-Ultra-550B-A55B-GGUF UD-IQ1_M",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [],
+     "a2_q4_0_estimate_gb": 315.3,
+     "fits_a2_q4_0": true,
+     "verdict": "fits no Local Mind machine; only the Atlas A2 by the q4_0 estimate"
     }
    },
    "engine_coverage": {
@@ -3884,7 +4036,7 @@
    "ctx_src": "Qwen/Qwen3.5-9B/config.json text_config.max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
+    "tool_call_probe": "passed on m1u llama-server b12633 (2026-11-23)",
     "published_scores": [
      {
       "benchmark": "LiveCodeBench",
@@ -4018,7 +4170,7 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "measured on amd395 36.21 tok/s (Vulkan, b12633)",
+    "llama.cpp": "measured on m1u 68.76 tok/s (b12633 Metal, 2026-11-23)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
@@ -4288,7 +4440,7 @@
    "ctx_src": "ornith-ai/Ornith-1.5-35B-A3B/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on m1u llama-server b12633 (2026-11-23)",
     "published_scores": [
      {
       "benchmark": "SWE-bench Verified",
@@ -4320,7 +4472,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "m1u: Ornith-1.5-35B-A3B llama.cpp b12633 (95.05 tok/s), 2026-11-23"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 10 global layers x 2 x 2 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 20480,
@@ -4375,15 +4529,30 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 21.7,
+     "file": "ornith-ai/Ornith-1.5-35B-A3B-GGUF Q4_K_M",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [
+      "m1u",
+      "m2max",
+      "gb10",
+      "amd395"
+     ],
+     "a2_q4_0_estimate_gb": 20.3,
+     "fits_a2_q4_0": true,
+     "verdict": "fits m1u, m2max, gb10, amd395"
     }
    },
    "engine_coverage": {
-    "llama.cpp": "download failed once on amd395 (transient); queued for re-run",
+    "llama.cpp": "measured on m1u 95.05 tok/s (b12633 Metal, 2026-11-23)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round2": "covered"
   },
   {
    "id": "ornith-ai/Ornith-1.5-9B",
@@ -4400,7 +4569,7 @@
    "ctx_src": "ornith-ai/Ornith-1.5-9B/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on m1u llama-server b12633 (2026-11-23)",
     "published_scores": [
      {
       "benchmark": "SWE-bench Verified",
@@ -4432,7 +4601,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "m1u: Ornith-1.5-9B llama.cpp b12633 (72 tok/s), 2026-11-23"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 8 global layers x 2 x 4 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 32768,
@@ -4489,15 +4660,31 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 5.8,
+     "file": "ornith-ai/Ornith-1.5-9B-GGUF Q4_K_M",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [
+      "m1u",
+      "m2max",
+      "m4mini",
+      "gb10",
+      "amd395"
+     ],
+     "a2_q4_0_estimate_gb": 5.5,
+     "fits_a2_q4_0": true,
+     "verdict": "fits m1u, m2max, m4mini, gb10, amd395"
     }
    },
    "engine_coverage": {
-    "llama.cpp": "measured on amd395 but NOT published: 17.35 tok/s, half the Qwen3.5-9B rate on the same architecture and size, so a same-window control is required first",
+    "llama.cpp": "measured on m1u 72 tok/s (b12633 Metal, 2026-11-23); the amd395 17.35 tok/s reading was not reproduced",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": []
-   }
+   },
+   "coverage_after_round2": "covered"
   },
   {
    "id": "ornith-ai/Ornith-1.5-397B-FP8",
@@ -4589,6 +4776,15 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 244.3,
+     "file": "ornith-ai/Ornith-1.5-397B-GGUF Q4_K_M (no smaller export)",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [],
+     "a2_q4_0_estimate_gb": 226.9,
+     "fits_a2_q4_0": true,
+     "verdict": "fits no Local Mind machine; only the Atlas A2 by the q4_0 estimate"
     }
    },
    "engine_coverage": {
@@ -4879,6 +5075,19 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 62.6,
+     "file": "unsloth/gpt-oss-120b-GGUF (every quant is ~62.6 GB: MXFP4 experts)",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [
+      "m1u",
+      "gb10",
+      "amd395"
+     ],
+     "a2_q4_0_estimate_gb": 65.7,
+     "fits_a2_q4_0": true,
+     "verdict": "fits m1u, gb10, amd395"
     }
    },
    "engine_coverage": {
@@ -5623,6 +5832,15 @@
        "a2"
       ]
      }
+    },
+    "smallest_published": {
+     "gb": 127,
+     "file": "mlx-community/Laguna-M.1-4bit (no GGUF)",
+     "read": "2026-11-23 from the Hugging Face tree",
+     "fits_resident_at_32k": [],
+     "a2_q4_0_estimate_gb": 127,
+     "fits_a2_q4_0": true,
+     "verdict": "fits no Local Mind machine; only the Atlas A2 by the q4_0 estimate"
     }
    },
    "engine_coverage": {

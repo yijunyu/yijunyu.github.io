@@ -1,0 +1,13 @@
+{
+ "round": 2,
+ "written": "2026-11-23T01:30:10.169Z",
+ "policy": "claude-opus-5.5",
+ "edit": "fit rule: place a candidate by the SMALLEST PUBLISHED file of its weights (Hugging Face tree sizes of GGUF/MLX/Strata repos) plus KV and 10% headroom, instead of params x nominal bpw; round 1 showed the estimate was optimistic by 2.5x for MiniMax-M3.1-Flash (52 GB estimated at IQ1, smallest real GGUF 129 GB)",
+ "predicted": {
+  "metric": "C",
+  "from": 0.64,
+  "direction": "up",
+  "magnitude": "+0.08..+0.16 (to 0.72-0.80): Ornith-1.5-35B, Ornith-1.5-9B, Mellum2.1 on the M2 Max; gpt-oss-120b, Ornith-1.5-122B, Nemotron-3-Super on m1u if their smallest files fit beside the :8017 server; 8-9 candidates (Inkling-2-Small, Hy4, GLM-5.3, Nemotron-Ultra, MiniMax-M3/M3.1, MiMo-V2.6-Flash, Ornith-397B, Laguna-M.1) will be shown to fit only the Atlas A2 or nothing and stay uncovered",
+  "note": "also predicts the file-size rule moves at least 3 candidates from \"fits a 128 GB box\" to \"fits no Local Mind machine\""
+ }
+}
