@@ -898,9 +898,12 @@ sh install --key DS4-… --email you@example.com</div>
         : `<span class="na">not read</span>`;
       // The engine is named per row because a rate is meaningless without it.
       const eng = r.engine ? `<span class="eng">${r.engine}</span>` : `<span class="na">not recorded</span>`;
-      const cls = r.class && CLASS[r.class]
-        ? ` <span class="classpill">${CLASS[r.class]}</span>` : "";
-      return `<tr><td class="fam">${r.name} <span class="variant">${r.params}</span>${cls}</td>`
+      // The model cell is the model name and its quantisation only: context has its own
+      // column, and architecture prose lives in the hover and the per-model page.
+      const qm = String(r.size || "").match(/\b(?:UD-|AD-)?(?:IQ\d_[A-Z]+|Q\d_K(?:_[A-Z]+)?|Q\d_\d|SQ-\d+|w8a8|q4_0|MXFP4|NVFP4|BF16|F16)\b|\b\d-bit\b/i);
+      const quant = qm && !String(r.name).toLowerCase().includes(qm[0].toLowerCase()) ? ` <span class="variant">${qm[0]}</span>` : "";
+      const tip = String(r.params || "").replace(/"/g, "&quot;");
+      return `<tr><td class="fam" title="${tip}">${r.name}${quant}</td>`
            + `<td class="num">${r.size}</td><td class="num">${cx}</td><td>${eng}</td><td>${runs}</td><td class="num">${d}</td>`
            + `<td class="num">${pf}</td>${bcols.map(c => benchCell(r, c.key)).join("")}<td class="coding">${probeCell(r)}</td></tr>`;
     }).join("");
