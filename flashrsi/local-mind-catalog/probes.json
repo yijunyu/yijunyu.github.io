@@ -1,0 +1,122 @@
+{
+ "amd395": {
+  "flint": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "gemma-4-12B-it": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "gemma-4-31B-it": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "GLM-4.7-Flash": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "gpt-oss-20b": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "LFM2.5-24B-A2B": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "Qwen3.5-4B": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "Qwen3.5-9B": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "Qwen3-Coder-30B-A3B-Instruct": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "Sage-A1.5": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "Spark-X2.6-4B": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  }
+ },
+ "m1u": {
+  "Ornith-1.5-35B-A3B": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-23"
+  },
+  "Ornith-1.5-9B": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-23"
+  },
+  "Mellum2.1-12B-A2.5B-Thinking": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-23"
+  },
+  "Qwen3.5-9B": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-23"
+  },
+  "Inkling-2-Mini 4-bit (mlx-serve)": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "Inkling-2-Mini UD-IQ2_XXS": {
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  }
+ },
+ "m2max": {
+  "Inkling-2-Mini UD-IQ2_XXS": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "Inkling-2-Mini 4-bit (mlx-serve)": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "Inkling-2-Mini release (mlx-dspark, plain)": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-23"
+  },
+  "Ornith-1.5-122B": {
+   "tool_call": "pass",
+   "check_17x23": "pass",
+   "date": "2026-11-23"
+  }
+ },
+ "m4mini": {
+  "Inkling-2-Mini UD-IQ2_XXS": {
+   "check_17x23": "pass",
+   "date": "2026-11-22"
+  },
+  "Inkling-2-Mini SQ-10 (Strata)": {
+   "check_17x23": "fail (every reply token id 0)",
+   "date": "2026-11-22"
+  }
+ }
+}

@@ -1,0 +1,231 @@
+{
+ "Qwen3-4B": [
+  {
+   "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
+   "value": 54.2,
+   "setting": "thinking mode; Qwen3 Technical Report Table 17",
+   "source_url": "https://arxiv.org/html/2505.09388v1",
+   "source_date": "2025-05-14 (arXiv v1)",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
+   "value": 21.3,
+   "setting": "non-thinking mode; Table 18",
+   "source_url": "https://arxiv.org/html/2505.09388v1",
+   "source_date": "2025-05-14 (arXiv v1)",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  }
+ ],
+ "Qwen3-8B": [
+  {
+   "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
+   "value": 57.5,
+   "setting": "thinking mode; Qwen3 Technical Report Table 17",
+   "source_url": "https://arxiv.org/html/2505.09388v1",
+   "source_date": "2025-05-14 (arXiv v1)",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
+   "value": 22.8,
+   "setting": "non-thinking mode; Table 18",
+   "source_url": "https://arxiv.org/html/2505.09388v1",
+   "source_date": "2025-05-14 (arXiv v1)",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  }
+ ],
+ "Qwen3-14B": [
+  {
+   "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
+   "value": 63.5,
+   "setting": "thinking mode; Qwen3 Technical Report Table 15",
+   "source_url": "https://arxiv.org/html/2505.09388v1",
+   "source_date": "2025-05-14 (arXiv v1)",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
+   "value": 29,
+   "setting": "non-thinking mode; Table 16",
+   "source_url": "https://arxiv.org/html/2505.09388v1",
+   "source_date": "2025-05-14 (arXiv v1)",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  }
+ ],
+ "Qwen3-32B": [
+  {
+   "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
+   "value": 65.7,
+   "setting": "thinking mode; Qwen3 Technical Report Table 13",
+   "source_url": "https://arxiv.org/html/2505.09388v1",
+   "source_date": "2025-05-14 (arXiv v1)",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
+   "value": 31.3,
+   "setting": "non-thinking mode; Table 14",
+   "source_url": "https://arxiv.org/html/2505.09388v1",
+   "source_date": "2025-05-14 (arXiv v1)",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  }
+ ],
+ "Muse Glimmer 30B": [
+  {
+   "benchmark": "SWE-bench Verified",
+   "value": 76,
+   "setting": "High Reasoning",
+   "source_url": "https://huggingface.co/meta-models/Muse-Glimmer-30B",
+   "source_date": "card created 2026-08-09",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "Terminal-Bench 2.1",
+   "value": 51.7,
+   "setting": "with terminus2; High Reasoning",
+   "source_url": "https://huggingface.co/meta-models/Muse-Glimmer-30B",
+   "source_date": "card created 2026-08-09",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "Terminal-Bench 2.1",
+   "value": 51.7,
+   "setting": "Terminus harness; column in Qwen3.8-27B comparison table",
+   "source_url": "https://huggingface.co/Qwen/Qwen3.8-27B",
+   "source_date": "Qwen3.8-27B card fetched 2026-11-23",
+   "reported_by": "third-party (Qwen)",
+   "source_class": "primary"
+  }
+ ],
+ "Ternary Bonsai 2 27B": [
+  {
+   "benchmark": "LiveCodeBench (version not stated)",
+   "value": 90.07,
+   "setting": "thinking mode; EvalScope + vLLM on H100; Bonsai 2 27B ternary build",
+   "source_url": "https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf",
+   "source_date": "card last modified 2026-11-04",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  }
+ ],
+ "Apex-35B-V1.0": [
+  {
+   "benchmark": "SWE-bench Verified",
+   "value": 73.4,
+   "setting": "No Internet",
+   "source_url": "https://huggingface.co/Apexintelligence-AI/Apex-35B-V1.0",
+   "source_date": "card last modified 2026-10-29",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "Terminal-Bench 2.1",
+   "value": 65.2,
+   "setting": "harness not stated in table (model built for Claude Code harness)",
+   "source_url": "https://huggingface.co/Apexintelligence-AI/Apex-35B-V1.0",
+   "source_date": "card last modified 2026-10-29",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "LiveCodeBench v6",
+   "value": 82.3,
+   "setting": "as on card",
+   "source_url": "https://huggingface.co/Apexintelligence-AI/Apex-35B-V1.0",
+   "source_date": "card last modified 2026-10-29",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  }
+ ],
+ "DeepSeek-V4.1-Flash": [
+  {
+   "benchmark": "Terminal-Bench 2.1",
+   "value": 90.6,
+   "setting": "Pass@1; reasoning_effort=100 (max); DeepSeek Harness Minimal mode, 1M ctx; temp 1.0 top_p 0.95",
+   "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash",
+   "source_date": "repo created 2026-09-10, card last modified 2026-10-16",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "Terminal-Bench 2.1",
+   "value": 88,
+   "setting": "Pass@1, Claude Code scaffold, N=3, no network, max effort",
+   "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash",
+   "source_date": "repo created 2026-09-10, card last modified 2026-10-16",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "Terminal-Bench 2.1",
+   "value": 90.3,
+   "setting": "Pass@1, mini-SWE scaffold, N=3, no network, max effort (other scaffolds: Codex 84.1, OpenCode 85.0, Pi 86.1, DSH Standard 85.8, DSH PTC 85.8)",
+   "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash",
+   "source_date": "repo created 2026-09-10, card last modified 2026-10-16",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  }
+ ],
+ "Kimi-K3": [
+  {
+   "benchmark": "Terminal-Bench 2.1",
+   "value": 88.3,
+   "setting": "Kimi Code harness, reasoning effort max, temp 1.0, top-p 1.0",
+   "source_url": "https://huggingface.co/moonshotai/Kimi-K3",
+   "source_date": "card last modified 2026-11-20",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "Terminal-Bench 2.1",
+   "value": 88.3,
+   "setting": "column \"K3\" in DeepSeek-V4.1-Flash comparison table",
+   "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash",
+   "source_date": "card last modified 2026-10-16",
+   "reported_by": "third-party (DeepSeek)",
+   "source_class": "primary"
+  }
+ ],
+ "Sage-S2.1-Flash": [
+  {
+   "benchmark": "Terminal-Bench 2.1",
+   "value": 87.9,
+   "setting": "harness not stated on card",
+   "source_url": "https://huggingface.co/internlm/Sage-S2.1-Flash",
+   "source_date": "repo created 2026-11-15, card last modified 2026-11-23",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  }
+ ],
+ "Sage-A1.5": [
+  {
+   "benchmark": "SWE-bench Pro (not Verified)",
+   "value": 61.2,
+   "setting": "mini-SWE-agent, temp 1.0, top-p 0.95, 200K ctx, auto compaction, offline",
+   "source_url": "https://huggingface.co/InternScience/Sage-A1.5",
+   "source_date": "card last modified 2026-10-22",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  },
+  {
+   "benchmark": "SWE-bench Multilingual (not Verified)",
+   "value": 72.7,
+   "setting": "mini-SWE-agent, temp 1.0, top-p 0.95, 200K ctx, auto compaction, offline",
+   "source_url": "https://huggingface.co/InternScience/Sage-A1.5",
+   "source_date": "card last modified 2026-10-22",
+   "reported_by": "vendor",
+   "source_class": "primary"
+  }
+ ]
+}

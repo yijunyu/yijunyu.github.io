@@ -301,6 +301,7 @@
 
   /* A closed <details> does not print. Opening them for the print is done in
      script; this only keeps the chevrons out of the paper. */
+  #modeltable td:nth-child(2){white-space:normal;min-width:6.5rem;max-width:11rem;overflow-wrap:break-word} td.coding{font-size:.86em;min-width:10.5rem;white-space:normal;line-height:1.35} td.coding a{text-decoration:none;border-bottom:1px dotted currentColor} td.coding sup{font-size:.7em;opacity:.75;margin-left:1px} td.coding .unver{opacity:.8}
   @media print{ .chev,.allctl{display:none;} }
   .classpill{display:inline-block;margin-left:.35rem;padding:.05rem .45rem;border-radius:.7rem;background:#f0f4ff;color:#345;font-size:.72rem;letter-spacing:.02em;vertical-align:.05rem}
   .pickbar{margin:.65rem 0 0;display:flex;gap:.7rem;flex-wrap:wrap;align-items:baseline;font-size:.86rem;color:var(--mut)}
@@ -368,6 +369,8 @@
             <th scope="col" class="sortable" data-sort="runs"   aria-sort="none"><button type="button" class="sortbtn">Runs as<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="decode" aria-sort="none"><button type="button" class="sortbtn">Decode<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="prefill" aria-sort="none"><button type="button" class="sortbtn">Prefill<span class="sarrow" aria-hidden="true"></span></button></th>
+            <th scope="col" title="Published coding-agent benchmark scores for the full-precision model, not for the quantised file in this row. Hover or follow a score for its source, date and who reported it.">Coding (published)<sup>*</sup></th>
+            <th scope="col" title="Checks this catalogue ran itself on this row's server: a greedy 17x23 answer and a streaming OpenAI tool call.">Our checks</th>
           </tr>
         </thead>
         <tbody id="modelrows"></tbody>
@@ -686,6 +689,34 @@ sh install --key DS4-… --email you@example.com</div>
   // The curated table is one row per class, so the class has to be visible;
   // otherwise the reader sees four models with no reason four.
   const CLASS = { small: "\u22648B", mid: "~30B", large: "~125B", frontier: "1M", t1m: "1M", t512k: "512K", t256k: "256K", t128k: "128K", t32k: "32K" };
+  // Coding column: published scores (full-precision model) with their source on hover and link,
+  // kept apart from the checks this catalogue ran itself.
+  const BENCH = s => {
+    const b = s.benchmark || "", set = (s.benchmark || "") + " " + (s.setting || "");
+    if (/SWE-?bench Verified/i.test(b)) return "SWE-V";
+    if (/Terminal/i.test(b)) { const v = (set.match(/(\d+\.\d+)/) || [])[1]; return v ? `TB${v}` : "TB (version not stated)"; }
+    if (/LiveCodeBench/i.test(b)) { const v = (set.match(/v\d+/i) || [])[0]; return v ? `LCB ${v}` : "LiveCodeBench"; }
+    if (/Aider/i.test(b)) return "Aider polyglot";
+    return b;
+  };
+  const esc = t => String(t ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  const codingCell = r => {
+    if (!r.coding || !r.coding.length) return '<span class="na">no published score</span>';
+    return r.coding.map(s => {
+      const tip = esc(`${s.benchmark}${s.setting ? " (" + s.setting + ")" : ""} \u00b7 ${s.reported_by || "reporter unknown"} \u00b7 ${s.source_date || "date not shown"} \u00b7 ${s.source_url || ""}`);
+      const third = /vendor/.test(s.reported_by || "") ? "" : '<sup title="third-party">3p</sup>';
+      const txt = `${BENCH(s)} ${s.value}${third}`;
+      const body = s.source_url ? `<a href="${esc(s.source_url)}" title="${tip}" rel="noopener">${txt}</a>` : `<span title="${tip}">${txt}</span>`;
+      return s.source_class === "unverified-session" ? `<em class="unver">${body}<sup>\u2020</sup></em>` : body;
+    }).join(" \u00b7 ");
+  };
+  const probeCell = r => {
+    const p = r.probes; if (!p) return '<span class="na">not run</span>';
+    const parts = [];
+    if (p.tool_call) parts.push(`tool-call probe: ${p.tool_call}`);
+    if (p.check_17x23) parts.push(`17\u00d723: ${p.check_17x23}`);
+    return `<span title="${esc(p.date || "")}">${parts.join(" \u00b7 ")}</span>`;
+  };
   const CLASS_ORDER = ["t1m", "t512k", "t256k", "t128k", "t32k", "small", "mid", "large", "frontier"];
   const rowsEl = document.getElementById("modelrows");
   const noteEl = document.getElementById("tablenote");
@@ -852,13 +883,14 @@ sh install --key DS4-… --email you@example.com</div>
         ? ` <span class="classpill">${CLASS[r.class]}</span>` : "";
       return `<tr><td class="fam">${r.name} <span class="variant">${r.params}</span>${cls}</td>`
            + `<td class="num">${r.size}</td><td class="num">${cx}</td><td>${eng}</td><td>${runs}</td><td class="num">${d}</td>`
-           + `<td class="num">${pf}</td></tr>`;
+           + `<td class="num">${pf}</td><td class="coding">${codingCell(r)}</td><td class="coding">${probeCell(r)}</td></tr>`;
     }).join("");
     // Curated on purpose: the default table is one pick per size class, and
     // the full measurement set is one click away rather than 48 rows of choice.
     // A box with no recorded price says nothing rather than "$0" or "—".
     priceEl.textContent = b.price ? `≈ ${b.price}` : "";
     setNote((b.note || "")
+      + " <sup>*</sup>Coding scores are what each model's publisher (or, marked 3p, a third party) reported for the full-precision model, not measurements of the quantised file in the row; hover a score for its setting, date and source, and follow it to the page it was read from. They are not comparable across harnesses."
       + " Sizes are the real download; residency is computed from that size against this"
       + " machine's memory and disk. Context is the window each model declares in its own"
       + " weights \u2014 context_length in the GGUF, max_position_embeddings in an MLX config \u2014"

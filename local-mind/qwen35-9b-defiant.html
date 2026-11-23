@@ -17,6 +17,8 @@
 <tr><th>Vocabulary</th><td>248,320</td></tr>
 <tr><th>Trained context</th><td>262,144 tokens, from <code>qwen35.context_length</code> in the file header</td></tr>
 <tr><th>Licence</th><td>Apache-2.0 — the base model's licence, which the derivative's own tags agree with</td></tr>
+
+<!--coding--><tr><th>Coding (published)</th><td><span style="color:var(--mut,#666)">no published score</span></td></tr><!--/coding-->
 </table>
 <p>The architecture line is read from the GGUF header rather than from the publisher's prose, by HTTP range request over the first 30&nbsp;MB of the file. That read is also what establishes it is dense: the header carries no <code>expert_count</code> or <code>expert_used_count</code>, so the row prices on its whole 6.50&nbsp;GiB per token rather than on an active-expert fraction.</p>
 <h2>The measurement</h2>

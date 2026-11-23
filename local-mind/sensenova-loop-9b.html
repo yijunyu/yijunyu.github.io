@@ -15,6 +15,8 @@
 <tr><th>Extra mechanism</th><td>two-stream manifold-constrained hyper-connections (<code>mhc_*</code>), 4 tensors per layer</td></tr>
 <tr><th>Trained context</th><td>262,144 tokens, from <code>qwen35.context_length</code></td></tr>
 <tr><th>Licence</th><td>Apache 2.0</td></tr>
+
+<!--coding--><tr><th>Coding (published)</th><td><a href="https://huggingface.co/sensenova/SenseNova-Loop-9B" title="Terminal-Bench (Terminal-Bench 2.1 (harness not stated in text)) · vendor · 2026-11-20 (HF card last modified)">TB2.1 59.55</a> <span style="color:var(--mut,#666);font-size:.85em">(published, full-precision model)</span></td></tr><!--/coding-->
 </table>
 <h2>Why it does not load: two conversions, two failures</h2>
 <p>The interesting part of this entry is that "the GGUF is broken" is not one fact. Two public Q4_K_M conversions of the same model fail against llama.cpp build 10964, and the loader's own messages separate them:</p>

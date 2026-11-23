@@ -19,6 +19,8 @@ CAP = {"m1u": 115.4, "m2max": 55.6, "m4mini": 12.7, "gb10": 128, "amd395": 130, 
 TIERS = [("1M", 1048576), ("512K", 524288), ("256K", 262144), ("128K", 131072), ("32K", 32768)]
 TK = {"1M": "t1m", "512K": "t512k", "256K": "t256k", "128K": "t128k", "32K": "t32k"}
 ROWMAP = json.load(open(f"{ROOT}/flashrsi/local-mind-catalog/rowmap.json"))
+import os
+EXTRA = json.load(open(f"{ROOT}/flashrsi/local-mind-catalog/extra-scores.json")) if os.path.exists(f"{ROOT}/flashrsi/local-mind-catalog/extra-scores.json") else {}
 RESIDENT = {"DeepSeek-V4.1-Flash Coder": 72.0, "Qwen3.8-Flash-Next MTP": 48.3, "Qwen3.8-Flash-Next|Strata": 60.0}
 def size_gb(s):
     m = re.search(r"([\d.]+)\s*(GiB|GB)", s or "")
@@ -27,10 +29,12 @@ def num(s):
     m = re.search(r"([\d.]+)", str(s or "")); return float(m.group(1)) if m else None
 def scores(name, bench):
     c = cand.get(ROWMAP.get(name, ""))
-    if not c: return None
-    v = [float(s["value"]) for s in c.get("coding_agent", {}).get("published_scores", []) or []
+    pool = list((c or {}).get("coding_agent", {}).get("published_scores", []) or []) + [
+        dict(s, variant_or_setting=s.get("setting")) for s in EXTRA.get(name, []) if s.get("source_class", "primary") == "primary"]
+    if not pool: return None
+    v = [float(s["value"]) for s in pool
          if "vendor" in (s.get("reported_by") or "") and (
-             ("SWE-bench Verified" in s["benchmark"]) if bench == "swe" else ("Terminal" in s["benchmark"] and "2.1" in (s.get("variant_or_setting") or "")))]
+             ("SWE-bench Verified" in s["benchmark"]) if bench == "swe" else ("Terminal" in s["benchmark"] and "2.1" in (s["benchmark"] + " " + (s.get("variant_or_setting") or ""))))]
     return max(v) if v else None
 def kv(name):
     if name.startswith("Inkling-2-Mini"): return 32768, 0.17

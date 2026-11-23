@@ -12,6 +12,8 @@
 <tr><th>Decode</th><td><b>104.47</b> and <b>103.90</b> tok/s for 128 generated tokens (±0.33 and ±0.17)</td></tr>
 <tr><th>Prefill</th><td><b>1,619.36</b> and <b>1,551.92</b> t/s for a 512-token prompt (±0.48 and ±136.29)</td></tr>
 <tr><th>Context</th><td>262,144 tokens, read from <code>qwen35.context_length</code> in the GGUF header and agreeing with the upstream <code>config.json</code></td></tr>
+
+<!--coding--><tr><th>Coding (published)</th><td><span style="color:var(--mut,#666)">no published score</span></td></tr><!--/coding-->
 </table>
 <p>Decode is quoted as one figure because the two runs agree to 0.6%. Prefill is quoted as a <b>range</b> rather than a point, because the two runs differ by 4% and the second carried a ±136 spread against the first's ±0.5 &mdash; a single number would hide that the prefill measurement is the noisier of the two.</p>
 <p>The decode rate implies about <b>289 GB/s</b> of weight traffic: 2.58 GiB read once per token, 104 times a second. That is 36% of this machine's ~800 GB/s, which is a normal figure for a small model on a shared-memory GPU &mdash; at this size the step is short enough that launch overhead and the per-token fixed costs are a meaningful share, so the remaining 64% is not a defect to chase.</p>
