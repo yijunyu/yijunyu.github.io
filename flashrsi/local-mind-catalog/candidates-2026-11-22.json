@@ -232,10 +232,11 @@
    },
    "engine_coverage": {
     "llama.cpp": "measured on m4mini 16.2, m1u 14.3 (build 225a534), m2max 21.2 tok/s (release b12633, Low Power Mode off)",
-    "Strata": "tried on m4mini (loads, every reply token id 0, upstream #6630), m1u and m2max (Metal kernel ink_moe_gu_situ fails to compile, upstream #6608); no rate",
+    "Strata": "Strata 0.2.19 and 0.2.20 (engine 0.1.65/0.1.66) both fail to start on m1u and m2max (Metal pipeline ink_moe_gu_situ does not compile, upstream #6608 still open); m4mini not retried (production: the SQ-10 pack cannot load beside the 8.5 GB production gguf); 0.2.20 release notes do not mention #6630 or #6608, #6630 was closed 2026-11-22",
     "mlx-serve": "measured on m1u 59.8 tok/s and m2max 44.5 tok/s (Low Power Mode off), 17.31 GB 4-bit, tool probe ok on both; m4mini not tried (pack exceeds its ~11.4 GB working set; box serves Inkling in production)",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "m1u: mlx-dspark 0.21.0 with mlx-vlm pinned at 111ac66807 loads the release checkpoint in baseline mode in 1 of 3 server starts (46.57 tok/s, probes passed) and never in dspark mode (Metal GPU Timeout on load), so no rate is published; the mlx-community 4-bit pack does not load (needs mlx-lm with inkling2, unmerged PR #2086); m2max: pending"
    }
   },
   {
@@ -313,7 +314,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -415,7 +417,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -510,7 +513,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -625,7 +629,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -712,7 +717,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -799,7 +805,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -904,7 +911,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -1009,7 +1017,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -1106,7 +1115,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -1204,7 +1214,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -1320,7 +1331,8 @@
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": [
      "m1u: transformers + auto-round"
-    ]
+    ],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -1451,7 +1463,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round2": "covered"
   },
@@ -1552,7 +1565,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -1642,7 +1656,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -1744,7 +1759,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -1830,7 +1846,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -1909,7 +1926,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -2009,7 +2027,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -2137,7 +2156,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -2233,7 +2253,8 @@
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": [
      "m1u: ds4 reference engine"
-    ]
+    ],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -2356,7 +2377,8 @@
     "other": [
      "m1u: ds4 reference engine + MTP",
      "m2max: ds4 reference engine + MTP"
-    ]
+    ],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -2461,7 +2483,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -2563,7 +2586,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -2581,7 +2605,7 @@
    "ctx_src": "ornith-ai/Ornith-1.5-122B-FP8/config.json max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
-    "tool_call_probe": "not run",
+    "tool_call_probe": "passed on m2max llama-server b12633 (2026-11-23)",
     "published_scores": [
      {
       "benchmark": "SWE-bench Verified",
@@ -2605,7 +2629,9 @@
    },
    "coverage_baseline": "not covered",
    "coverage_after_round0": "not covered",
-   "rows": [],
+   "rows": [
+    "m2max: Ornith-1.5-122B UD-IQ1_M llama.cpp b12633 (23.03 tok/s), 2026-11-23"
+   ],
    "fit": {
     "kv_estimate": "GQA f16: 12 global layers x 2 x 2 kv x 256 hd x 2B; linear/SSM layers carry constant state, ignored",
     "kv_f16_bytes_per_token": 24576,
@@ -2675,12 +2701,14 @@
     }
    },
    "engine_coverage": {
-    "llama.cpp": "not tried",
+    "llama.cpp": "measured on m2max 23.03 tok/s (UD-IQ1_M 40.36 GB, b12633 Metal, Low Power Mode off)",
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
-   }
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
+   },
+   "coverage_after_round2": "covered"
   },
   {
    "id": "moonshotai/Kimi-K2.7-Code",
@@ -2748,7 +2776,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -2937,7 +2966,8 @@
      "gb10: ds4",
      "amd395: ds4 reference engine",
      "a2: vLLM-Ascend"
-    ]
+    ],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -3015,7 +3045,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -3100,7 +3131,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -3240,7 +3272,8 @@
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
     "other": [
      "m1u: MLX"
-    ]
+    ],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -3387,7 +3420,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -3490,7 +3524,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -3596,7 +3631,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -3759,7 +3795,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -3828,7 +3865,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -4018,7 +4056,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -4174,7 +4213,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -4283,7 +4323,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -4421,7 +4462,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -4550,7 +4592,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round2": "covered"
   },
@@ -4682,7 +4725,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round2": "covered"
   },
@@ -4792,7 +4836,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -4931,7 +4976,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -5095,7 +5141,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -5257,7 +5304,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -5426,7 +5474,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -5535,7 +5584,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    },
    "coverage_after_round1": "covered"
   },
@@ -5636,7 +5686,8 @@
     "other": [
      "m1u: ds4 reference engine",
      "m2max: tile-rs"
-    ]
+    ],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -5743,7 +5794,8 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   },
   {
@@ -5848,9 +5900,10 @@
     "Strata": "not tried",
     "mlx-serve": "not tried",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised in round 0)",
-    "other": []
+    "other": [],
+    "mlx-dspark": "not tried (added 2026-11-23; Apple hosts / MLX weights only)"
    }
   }
  ],
- "engines_note": "General engines the catalogue tries first where a model fits: Strata, llama.cpp, ggml-rs, and mlx-serve on Apple hosts / MLX weights (added 2026-11-22 by user instruction). For candidates other than Inkling-2-Mini this field is derived from the existing machines.json rows; \"not tried\" means no row on that engine."
+ "engines_note": "General engines the catalogue tries first where a model fits: Strata, llama.cpp, ggml-rs, and mlx-serve on Apple hosts / MLX weights (added 2026-11-22 by user instruction). For candidates other than Inkling-2-Mini this field is derived from the existing machines.json rows; \"not tried\" means no row on that engine. 2026-11-23: mlx-dspark (DSpark/DFlash speculative decoding on MLX) added as a general engine for Apple hosts beside mlx-serve."
 }
