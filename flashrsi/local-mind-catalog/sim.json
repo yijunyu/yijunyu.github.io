@@ -58,6 +58,35 @@
           "source": "prospective"
         }
       ]
+    },
+    {
+      "root_cause": "the fit rule places candidates by params x nominal bpw, which understates real export sizes, so the plan sends models to boxes that cannot hold them",
+      "attempts": [
+        {
+          "action": "fit rule: place a candidate by its smallest PUBLISHED file (fit.smallest_published, read from the Hugging Face tree) plus KV and 10% headroom; keep a params x 4.5 bpw q4_0 estimate only for the Atlas A2",
+          "rationale": "round 1: MiniMax-M3.1-Flash was estimated at 52 GB at ~1.9 bpw, and its smallest real GGUF is 129 GB",
+          "predicted": {
+            "direction": "up",
+            "magnitude": "0.64 -> 0.72-0.80; at least 3 candidates move to fits-no-Local-Mind-machine",
+            "metric": "C",
+            "note": "written in prediction-round2.json at 01:30 before any round-2 measurement"
+          },
+          "observed": {
+            "delta": "+0.08",
+            "metric": "C",
+            "note": "C reached the bottom of the predicted range: Ornith-1.5-35B, Ornith-1.5-9B, Mellum2.1 (m1u) and Ornith-1.5-122B (m2max) covered. The second prediction held: MiniMax-M3, MiniMax-M3.1-Flash, Laguna-M.1 and Ornith-1.5-397B moved from fits-a-128GB-box (estimate) to fits-no-Local-Mind-machine (real files 127-244 GB), and gpt-oss-120b, Nemotron-3-Super and Hy4-flash fit m1u only beside a 40 GB production server, so they were not run. amd395 down all round.",
+            "value": 0.72,
+            "verdict": "partial"
+          },
+          "provenance": {
+            "domain": "local-mind-catalog",
+            "benchmark": "candidates-2026-11-22 (frozen, 50 upstream LLMs: 25 latest + 25 popular; rules and sources inside the file)",
+            "policy": "claude-opus-5.5",
+            "round": 2
+          },
+          "source": "prospective"
+        }
+      ]
     }
   ]
 }

@@ -236,7 +236,7 @@
     "mlx-serve": "measured on m1u 59.8 tok/s and m2max 44.5 tok/s (Low Power Mode off), 17.31 GB 4-bit, tool probe ok on both; m4mini not tried (pack exceeds its ~11.4 GB working set; box serves Inkling in production)",
     "ggml-rs": "not tried: not installed on any reachable host (install not authorised)",
     "other": [],
-    "mlx-dspark": "m1u: mlx-dspark 0.21.0 with mlx-vlm pinned at 111ac66807 loads the release checkpoint in baseline mode in 1 of 3 server starts (46.57 tok/s, probes passed) and never in dspark mode (Metal GPU Timeout on load), so no rate is published; the mlx-community 4-bit pack does not load (needs mlx-lm with inkling2, unmerged PR #2086); m2max: pending"
+    "mlx-dspark": "m2max: plain mode 35.7 tok/s / 270 t/s on the release checkpoint (19 GB, NVFP4 experts), probes passed; DSpark mode (drafter = the MTP head shipped in the release, mtp.safetensors) accepts 2.08-2.59 tokens per round but decodes SLOWER (22.9-28.3 vs 36.5 tok/s) and its 129-token story diverged from plain greedy near token 120, so it is not published; m1u: plain mode loaded in 1 of 3 starts, DSpark never (Metal GPU Timeout); the mlx-community 4-bit pack does not load (needs the unmerged mlx-lm inkling2 port)"
    }
   },
   {
