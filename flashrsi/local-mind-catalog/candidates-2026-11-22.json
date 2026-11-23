@@ -104,7 +104,8 @@
    "models whose exports stream a table from disk (DeepSeek-V4.1 engram/n-gram, Qwen3.8 MTP per-layer embedding) run resident with less than their file size; the estimate does not model that, which is why V4.1-Flash-1017 shows a2-only while it is measured on m1u and amd395",
    "KV for Inkling-2-Mini counts all 48 loop visits at full attention, an upper bound: its 1,024-token sliding window is not in config.json",
    "linear-attention / SSM layers carry constant state and are ignored"
-  ]
+  ],
+  "ctx_reader": "flashrsi/local-mind-catalog/ctx_reader.py: GGUF <arch>.context_length, then config.json max_position_embeddings, text_config.max_position_embeddings, text_config.model_max_length, model_max_length, then any nested *.max_position_embeddings, always reporting the key path it read"
  },
  "kpi": {
   "C_baseline": {
@@ -592,7 +593,7 @@
    "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
    "architecture": "KimiK31ForConditionalGeneration",
    "ctx_tokens_declared": 1048576,
-   "ctx_src": "moonshotai/Kimi-K3.1-Pro/config.json max_position_embeddings",
+   "ctx_src": "moonshotai/Kimi-K3.1-Pro/config.json text_config.max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
     "tool_call_probe": "not run",
@@ -1478,7 +1479,7 @@
    "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
    "architecture": "Qwen3_5MoeForConditionalGeneration",
    "ctx_tokens_declared": 262144,
-   "ctx_src": "InternScience/Sage-A1.5/config.json max_position_embeddings",
+   "ctx_src": "InternScience/Sage-A1.5/config.json text_config.max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
     "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
@@ -1747,7 +1748,7 @@
    "params_src": "model name (1T-A52B); the HF API returned no safetensors total",
    "architecture": "MistralLarge4ForConditionalGeneration",
    "ctx_tokens_declared": 1048576,
-   "ctx_src": "mistralai/Mistral-Large-4-1T-A52B/config.json max_position_embeddings",
+   "ctx_src": "mistralai/Mistral-Large-4-1T-A52B/config.json text_config.max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
     "tool_call_probe": "not run",
@@ -2572,7 +2573,7 @@
    "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
    "architecture": "KimiK25ForConditionalGeneration",
    "ctx_tokens_declared": 262144,
-   "ctx_src": "moonshotai/Kimi-K2.7-Code/config.json max_position_embeddings",
+   "ctx_src": "moonshotai/Kimi-K2.7-Code/config.json text_config.max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "unstated",
     "tool_call_probe": "not run",
@@ -3880,7 +3881,7 @@
    "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
    "architecture": "Qwen3_5ForConditionalGeneration",
    "ctx_tokens_declared": 262144,
-   "ctx_src": "Qwen/Qwen3.5-9B/config.json max_position_embeddings",
+   "ctx_src": "Qwen/Qwen3.5-9B/config.json text_config.max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
     "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
@@ -4037,7 +4038,7 @@
    "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
    "architecture": "Qwen3_5ForConditionalGeneration",
    "ctx_tokens_declared": 262144,
-   "ctx_src": "Qwen/Qwen3.5-4B/config.json max_position_embeddings",
+   "ctx_src": "Qwen/Qwen3.5-4B/config.json text_config.max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
     "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
@@ -5062,7 +5063,7 @@
    "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
    "architecture": "Gemma4ForConditionalGeneration",
    "ctx_tokens_declared": 262144,
-   "ctx_src": "google/gemma-4-31B-it/config.json max_position_embeddings",
+   "ctx_src": "google/gemma-4-31B-it/config.json text_config.max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
     "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
@@ -5232,7 +5233,7 @@
    "params_src": "HF API safetensors.total (counts packed FP8/I8 scale tensors, so it can exceed the card figure)",
    "architecture": "Gemma4UnifiedForConditionalGeneration",
    "ctx_tokens_declared": 262144,
-   "ctx_src": "google/gemma-4-12B-it/config.json max_position_embeddings",
+   "ctx_src": "google/gemma-4-12B-it/config.json text_config.max_position_embeddings",
    "coding_agent": {
     "tool_calling_card": "yes",
     "tool_call_probe": "passed on amd395 llama-server b12633 (2026-11-22)",
