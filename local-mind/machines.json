@@ -41,6 +41,85 @@
     "{tool_call, check_17x23, date}. Both are written by flashrsi/local-mind-catalog/coding_cells.py."
   ],
   "_provenance": "The M4 mini and DGX Spark rows were measured directly on those machines in August 2026 and carry the method in their notes. On 12 August 2026 three M1 Ultra rows were re-measured the same way and now carry medians with spreads: Qwen3.6-35B-A3B, Laguna-S-2.1 and DeepSeek-V4-Flash. Where a re-measurement moved a number it is recorded here rather than silently overwritten: Laguna-S-2.1 30.8 -> 33.4 and DeepSeek-V4-Flash 27.5 -> 28.0 (both faster than published), Qwen3.6-35B-A3B 73.7 -> 72.3. The M1 Ultra DeepSeek-V4-Flash size was corrected from 97.6 GB to 87 GB: the old figure matched no file on the machine and disagreed with the same model's own M2 Max and DGX Spark rows. A fourth attempt, M2 Max Qwen3-4B, was WITHDRAWN rather than published: two runs of the identical script disagreed by 1.7x, so that row is now null. TWO LIMITS THIS EXERCISE EXPOSED, which apply to every row on this page. First, decode is not a single rate: measured on M2 Max, the 1->129 token slope and the 129->513 slope differ by 15%, because attention costs more as the context grows -- so any figure here depends on the token count it was taken at, which is 129. Second, these machines are shared, and a busy machine can halve the number; spreads are quoted so a reader can see when that happened. The remaining M1 Ultra and M2 Max rows are still carried over verbatim from the first version of this page and have NOT been re-verified. Prices are approximate street or list prices in August 2026, recorded so a rate can be read against what the machine costs -- they move, and they are not quotes. Muse Glimmer 30B was ADDED to the M1 Ultra and M2 Max boxes after the 12 August exercise and does not share its method: both figures are llama.cpp's llama-bench tg128 (build b10360, r=3, 12 August 2026), an instrument reporting a mean over repetitions rather than the median-of-paired-estimates used elsewhere here, so the two rows are comparable with each other but not strictly with their neighbours, and the notes say so. Where two runs exist the LOWER is published: M2 Max decode 6.42 and 6.25 -> 6.3, prefill 82.65 and 76.75 -> 78. Two figures also exist for the M1 Ultra and both are kept rather than one being chosen silently: tg128 23.20 and tg64 ~28.9. tg128 is published because the rest of the column is quoted at 129 generated tokens; the tg64 figure is not wrong, it is a shorter generation, which this page already records as producing a higher rate. The tg64 run is documented as having a ds4 Q4_K kernel substitution active and the tg128 runs do not say, which is why these rows decline to name an engine's kernels the way their neighbours do. These are also the only two rows on this page measured on TWO machines by one instrument, and the 0.28x ratio between them against a 0.605 tier prediction is the reason no rate here is scaled from another machine's. In late August 2026 a fifth box was added: an AMD Ryzen AI Max+ 395 (Strix Halo), running the same DeepSeek-V4-Flash file as the DGX Spark row through the ROCm reference engine, at 15.0 tok/s decode. It is published at the machine's default power governor rather than at its best observed setting, because the default is what a buyer gets; forcing the GPU to `high` is worth +0.8% on decode and +6.7% on prefill, and up to +26% when the CPU is also busy, but it costs a co-running CPU job about 40% and was still showing 104C peaks after 25 minutes of soak, so it is not a free setting and is not what the row reports. The machine's NPU is excluded from the figure for the plainer reason that it was measured and is worth +0.4%. The Ryzen row's price is what was actually paid for the machine (\u00a33,099, Bosgame M5, August 2026) rather than a list price, which is why it is the only row in a currency other than dollars; it has not been converted, because a made-up exchange rate is not better provenance than none. On 29 August 2026 two rows were added to the M1 Ultra table, each measured on that machine: Qwen3.8-Flash-Next at 30.8 tok/s and GLM-5.3-Flash at 24.1 tok/s. The GLM-5.2 row (3.5 tok/s, SSD-streamed) was removed rather than re-measured, because the model is no longer offered; its number was not superseded by a new measurement of the same model and is not claimed to be wrong. An Atlas A2 row (8x 910B2, 512 GB) was added in late August 2026 with a NULL decode rate: the ds4-rs-ascend binary is built and verified to install on that hardware, but DeepSeek-V4-Flash has not been run on it, and 'packaged' is not 'measured'. Its price is left blank: A2 systems have no citable list figure, and every other price here names a source, so an estimate was dropped rather than published as though it were sourced. FULL METHOD for the M1 Ultra rows, moved out of the rendered note on 2026-08-29 because that note had grown to 3,074 characters against 520 for the shortest box: Three of these six rows were re-measured on this machine on 12 August 2026; the figure is the <strong>median</strong> of paired estimates, not a best-ever run. Decode is isolated as the difference between a 129-token and a 1-token completion so prefill is excluded, and repetitions alternate A/B/B/A so drift lands on both arms. Each model runs on the engine the app picks for it, and they are not the same engine: <strong>Qwen3.6-35B-A3B</strong> on llama.cpp with the ds4 kernels &mdash; 72.3, ten estimates spanning 67.5&ndash;78.0; <strong>Laguna-S-2.1</strong> on the ds4 reference engine &mdash; 33.4, eight estimates spanning 33.1&ndash;34.3; <strong>DeepSeek-V4-Flash</strong> on our own Rust/Metal engine &mdash; 28.0, eight estimates spanning 27.8&ndash;28.2. The machine was shared with other work throughout, which is why the Qwen3.6 spread is the wide one; the DeepSeek figure independently reproduces a 27.9&ndash;28.2 anchor measured by a different harness. The last two rows are <strong>out-of-core</strong> rates and are still carried over unverified: GLM-5.2 is not present on this machine at all, and Kimi-K3 is present but its streaming mode is the untested claim &mdash; one attempt at an out-of-core model of that class drove the machine into 42&nbsp;GB of swap and was stopped. <strong>Muse Glimmer 30B is measured by a different instrument</strong> and is marked so rather than blended in: llama.cpp's own <code>llama-bench</code>, build b10360, on 12&nbsp;August&nbsp;2026 &mdash; <code>tg128</code> 23.20&nbsp;&plusmn;&nbsp;0.19 over three repetitions, with a <code>pp512</code> prefill of 247.55&nbsp;&plusmn;&nbsp;0.87. That is a mean over repetitions, not the median of paired estimates the rows above use. It is quoted at 128 generated tokens because that is nearest the 129 the rest of the column uses; the same model on this machine was separately recorded at ~28.9 tok/s on <code>tg64</code>, and that gap between 64 and 128 tokens is the context effect described below, not a contradiction. llama.cpp is the <strong>only</strong> engine that can load this architecture &mdash; our own engine has no path for it &mdash; but which of the two Q4_K matvec paths that run used is not recorded, so unlike the rows above this one names no kernels. Two rows were added on 29 August 2026 and both were measured on this machine. <strong>Qwen3.8-Flash-Next</strong> &mdash; 30.8, the median of three llama-bench tg128 repetitions (30.78 &plusmn; 0.03), running on llama.cpp; its prefill is 560.7 tok/s at pp512. <strong>GLM-5.3-Flash</strong> &mdash; 24.1, on the ds4 reference engine, fully GPU-resident at 32K context; the same model measures 17.6 at a 9,600-token prompt, so the headline is a short-context figure like the others on this table and long sessions are slower. <strong>GLM-5.2 has been removed from this row.</strong> It never fit in memory on a 128 GB machine &mdash; 216.7 GB, streamed from SSD &mdash; and GLM-5.3-Flash now runs resident on the same hardware at roughly seven times the rate, so the older model is no longer offered. The Atlas A2 note was removed from the rendered page on 2026-08-29 as telling the reader nothing the table already showed (decode is null, which renders as 'not measured'; price is null, which renders as nothing). Its content, for the record: A Huawei Atlas A2 server: eight Ascend 910B2 cards, 64&nbsp;GB HBM each, 512&nbsp;GB in total, confirmed from <code>npu-smi</code> on the box (8 chips, 65536&nbsp;MB per chip, all reporting healthy). <strong>DeepSeek-V4-Flash has not been measured here.</strong> The <code>ds4-rs-ascend</code> controller is built and published for this hardware and installs on it, but no decode rate has been taken, so none is quoted \u2014 the row says 'not measured' rather than borrowing a number from another machine. An 87&nbsp;GB model fits resident many times over in 512&nbsp;GB, which is why the residency column reads GPU; that is an arithmetic claim about capacity, not a measurement of speed. No price is shown. A2 systems sell through configuration-dependent channels with no list figure to cite, and every other price on this page names a source \u2014 a list price, or an amount actually paid. An unsourced estimate would be the odd one out, so the field is left empty until there is something to point at. FULL METHOD for the Ryzen AI Max+ 395 and M2 Max rows, moved out of the rendered notes on 2026-08-29 for the same reason as the M1 Ultra's: the page carried more method than a reader of a comparison table needs. AMD Ryzen AI Max+ 395: The same DeepSeek-V4-Flash file as the DGX Spark row, 86.7&nbsp;GB on disk, on a Bosgame M5 mini-PC (AMD Ryzen AI Max+ 395 &ldquo;Strix Halo&rdquo;, Radeon&nbsp;8060S, 128&nbsp;GB LPDDR5X, 2&nbsp;TB SSD) through the reference ROCm engine, so the model and the quantisation are comparable to the Mac rows even though the engine is not. Measured August 2026 at a 2048-token context; eight baseline repetitions spanned 0.03&nbsp;tok/s (15.00\u201315.03) and the GPU clock was sampled throughout (1707&nbsp;MHz mean). The weights sit in unified memory rather than streaming, which is why an 87&nbsp;GB model reports a resident rate on a 128&nbsp;GB box. The price is what was paid, not a list figure, and it is worth reading beside the DGX Spark row rather than instead of it: this machine is the cheaper of the two and the slower of the two on this model. Two things specific to it are worth stating rather than hiding. The rate depends on the GPU power governor: this figure is the out-of-the-box <code>auto</code> setting, and forcing <code>high</code> moves decode to 15.1 and prefill by 6.7% \u2014 a setting, not a property of the silicon. And its XDNA2 NPU, which no other box here has, was measured co-executing the output projection: it is worth +0.4%, so it is not used for this number. The 126&nbsp;TOPS on the box is the platform total across NPU, GPU and CPU; the NPU's own share of it is 50. M2 Max: The same catalogue, scored for 64&nbsp;GB. <strong>Qwen3-4B was measured twice here on 12 August 2026 and the two runs disagreed by 1.7&times;</strong> &mdash; 43.4 tok/s and then 74.9 tok/s from the identical script, model and engine. The first run was taken minutes after a 2.3&nbsp;GB file landed on the machine, so the machine's state rather than the model dominated it. The row is therefore <strong>withdrawn</strong> rather than published at either figure: a number that does not mean what it says is worse than an admitted gap. It will return when it can be measured on a quiescent machine. The other three rows are still carried over from the first version of this page and have <strong>not</strong> been re-verified &mdash; this machine currently has 27&nbsp;GB of disk free, so the 22&nbsp;GB Qwen3.6 and the 48&nbsp;GB Laguna-S cannot be stored without freeing space, and DeepSeek-V4-Flash at 87&nbsp;GB is <strong>out-of-core</strong> here, which is what the 2.9 would cost. <strong>Muse Glimmer 30B was measured on both this machine and the M1 Ultra</strong>, by the same <code>llama-bench</code> instrument and in the same window &mdash; <code>tg128</code> 6.42&nbsp;&plusmn;&nbsp;0.08, and 6.25&nbsp;&plusmn;&nbsp;0.25 on a re-run, published at the lower <strong>6.3</strong>; prefill 82.65 and 76.75 on the two runs, so ~78. The point of measuring it twice is what it says about every unmeasured row on this page: this machine delivers <strong>0.28&times;</strong> the Ultra's rate, where scaling by GPU tier would have predicted 0.605 and advertised ~14&nbsp;tok/s to a Mac that gives ~6.3. A control model measured on both boxes in the same window ran 3.0&times; slower here too, so this is the machine and not something peculiar to Muse Glimmer. This is also the smallest M2 Max &mdash; 30 of a possible 38 GPU cores &mdash; so a fuller Max should beat it. On 30 August 2026 the two dense Qwen3 rows were added to the M1 Ultra by the same 129-vs-1-token differencing used on the M4 mini, so the two machines' dense rows are directly comparable: Qwen3-4B 130.2 tok/s and Qwen3-8B 87.6 tok/s (medians of 5). Both ran on llama.cpp with the ds4 kernels, which is the engine the app picks for dense Qwen; the same models on our own Metal engine reach only 26.9 tok/s, which is why the engine is named per row rather than assumed. On 30 August 2026 the two M4 mini rows were re-measured and corrected UPWARDS: Qwen3-4B 19.6 -> 36.2 and Qwen3-8B 12.0 -> 21.6 tok/s. The published figures were ~1.8x low because they had been taken on a slower engine than the one the app now picks for dense Qwen; the corrected numbers come from the same 129-vs-1-token differencing as before, and are confirmed by a second instrument on the same box (llama-bench tg128: 37.9 and 21.6). Separately, the M2 Max Qwen3-4B row withdrawn earlier for a 1.7x disagreement between identical runs is now EXPLAINED rather than merely withdrawn: that laptop runs with Low Power Mode enabled, which costs it exactly 1.73x (69.7 vs 40.3 tok/s on the same model and binary). The row stays null until it can be measured with Low Power Mode off, because a battery setting is not a property of the chip. Also on 30 August 2026 the M2 Max column was re-measured with Low Power Mode OFF, and three rows moved UP: Muse Glimmer 30B 6.3 -> 8.5, Qwen3.6-35B-A3B 51.6 -> 62.3, and Qwen3-4B filled in at 81.1 (the row withdrawn earlier for a 1.7x disagreement between identical runs \u2014 the disagreement was this setting). That laptop had Low Power Mode enabled for AC as well as battery, which costs about 2.1x on a small dispatch-bound model and about 1.4x on a bandwidth-bound one, and it does NOT recover on cooldown, which is what distinguishes it from thermal throttling. These three are llama-bench tg128 medians taken in a window verified quiet; the 129-vs-1 differencing used elsewhere agrees with llama-bench within 5% on the two machines where both could be run, but could not be re-run here because the laptop went back into interactive use. A second lesson is folded into these numbers: benchmarking several models back-to-back penalises whichever runs later \u2014 the 35B read 53 following two other models and 62 sampled on its own \u2014 so each figure here comes from a single-model series. The two M2 Max rows left carried-over on 30 August 2026 were then measured too, with Low Power Mode off. DeepSeek-V4-Flash went 2.9 -> 7.2 tok/s (median of 8 across two independent runs, 6.63-7.49); at 86.7 GB it cannot be resident on a 64 GB machine, so this is SSD-streaming with a 39.9 GB expert cache, and it is the one rate on this page that is disk-bound rather than memory-bound. Laguna-S-2.1 re-measured at 25.8 against its published 26.4, so that row was already right and is now verified rather than carried over; it was taken on the tile-rs engine, which an earlier campaign measured at parity (1.01x) with the reference engine the app uses for that model. No row on this machine is now unverified. DeepSeek-V4.1-Flash joined in 1.0.6: 2.9 tok/s decode and 70 t/s prefill on the M1 Ultra with the file on the internal SSD, measured 13 September 2026 on a 2048-token prompt. Only ~152 GiB of the 366 GB file is weights; the engram tables are read a row at a time from the file, which is why it runs at all on a 128 GB Mac and why the drive matters: the same file decodes at 0.54 tok/s from an external USB SSD. It does not fit a 64 GB Mac. Qwen3.8-Flash-Next MTP joined in 1.0.7 and is the first model on this page measured on two machines by the same instrument in the same window since Muse Glimmer. It is antirez's Q2 file, 147 GB on disk, on his reference engine, run with multi-token prediction as the app runs it. It is a DIFFERENT FILE AND A DIFFERENT ENGINE from the Qwen3.8-Flash-Next row above it, which is Unsloth's UD-Q2_K_XL on llama.cpp at 30.8; the older row is kept rather than overwritten because it was not re-measured, and the two are not a before-and-after. Only about 45 GiB of the 147 GB file has to be resident: the per-layer embedding table, 95.37 GiB of it, is read a row at a time and never held in memory, which is the same disk-versus-memory split as the DeepSeek-V4.1-Flash row and the reason a 147 GB model reports a GPU-resident rate on a 128 GB Mac and fits a 64 GB one. M1 ULTRA 128 GB, 2026-09-19, greedy, reference engine main 8db1d1d: 43.7-43.9 tok/s on open prose with 71.7% of drafts accepted, and 47.0-51.2 on code with 96.7%; 36.1-38.0 with MTP off. The prose figure is published because it is the LOWER of the two, the same rule used elsewhere on this page. Prefill is 498-516 t/s across 2k-8k frontiers on 2048-token chunks, published at 510. M2 MAX 64 GB, 2026-09-21, same binary and the --prefill-chunk 1024 the model's own notes advise for 64 GB: 23.6-24.3 tok/s on prose at the same 71.7% acceptance, 27.9-28.0 on code, ds4-bench steady decode 22.6/20.8/20.6/20.0 at 2k/4k/6k/8k, prefill 259/234/229/227, and a resident plan of exactly 43.19 GiB at 8192 context \u2014 so IT FITS. A CLAIM OF 50-60 tok/s ON A 64 GB MAC IS WHAT PROMPTED THIS MEASUREMENT AND IT IS NOT REPRODUCED: the best figure on the real machine is 28 tok/s, on code, which is the easiest content for a draft head, and plain decode is 16-23. The M2 Max lands at roughly 60% of the Ultra's decode and 45% of its prefill, which tracks memory bandwidth, and draft acceptance matches the Ultra's exactly at 71.7% on prose, so the shortfall is the HARDWARE and not the speculation. One caveat specific to this laptop, in the same family as the Low Power Mode finding above: the plain arms fell about 28% between the first and last pass, 23.3 down to 16.8 on prose, while the MTP arms held steady \u2014 the signature of a laptop-class chip under sustained load \u2014 so a range is published rather than a single number, and where in a run a figure was taken matters. One earlier claim is CORRECTED rather than quietly dropped: a run on the Ultra with 64 GiB locked away via --simulate-used-memory had reported the same speed as the full machine, and was cited as evidence about 64 GB Macs. That simulation was right about RESIDENCY \u2014 43.19 GiB on both, which the real machine confirmed to the decimal \u2014 and wrong about SPEED, because locking memory away leaves the Ultra's memory bandwidth intact. Only the fit half survived contact with a real 64 GB Mac. Finally, the engine that generates every kernel for this architecture in our own compiler is verified bit-identical to the reference engine and measures 4.8-8.4% ahead on decode, but the app routes this model to the REFERENCE engine, so no figure on this page is taken from it. 2026-10-04: the Ryzen AI Max+ 395 AMD rows were re-measured on the latest engines \u2014 DeepSeek-V4-Flash on antirez main + PR #992 (14.7, was 15.0) and DeepSeek-V4.1-Flash on the pr4 build with the selected-split env var (12.1, was 8.66-9.44). The V4.1 gap is the engine improvement, not the machine. 2026-10-04: four models added to the Ryzen row from llama.cpp llama-bench tg128 r=3 (Qwen3-4B 67.0, Qwen3-8B 38.2, Qwen3.6-35B-A3B 56.1, Muse Glimmer 30B 11.5); the same instrument as the M1 Ultra's llama.cpp rows. ADDED 11 October 2026: the M1 Ultra Ternary Bonsai 2 27B row, 31.3 tok/s &mdash; the median of three whole runs, not the best of them. Method stated in the box note. It is the first row measured with repeated WHOLE RUNS rather than repetitions inside one run, and the reason is worth recording for every other row on this page: on this machine the same binary measuring the same model at the same context gave 28.33 and 31.10 tok/s in consecutive runs, each internally flat to under 1%. Repetitions inside a run measure the run; only repeating the run measures the machine. The published figure is therefore from the quieter measurement point (a 129-token prompt, spreads 1.7%, 0.1% and 0.4%) with the wider 256-token range disclosed in the note rather than averaged away. This row also differs from its neighbours in one way a reader should know: it is measured on the current engine, not on the engine in the released build. 2026-10-25: the Atlas A2 row\u2019s NULL decode rate was FILLED, and the note saying DeepSeek-V4-Flash \u201chas not been measured here\u201d is withdrawn \u2014 it had been measured twice, on two stacks, and this page had not caught up. Neither number comes from our own ds4-rs-ascend controller, which still has no end-to-end rate on this hardware; they come from the two stacks that do run the model there, and the row names the engine for each. (1) vLLM-Ascend, Ascend w8a8 conversion, TP8 across eight 910B2 cards, speculative decoding on (dspark, 7 draft tokens, eager): median 34.98 tok/s over 24 A/B/B/A trials, 86-token prompt, 128- and 512-token greedy completions with end-of-sequence ignored, two warm-ups discarded, measured 11 August 2026. Out=128 gave 34.13 and out=512 gave 35.60; the trials spanned 28.58\u201341.52, CV 8.64%. That session was the first with external witnesses \u2014 per-trial host load, per-chip AI Core maximum and HBM, sampled outside the timed window \u2014 and it SUPERSEDES an unwitnessed 37.09 from an earlier session, which was about 6% high; that session\u2019s 15.83 steps/s is the outlier against 13.94 and 14.19 from two later ones. The decomposition is steps/s 14.19 at CV 0.72% \u00d7 2.46 tokens per step (acceptance 0.21), and the 14.19 is published in the note as a NON-SPECULATIVE FLOOR rather than as a rate, because a speculation-off serve could not be run on that box: no second server fits in HBM and the running one is root-in-container. A vendor figure of \u201c50+\u201d exists for this hardware and is NOT this configuration \u2014 it pairs four-bit w4a8 weights with reasoning and code corpora, and our own witnessed sweep on the same server reads 74.55 on code and 85.44 on list output against 34.71 on prose, with the step rate invariant at 13.94\u201314.86 across all six workloads. Decode there is set by how predictable the output is, not by the accelerator. (2) llama.cpp CANN backend, q4_0, four of the eight cards, measured 30 August 2026: pp512 3.88 \u00b1 0.05 and tg128 0.36 \u00b1 0.00 tok/s, r=3, fully offloaded, 166 GB resident across four cards, no CANN errors, box load 12.60. The route to that number is itself the finding: the CANN backend has ZERO MXFP4 kernels and its MUL_MAT/MUL_MAT_ID accept only F16/F32/BF16/Q4_0/Q8_0, so loading the 144.34 GiB MXFP4 file with full offload silently put 95.2% of the weight bytes on the host CPU and aborted anyway; the file was requantised to q4_0 (149.02 GiB) to obtain an NPU path. The abort \u2014 error 107000, a kernel not found by name, surfacing under unrelated operators including the rope ramp and an in-place copy \u2014 was NOT a missing operator package: the object exists, its digest matches its manifest, and the symbol is present. It is CANN 8.5.2\u2019s aclnn executor cache holding a device-specific binary handle without keying on the device, so the first operator on any card after the first dies. Controlled repro, seconds long: one visible device passes, two abort, four abort; disabling the executor cache passes 5/5 backends on four devices, and that is what the measured run used. ITS PRICE was measured rather than estimated, on the operator that dominates MoE decode: q4_0 at n=1 goes 178.4 microseconds / 141.1 GFLOPS to 2298.0 / 11.0, i.e. 12.9\u00d7; q8_0 at n=1 10.9\u00d7; q8_0 at n=4 11.2\u00d7. So the 0.36 is gated 11\u201313\u00d7 by a software defect rather than by the silicon, and the note says so. A METHOD WARNING is recorded against that work by its own author: the first control run, a rope operator test reporting 448/448 OK, was taken with a single visible device and therefore COULD NOT FIRE \u2014 it held fixed the one variable that was the entire bug. Two things were seen and are NOT claimed: an end-to-end q8_0 run needs all eight cards and four were held by another tenant, and a nondeterministic NaN appeared once in a q4_0 matmul at m=k=2880 and not in the next run. A host-CPU-only figure for the MXFP4 file on the same box, pp512 16.59 \u00b1 0.89 and tg128 1.29 \u00b1 0.40, is deliberately NOT published: it was taken on a contended box (load 96\u2013115) and it measures the Kunpeng host, not the NPU. On 31 October 2026 Qwen3-4B on the M1 Ultra was re-measured as a decode/prefill PAIR from one build and moved 130.2 -> 121.4 tok/s, gaining 1690 t/s prefill; its engine label changed from 'llama.cpp + ds4 kernels' to 'llama.cpp (llama-bench)' because no llama-bench build here reproduced the old figure (stock 119.0, tile-rs 112.4). A number that moved because the engine changed is not a regression, and the label moved with it. Qwen3-4B's download size read '2 GB' on the Mac rows for a 2,497,280,256-byte file and is corrected to 2.5 GB; the column is decimal GB, so 2 GB understated it by a fifth. The Ryzen row's 2.3 GB is the GiB figure for that same byte count and is left alone pending a check on that machine, since it may serve a different file. An audit matching table rows to catalogue entries by MODEL NAME also flagged the two 10.7 GB M4 rows, and they are right: those are IQ2_XXS at 9.93 GiB and IQ2_M at 9.97 GiB, not the Q4 files the name matched. On 31 October 2026 a CONTEXT column was added, read from the weights rather than from any model card: context_length in the GGUF header, max_position_embeddings in an MLX/HF config, one copy of each model on this machine, recorded per row in ctx_src. 44 of the 45 rows have a value; Nanbeige4.3-33B has none because no copy of those weights is on a machine reachable from here, and the Ryzen box was down for this exercise. Four of the M1 Ultra files read are byte-for-byte the ones that row was measured on (Qwen3-4B 2.5 GB, Laguna-XS-2.1 20.7 GB, DeepSeek-V4-Flash 86.7 GB, GLM-5.3-Flash 96.5 GB); the rest are a copy of the same model at another quantisation, and THAT ASSUMPTION IS NOT SAFE IN GENERAL. Reading second exports to test it refuted it twice: DeepSeek-V4-Flash-MXFP4 declares the same 1048576 but carries NO rope.scaling keys, so the 'YaRN from 64k' line under it is a property of the export that has them, not of the model; and the 1017 IQ2_XXS/Q2_K export of DeepSeek-V4.1-Flash declares no context_length AT ALL. An export can drop the declaration, so a cell here says what the file named in ctx_src says, and no more. Laguna-XS-2.1 agreed across three exports (BF16, Q4_K_L, ds4-Q4K-Q8attn) at 262144 with the same 8192 YaRN base. Separately, sizing those files against the table showed the Ryzen GiB/GB slip is not one row but NINE: Qwen3-4B 2.3, Qwen3-8B 4.7, Qwen3-14B 8.4, Qwen3-32B 18.4, Qwen3.6-35B-A3B 20.7, Muse Glimmer 15.6, Laguna-XS-2.1 19.3, MiniCPM-V 4.7 19.7 -- each is exactly the GiB value of the decimal-GB file we hold here, in a column whose other rows are decimal GB. They are left as published until that machine can say which file it served, because correcting a number by inference is how the wrong one got there. 2026-11-22 (catalog-maintainer, round 0 of the local-mind-catalog CRSI campaign): FOUR ROWS ADDED for the upstream Inkling-2-Mini, two per machine. M4 mini: llama.cpp 225a534 on unsloth UD-IQ2_XXS (Mainline_Support), 16.2 tok/s and 92-109 t/s; M1 Ultra: the same file and build, 14.3 tok/s and 331 t/s, on a busy host, with a same-window control on the AD-IQ2_M file reading 26.59 tok/s and 482.5 t/s. That control is a RE-MEASUREMENT of the published AD-IQ2_M row (25.3 tok/s, 459 t/s): the new run is higher by 5%, so the LOWER published figures stand and the row is unchanged. The two Strata 0.2.19 rows carry no rate: on the M4 mini every served reply is token id 0 although the engine's own selfcheck passes and its bench reads 28.5 tok/s / 185 t/s (upstream #6630), and on the M1 Ultra the engine does not start (Metal kernel compile failure, upstream #6608); the Mac-3 laptop (M2 Max) was unreachable, so it has no Inkling row. ggml-rs, the third general engine, is not installed on any host reachable from here and was not run. RETIRED, not deleted: DeepSeek-V4.1-Flash (September checkpoint) on the M1 Ultra and on the Ryzen box, by DeepSeek-V4.1-Flash Coder, the 1017 checkpoint at higher bits per weight, faster (24.8 vs 2.9 and 18.5 vs 12.1 tok/s), half the download, same 1M window; the rows keep their data and gain retired, retired_by and retired_reason, and neither carried a pick. PARETO: computed per machine and context tier over decode and download size from the existing rows; no pick was changed, because on those two axes alone a 4B model dominates almost every tier, so every current pick that is off that two-axis front (M1 Ultra Qwen3-8B, MiniCPM-V 4.7, Qwen3.8-Flash-Next via Strata, the V4.1 Coder; M2 Max Laguna-S-2.1; Ryzen Qwen3-8B) is defended only by coding capability, which this page has not yet recorded with a cited score; that is the next round's work, not a reason to move a pick now. WEIGHTS MOVED off the Studio's internal disk with rsync and a SHA-256 comparison, each leaving a symlink at the old path: Qwen3.5-9B Defiant MTP-Q4_K_M (6.98 GB) to /Volumes/Data/models/qwen/Qwen3.5-9B-Defiant-MTP-Q4_K_M/, and the tqllm cache's Qwen3.8-27B MLX-4bit (15.82 GB) and its DFlash2 drafter (1.28 GB) to /Volumes/Data/models/qwen/; 24.1 GB freed. The candidate list, fit map and KPI behind this round are in flashrsi/local-mind-catalog/ of this repository. 2026-11-22, later: the M2 Max laptop was connected and Inkling-2-Mini was run there on three engines (mlx-serve, llama.cpp, Strata). No rate is published from it, because Low Power Mode was ON and the page's own rule (the Qwen3-4B row withdrawn on 12 August) keeps a row null until it can be measured with it off; the measured floors are in the box note (mlx-serve 28.3 tok/s, llama.cpp 12.6 tok/s) and Strata 0.2.19 failed to start, as on the M1 Ultra. mlx-serve is now one of the general engines this catalogue tries on Apple hosts beside Strata, llama.cpp and ggml-rs; it was not tried on the M4 mini (the 17.31 GB MLX pack does not fit its ~11.4 GB Metal working set, and that box now hosts a production Inkling service) or on the M1 Ultra (not installed there; it needs another Studio window). ggml-rs is not installed anywhere reachable and was not tried. 2026-11-22, round 1: mlx-serve was installed on the M1 Ultra (/Volumes/Data/tools/mlx-serve, release 26.11.4-pre-release.1) with the user's approval and Inkling-2-Mini 4-bit measured there at 59.8 tok/s / 558 t/s, method in the box note. The M2 Max laptop's Low Power Mode could not be turned off from here (sudo needs a password), so its Inkling rows stay null. 2026-11-22, round 1: the M2 Max Inkling-2-Mini rows were re-measured after the user turned Low Power Mode off and are now PUBLISHED: mlx-serve 44.5 tok/s / 271 t/s and llama.cpp 21.2 tok/s / 180-194 t/s, against 28.3 and 12.6 with the setting on, which this page did not publish. 2026-11-22, round 1: eleven amd395 rows added on llama.cpp b12633 Vulkan (method in that box note); the batch's last model drove the box unresponsive and it was not recovered from here. 2026-11-23: the picks were RECOMPUTED per machine and context tier (1M, 512K, 256K, 128K, 32K) on a four-axis Pareto front using the round-1 coding scores, replacing the 2026-11-07 size-class picks; `class` now names the tier (t1m ... t32k). Each pick's argument is at the head of its box note. Notable: Inkling-2-Mini became the 1M pick on the M1 Ultra (mlx-serve, beside the V4.1 Coder) and on the M2 Max (llama.cpp IQ2_XXS), where it dominates DeepSeek-V4-Flash, whose M2 Max pick was removed; on the M2 Max the 4-bit mlx-serve pack does not fit at 1M with its cache and is the 512K pick instead. 2026-11-23: Strata was upgraded to 0.2.20 (engines and Control 0.1.66) and Inkling-2-Mini SQ-10 retried. On the M2 Max laptop and the M1 Ultra it still does not start: the Metal pipeline ink_moe_gu_situ fails to compile with XPC_ERROR_CONNECTION_INTERRUPTED, exactly as on 0.2.19 (the 0.2.19 rows recorded that failure on both machines and the token-id-0 replies on the M4 mini). The 0.2.20 release notes mention neither upstream issue; #6630 (token id 0 on Metal) was closed on 2026-11-22 and #6608 (the M1 Max compile failure) is still open. The M4 mini was not retried, because the SQ-10 pack cannot load beside the 8.5 GB production gguf in its ~11.4 GB Metal budget. mlx-dspark 0.21.0 was added as an engine and tried on the M1 Ultra: on the release checkpoint (mlx-vlm pinned at 111ac66807, the 2026-11-20 Inkling 2 Mini merge; git main breaks it with a speculative_verify argument) its plain mode loaded in one of three server starts, reading 46.57 tok/s with both probes passed, and its DSpark mode never loaded (Metal GPU Timeout), so no M1 Ultra row is published for it; it cannot load mlx-community's 4-bit pack at all, which needs mlx-lm's unmerged inkling2 port. 2026-11-23: a Coding (published) column was added to every machine table and to the per-model pages, rendered from each row's new `coding` field (documented in _comment), with this catalogue's own checks in a separate Our checks column (`probes`, 23 rows). 82 of 90 rows carry at least one published score, 8 read 'no published score'. By source class: 106 score cells come from the frozen candidate list's primary-source sweep of 2026-11-22, 25 from a second primary-source read on 2026-11-23 for rows outside that list (20 rows: the Qwen3 family from the Qwen3 technical report, Muse Glimmer, Ternary Bonsai 2, Apex-35B, the September DeepSeek-V4.1-Flash, Kimi-K3, Sage-S2.1-Flash), 0 verified-from-session and 0 unverified-session: the session transcripts, this repository's history and the ds4-rs-metal ledger were searched and held no coding score for these models that the primary sweep had not already found, only this catalogue's own earlier notes. Scores are for the full-precision model; third-party figures are marked 3p and only vendor figures feed the pick rule. The new scores moved the 128K pick on the M1 Ultra, the M2 Max and the Ryzen box to Muse Glimmer 30B (SWE-bench Verified 76.0, vendor).",
+  "_coding_benchmarks": [
+    {
+      "key": "swe_v",
+      "label": "SWE-V",
+      "name": "SWE-bench Verified",
+      "unit": "% resolved",
+      "rows": 50
+    },
+    {
+      "key": "swe_pro",
+      "label": "SWE-Pro",
+      "name": "SWE-bench Pro",
+      "unit": "% resolved",
+      "rows": 1
+    },
+    {
+      "key": "swe_ml",
+      "label": "SWE-ML",
+      "name": "SWE-bench Multilingual",
+      "unit": "% resolved",
+      "rows": 1
+    },
+    {
+      "key": "tb4_0",
+      "label": "TB 4.0",
+      "name": "Terminal-Bench 4.0",
+      "unit": "% tasks solved",
+      "rows": 24
+    },
+    {
+      "key": "tb2_1",
+      "label": "TB 2.1",
+      "name": "Terminal-Bench 2.1",
+      "unit": "% tasks solved",
+      "rows": 55
+    },
+    {
+      "key": "tb2_0",
+      "label": "TB 2.0",
+      "name": "Terminal-Bench 2.0",
+      "unit": "% tasks solved",
+      "rows": 15
+    },
+    {
+      "key": "tb_nv",
+      "label": "TB (v?)",
+      "name": "Terminal-Bench, version not stated",
+      "unit": "% tasks solved",
+      "rows": 1
+    },
+    {
+      "key": "lcb_v6",
+      "label": "LCB v6",
+      "name": "LiveCodeBench v6",
+      "unit": "% pass@1",
+      "rows": 32
+    },
+    {
+      "key": "lcb_v5",
+      "label": "LCB v5",
+      "name": "LiveCodeBench v5 (2024.10-2025.02)",
+      "unit": "% pass@1",
+      "rows": 9
+    },
+    {
+      "key": "lcb_nv",
+      "label": "LCB (v?)",
+      "name": "LiveCodeBench, version not stated",
+      "unit": "% pass@1",
+      "rows": 7
+    },
+    {
+      "key": "aider",
+      "label": "Aider",
+      "name": "Aider polyglot",
+      "unit": "% correct",
+      "rows": 1
+    }
+  ],
   "boxes": [
     {
       "id": "m1u",
@@ -64,6 +143,7 @@
           "class": "t256k",
           "coding": [
             {
+              "bench": "lcb_v6",
               "benchmark": "LiveCodeBench",
               "value": 56.57,
               "setting": "LiveCodeBench-v6, instruct mode (overall_performance_35ba3b_language.png on card)",
@@ -89,6 +169,7 @@
           "ctx_src": "Qwen3-4B-Q4_K_M.gguf qwen3.context_length",
           "coding": [
             {
+              "bench": "lcb_v5",
               "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
               "value": 54.2,
               "setting": "thinking mode; Qwen3 Technical Report Table 17",
@@ -115,6 +196,7 @@
           "class": "t32k",
           "coding": [
             {
+              "bench": "lcb_v5",
               "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
               "value": 57.5,
               "setting": "thinking mode; Qwen3 Technical Report Table 17",
@@ -139,8 +221,9 @@
           "ctx_src": "muse-glimmer-30B-kquant-17gb.gguf muse-glimmer.context_length",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 76,
+              "value": 76.0,
               "setting": "High Reasoning",
               "source_url": "https://huggingface.co/meta-models/Muse-Glimmer-30B",
               "source_date": "card created 2026-08-09",
@@ -148,6 +231,7 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench 2.1",
               "value": 51.7,
               "setting": "with terminus2; High Reasoning",
@@ -174,6 +258,7 @@
           "ctx_src": "Ternary-Bonsai-2-27B-mlx-2bit config.json max_position_embeddings",
           "coding": [
             {
+              "bench": "lcb_nv",
               "benchmark": "LiveCodeBench (version not stated)",
               "value": 90.07,
               "setting": "thinking mode; EvalScope + vLLM on H100; Bonsai 2 27B ternary build",
@@ -198,6 +283,7 @@
           "ctx_src": "Qwen_Qwen3.6-35B-A3B-Q4_K_M.gguf qwen35moe.context_length",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 73.4,
               "setting": "",
@@ -207,12 +293,33 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 52.5,
               "setting": "Terminal-Bench 2.1 (Terminus-2)",
               "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
               "source_date": "2026-08-23 (HF card last modified)",
               "reported_by": "third-party (Ornith-1.5-35B card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 51.5,
+              "setting": "Terminal-Bench 2.0",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 80.4,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -231,6 +338,7 @@
           "ctx_src": "Apex-35B-V1.0-Q4_K_M.gguf qwen35moe.context_length",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 73.4,
               "setting": "No Internet",
@@ -240,9 +348,20 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench 2.1",
               "value": 65.2,
               "setting": "harness not stated in table (model built for Claude Code harness)",
+              "source_url": "https://huggingface.co/Apexintelligence-AI/Apex-35B-V1.0",
+              "source_date": "card last modified 2026-10-29",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench v6",
+              "value": 82.3,
+              "setting": "as on card",
               "source_url": "https://huggingface.co/Apexintelligence-AI/Apex-35B-V1.0",
               "source_date": "card last modified 2026-10-29",
               "reported_by": "vendor",
@@ -265,6 +384,7 @@
           "ctx_src": "laguna-s-2.1-RoutedQ2_K-Last27Q3_K.gguf laguna.context_length + rope.scaling yarn x32",
           "coding": [
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 70.2,
               "setting": "Terminal-Bench 2.1; poolside agent harness",
@@ -290,6 +410,7 @@
           "ctx_src": "Qwen3.8-Flash-Next-UD-Q2_K_XL-00001-of-00003.gguf qwen4exp.context_length",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 82.8,
               "setting": "OpenHands, anti-hack (\"non-hack\"); Ornith table",
@@ -299,12 +420,33 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 29.5,
+              "setting": "Terminal-Bench 4.0; Tencent test",
+              "source_url": "https://huggingface.co/tencent/Hy4-flash/resolve/main/assets/benchmark.png",
+              "source_date": "2026-11-19 (HF card last modified)",
+              "reported_by": "third-party (Tencent Hy4-flash card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 83.4,
               "setting": "Terminal-Bench 2.1; Ornith table",
               "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-122B-FP8",
               "source_date": "2026-10-21 (HF card last modified)",
               "reported_by": "third-party (Ornith-1.5-122B card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 91.9,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -326,6 +468,7 @@
           "class": "t256k",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 82.8,
               "setting": "OpenHands, anti-hack (\"non-hack\"); Ornith table",
@@ -335,12 +478,33 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 29.5,
+              "setting": "Terminal-Bench 4.0; Tencent test",
+              "source_url": "https://huggingface.co/tencent/Hy4-flash/resolve/main/assets/benchmark.png",
+              "source_date": "2026-11-19 (HF card last modified)",
+              "reported_by": "third-party (Tencent Hy4-flash card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 83.4,
               "setting": "Terminal-Bench 2.1; Ornith table",
               "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-122B-FP8",
               "source_date": "2026-10-21 (HF card last modified)",
               "reported_by": "third-party (Ornith-1.5-122B card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 91.9,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -359,6 +523,7 @@
           "ctx_src": "Qwen3.8-Flash-Next-MLX-4bit-MTP config.json max_position_embeddings",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 82.8,
               "setting": "OpenHands, anti-hack (\"non-hack\"); Ornith table",
@@ -368,12 +533,33 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 29.5,
+              "setting": "Terminal-Bench 4.0; Tencent test",
+              "source_url": "https://huggingface.co/tencent/Hy4-flash/resolve/main/assets/benchmark.png",
+              "source_date": "2026-11-19 (HF card last modified)",
+              "reported_by": "third-party (Tencent Hy4-flash card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 83.4,
               "setting": "Terminal-Bench 2.1; Ornith table",
               "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-122B-FP8",
               "source_date": "2026-10-21 (HF card last modified)",
               "reported_by": "third-party (Ornith-1.5-122B card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 91.9,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -394,8 +580,9 @@
           "ctx_src": "deepseek-v4-flash-q2_k-0731.gguf deepseek4.context_length + rope.scaling yarn x16",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 79,
+              "value": 79.0,
               "setting": "V4-Flash Max reasoning",
               "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
               "source_date": "2026-06-22 (HF card last modified)",
@@ -403,12 +590,43 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 54.2,
               "setting": "Terminal-Bench 2.1; \"DS-v4-Flash 284B-A13B\" column",
               "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
               "source_date": "2026-08-24 (HF card last modified)",
               "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 56.9,
+              "setting": "Terminal-Bench 2.0 (Acc), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 90.9,
+              "setting": "LiveCodeBench v6; \"DS-v4-Flash\" column",
+              "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+              "source_date": "2026-08-24 (HF card last modified)",
+              "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_nv",
+              "benchmark": "LiveCodeBench",
+              "value": 91.6,
+              "setting": "LiveCodeBench Pass@1 (window not stated), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -431,6 +649,7 @@
           "retired_reason": "2026-11-22: same family, newer checkpoint (1017 over the September release) at higher bits per weight, and on this machine it is faster (24.8 against 2.9 tok/s) at half the download (182.7 against 366 GB) at the same 1M window; kept as history, not offered",
           "coding": [
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench 2.1",
               "value": 90.6,
               "setting": "Pass@1; reasoning_effort=100 (max); DeepSeek Harness Minimal mode, 1M ctx; temp 1.0 top_p 0.95",
@@ -459,6 +678,7 @@
           "class": "t1m",
           "coding": [
             {
+              "bench": "tb4_0",
               "benchmark": "Terminal-Bench",
               "value": 42.3,
               "setting": "Terminal-Bench 4.0; Claude Code harness",
@@ -486,6 +706,17 @@
           "class": "t512k",
           "coding": [
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 35.4,
+              "setting": "Terminal-Bench 4.0; Tencent test",
+              "source_url": "https://huggingface.co/tencent/Hy4-flash/resolve/main/assets/benchmark.png",
+              "source_date": "2026-11-19 (HF card last modified)",
+              "reported_by": "third-party (Tencent Hy4-flash card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 84.3,
               "setting": "Terminal-Bench 2.1; Claude Code 2.1.207 (bench_53.png on card)",
@@ -511,6 +742,7 @@
           "ctx_src": "Kimi-K3-UD-IQ1_S-00001-of-00014.gguf kimi-k3.context_length",
           "coding": [
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench 2.1",
               "value": 88.3,
               "setting": "Kimi Code harness, reasoning effort max, temp 1.0, top-p 1.0",
@@ -535,6 +767,7 @@
           "ctx_src": "nemotron35-measure/config.json max_position_embeddings",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 51.56,
               "setting": "harness-level coding-agent result",
@@ -544,12 +777,23 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 24.58,
               "setting": "Terminal-Bench 2.1",
               "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
               "source_date": "2026-08-24 (HF card last modified)",
               "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 78.3,
+              "setting": "LiveCodeBench v6 pass@1",
+              "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+              "source_date": "2026-11-14 (HF card last modified)",
+              "reported_by": "third-party (Maxwell-V1-Flash card)",
               "source_class": "primary"
             }
           ]
@@ -570,6 +814,7 @@
           "ctx_src": "Laguna-XS-2.1-Q4_K_L.gguf laguna.context_length + rope.scaling yarn x32",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 70.9,
               "setting": "Harbor + poolside pool harness, 500 steps, patched images",
@@ -579,6 +824,7 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_0",
               "benchmark": "Terminal-Bench",
               "value": 37.5,
               "setting": "Terminal-Bench 2.0",
@@ -601,6 +847,7 @@
           "ctx_src": "Sage-S2.1-Flash config.json text_config.max_position_embeddings (1,048,576); no GGUF exists to read a context_length from",
           "coding": [
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench 2.1",
               "value": 87.9,
               "setting": "harness not stated on card",
@@ -623,6 +870,7 @@
           "ctx_src": "SenseNova-Loop-9B-Preview-Q4_K_M.gguf qwen35.context_length (262144); the two public Q4_K_M conversions each fail for a DIFFERENT reason, both read off the loader: AtomicChat declares qwen35 but carries 523 tensors where that arch expects 427 (96 mhc_* hyper-connection tensors it does not define), and annelo declares sensenova_loop, which no upstream llama.cpp architecture list contains",
           "coding": [
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 59.55,
               "setting": "Terminal-Bench 2.1 (harness not stated in text)",
@@ -662,6 +910,7 @@
           "ctx_src": "Maxwell-V1-Flash-Q4_0.gguf maxwell_moe.context_length (524288), read from the file header; the model card says 262144 is the configured window, so the two disagree and the file's value is recorded",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 65.4,
               "setting": "Claude Code harness, pass@1",
@@ -671,9 +920,20 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 58.65,
               "setting": "Terminal-Bench 2.1 (table row \"Terminal-Bench (mean@5)\"; footnote names 2.1)",
+              "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
+              "source_date": "2026-11-14 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 85.66,
+              "setting": "LiveCodeBench v6 pass@1 (64K gen)",
               "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
               "source_date": "2026-11-14 (HF card last modified)",
               "reported_by": "vendor",
@@ -707,6 +967,7 @@
           "ctx_src": "Inkling-2-Mini-IQ4_NL.gguf inkling2_loop.context_length (1048576); the mlx-community config.json text_config.model_max_length (1048576) agrees (that config has no max_position_embeddings key; mtp_config.max_position_embeddings is also 1048576)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 79.2,
               "setting": "bash only",
@@ -716,6 +977,17 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 5.6,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+              "source_date": "2026-11-21 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 71.6,
               "setting": "Terminal-Bench 2.1; Inkling 2 Mini in pi v0.83.0",
@@ -783,6 +1055,7 @@
           "ctx_src": "unsloth/Inkling-2-Mini-GGUF Mainline_Support/Inkling-2-Mini-UD-IQ2_XXS.gguf_file, inkling2_loop.context_length (1048576); measured at llama-bench's default context, not at 1M",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 79.2,
               "setting": "bash only",
@@ -792,6 +1065,17 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 5.6,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+              "source_date": "2026-11-21 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 71.6,
               "setting": "Terminal-Bench 2.1; Inkling 2 Mini in pi v0.83.0",
@@ -821,6 +1105,7 @@
           "ctx_src": null,
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 79.2,
               "setting": "bash only",
@@ -830,6 +1115,17 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 5.6,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+              "source_date": "2026-11-21 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 71.6,
               "setting": "Terminal-Bench 2.1; Inkling 2 Mini in pi v0.83.0",
@@ -853,6 +1149,7 @@
           "ctx_src": "moonshotai/Kimi-K3.1-Pro/config.json text_config.max_position_embeddings (read from the HF config, not from a local file)",
           "coding": [
             {
+              "bench": "tb4_0",
               "benchmark": "Terminal-Bench",
               "value": 65.7,
               "setting": "Terminal-Bench 4.0; Claude Code harness, max effort",
@@ -876,6 +1173,17 @@
           "ctx_src": "meituan-longcat/LongCat-2.5/config.json max_position_embeddings (read from the HF config, not from a local file)",
           "coding": [
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 38.5,
+              "setting": "Terminal-Bench 4.0; Claude Code v2.1.280",
+              "source_url": "https://huggingface.co/meituan-longcat/LongCat-2.5",
+              "source_date": "2026-11-10 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 88.4,
               "setting": "Terminal-Bench 2.1; Claude Code v2.1.280, 512K, avg of 3 runs",
@@ -899,6 +1207,17 @@
           "ctx_src": "XiaomiMiMo/MiMo-V2.6-Pro-RL/config.json max_position_embeddings (read from the HF config, not from a local file)",
           "coding": [
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 34.9,
+              "setting": "Terminal-Bench 4.0 (column \"MiMo-V2.6 Pro\")",
+              "source_url": "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL",
+              "source_date": "2026-10-28 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 89.9,
               "setting": "Terminal-Bench 2.1 (column \"MiMo-V2.6 Pro\")",
@@ -922,6 +1241,7 @@
           "ctx_src": "mistralai/Mistral-Large-4-1T-A52B/config.json text_config.max_position_embeddings (read from the HF config, not from a local file)",
           "coding": [
             {
+              "bench": "tb4_0",
               "benchmark": "Terminal-Bench",
               "value": 41.4,
               "setting": "Terminal-Bench 4.0; Artificial Analysis Coding Agent Index (blog text: \"improved ... to 41%\")",
@@ -957,6 +1277,7 @@
           "ctx_src": "deepseek-ai/DeepSeek-V4-Pro-0813/config.json max_position_embeddings (read from the HF config, not from a local file)",
           "coding": [
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 87.9,
               "setting": "Terminal-Bench 2.1",
@@ -996,6 +1317,7 @@
           "class": "t1m",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 79.2,
               "setting": "bash only",
@@ -1005,6 +1327,17 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 5.6,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+              "source_date": "2026-11-21 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 71.6,
               "setting": "Terminal-Bench 2.1; Inkling 2 Mini in pi v0.83.0",
@@ -1037,8 +1370,9 @@
           "class": "t256k",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 79,
+              "value": 79.0,
               "setting": "OpenHands, anti-hack",
               "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
               "source_date": "2026-08-23 (HF card last modified)",
@@ -1046,6 +1380,7 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 68.5,
               "setting": "Terminal-Bench 2.1 (Claude Code)",
@@ -1076,6 +1411,7 @@
           "ctx_src": "ornith-ai/Ornith-1.5-9B/config.json max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 70.6,
               "setting": "OpenHands, anti-hack",
@@ -1085,8 +1421,9 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
-              "value": 47,
+              "value": 47.0,
               "setting": "Terminal-Bench 2.1 (Claude Code)",
               "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-9B",
               "source_date": "2026-08-23 (HF card last modified)",
@@ -1115,8 +1452,9 @@
           "ctx_src": "JetBrains/Mellum2.1-12B-A2.5B-Thinking/config.json max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 47,
+              "value": 47.0,
               "setting": "harness not stated in table",
               "source_url": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
               "source_date": "2026-10-07 (HF card last modified)",
@@ -1124,9 +1462,20 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 17.4,
               "setting": "Terminal-Bench 2.1",
+              "source_url": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
+              "source_date": "2026-10-07 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 82.0,
+              "setting": "LiveCodeBench v6",
               "source_url": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
               "source_date": "2026-10-07 (HF card last modified)",
               "reported_by": "vendor",
@@ -1154,6 +1503,7 @@
           "ctx_src": "Qwen/Qwen3.5-9B/config.json text_config.max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 53.2,
               "setting": "Ornith table",
@@ -1163,12 +1513,23 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 21.7,
               "setting": "Terminal-Bench 2.1",
               "source_url": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
               "source_date": "2026-10-07 (HF card last modified)",
               "reported_by": "third-party (JetBrains Mellum2.1 card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 65.6,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+              "source_date": "2026-03-02 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ],
@@ -1204,6 +1565,7 @@
           "class": "t256k",
           "coding": [
             {
+              "bench": "lcb_v6",
               "benchmark": "LiveCodeBench",
               "value": 56.57,
               "setting": "LiveCodeBench-v6, instruct mode (overall_performance_35ba3b_language.png on card)",
@@ -1228,8 +1590,9 @@
           "ctx_src": "muse-glimmer-30B-kquant-17gb.gguf muse-glimmer.context_length",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 76,
+              "value": 76.0,
               "setting": "High Reasoning",
               "source_url": "https://huggingface.co/meta-models/Muse-Glimmer-30B",
               "source_date": "card created 2026-08-09",
@@ -1237,6 +1600,7 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench 2.1",
               "value": 51.7,
               "setting": "with terminus2; High Reasoning",
@@ -1265,6 +1629,7 @@
           "class": "t32k",
           "coding": [
             {
+              "bench": "lcb_v5",
               "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
               "value": 54.2,
               "setting": "thinking mode; Qwen3 Technical Report Table 17",
@@ -1289,6 +1654,7 @@
           "ctx_src": "Qwen_Qwen3.6-35B-A3B-Q4_K_M.gguf qwen35moe.context_length",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 73.4,
               "setting": "",
@@ -1298,12 +1664,33 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 52.5,
               "setting": "Terminal-Bench 2.1 (Terminus-2)",
               "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
               "source_date": "2026-08-23 (HF card last modified)",
               "reported_by": "third-party (Ornith-1.5-35B card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 51.5,
+              "setting": "Terminal-Bench 2.0",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 80.4,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -1325,6 +1712,7 @@
           "class": "t32k",
           "coding": [
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 70.2,
               "setting": "Terminal-Bench 2.1; poolside agent harness",
@@ -1351,8 +1739,9 @@
           "ctx_src": "deepseek-v4-flash-q2_k-0731.gguf deepseek4.context_length + rope.scaling yarn x16",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 79,
+              "value": 79.0,
               "setting": "V4-Flash Max reasoning",
               "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
               "source_date": "2026-06-22 (HF card last modified)",
@@ -1360,12 +1749,43 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 54.2,
               "setting": "Terminal-Bench 2.1; \"DS-v4-Flash 284B-A13B\" column",
               "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
               "source_date": "2026-08-24 (HF card last modified)",
               "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 56.9,
+              "setting": "Terminal-Bench 2.0 (Acc), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 90.9,
+              "setting": "LiveCodeBench v6; \"DS-v4-Flash\" column",
+              "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+              "source_date": "2026-08-24 (HF card last modified)",
+              "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_nv",
+              "benchmark": "LiveCodeBench",
+              "value": 91.6,
+              "setting": "LiveCodeBench Pass@1 (window not stated), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -1384,6 +1804,7 @@
           "ctx_src": "Qwen3.8-Flash-Next-MLX-4bit-MTP config.json max_position_embeddings",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 82.8,
               "setting": "OpenHands, anti-hack (\"non-hack\"); Ornith table",
@@ -1393,12 +1814,33 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 29.5,
+              "setting": "Terminal-Bench 4.0; Tencent test",
+              "source_url": "https://huggingface.co/tencent/Hy4-flash/resolve/main/assets/benchmark.png",
+              "source_date": "2026-11-19 (HF card last modified)",
+              "reported_by": "third-party (Tencent Hy4-flash card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 83.4,
               "setting": "Terminal-Bench 2.1; Ornith table",
               "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-122B-FP8",
               "source_date": "2026-10-21 (HF card last modified)",
               "reported_by": "third-party (Ornith-1.5-122B card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 91.9,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -1416,6 +1858,7 @@
           "ctx_src": "DeepSeek-V4.1-Flash-1017-UD-IQ1_S-00001-of-00005.gguf deepseek41.context_length + rope.scaling yarn x16",
           "coding": [
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench 2.1",
               "value": 90.6,
               "setting": "Pass@1; reasoning_effort=100 (max); DeepSeek Harness Minimal mode, 1M ctx; temp 1.0 top_p 0.95",
@@ -1443,6 +1886,7 @@
           "class": "t1m",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 79.2,
               "setting": "bash only",
@@ -1452,6 +1896,17 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 5.6,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+              "source_date": "2026-11-21 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 71.6,
               "setting": "Terminal-Bench 2.1; Inkling 2 Mini in pi v0.83.0",
@@ -1484,6 +1939,7 @@
           "class": "t512k",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 79.2,
               "setting": "bash only",
@@ -1493,6 +1949,17 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 5.6,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+              "source_date": "2026-11-21 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 71.6,
               "setting": "Terminal-Bench 2.1; Inkling 2 Mini in pi v0.83.0",
@@ -1523,6 +1990,7 @@
           "ctx_src": null,
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 79.2,
               "setting": "bash only",
@@ -1532,6 +2000,17 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 5.6,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+              "source_date": "2026-11-21 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 71.6,
               "setting": "Terminal-Bench 2.1; Inkling 2 Mini in pi v0.83.0",
@@ -1559,6 +2038,7 @@
           "class": "t256k",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 84.5,
               "setting": "OpenHands, anti-hack safeguards (\"non-hack\"), 256K",
@@ -1568,6 +2048,7 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 81.2,
               "setting": "Terminal-Bench 2.1; Claude Code 2.1.126, avg of 5 runs",
@@ -1598,6 +2079,7 @@
           "ctx_src": "thinkingmachines/Inkling-2-Mini config.json text_config.model_max_length (1048576); measured at short context",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 79.2,
               "setting": "bash only",
@@ -1607,6 +2089,17 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 5.6,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+              "source_date": "2026-11-21 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 71.6,
               "setting": "Terminal-Bench 2.1; Inkling 2 Mini in pi v0.83.0",
@@ -1648,6 +2141,7 @@
           "class": "t32k",
           "coding": [
             {
+              "bench": "lcb_v5",
               "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
               "value": 54.2,
               "setting": "thinking mode; Qwen3 Technical Report Table 17",
@@ -1672,6 +2166,7 @@
           "ctx_src": "Qwen3-8B-Q4_K_M.gguf qwen3.context_length",
           "coding": [
             {
+              "bench": "lcb_v5",
               "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
               "value": 57.5,
               "setting": "thinking mode; Qwen3 Technical Report Table 17",
@@ -1696,6 +2191,7 @@
           "ctx_src": "MiniCPM-V-4_7-35B-A3B-Q4_K_M.gguf qwen35moe.context_length",
           "coding": [
             {
+              "bench": "lcb_v6",
               "benchmark": "LiveCodeBench",
               "value": 56.57,
               "setting": "LiveCodeBench-v6, instruct mode (overall_performance_35ba3b_language.png on card)",
@@ -1721,6 +2217,7 @@
           "ctx_src": "Qwen_Qwen3.6-35B-A3B-Q4_K_M.gguf qwen35moe.context_length",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 73.4,
               "setting": "",
@@ -1730,12 +2227,33 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 52.5,
               "setting": "Terminal-Bench 2.1 (Terminus-2)",
               "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
               "source_date": "2026-08-23 (HF card last modified)",
               "reported_by": "third-party (Ornith-1.5-35B card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 51.5,
+              "setting": "Terminal-Bench 2.0",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 80.4,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -1754,6 +2272,7 @@
           "ctx_src": "Qwen_Qwen3.6-35B-A3B-Q4_K_M.gguf qwen35moe.context_length",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 73.4,
               "setting": "",
@@ -1763,12 +2282,33 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 52.5,
               "setting": "Terminal-Bench 2.1 (Terminus-2)",
               "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
               "source_date": "2026-08-23 (HF card last modified)",
               "reported_by": "third-party (Ornith-1.5-35B card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 51.5,
+              "setting": "Terminal-Bench 2.0",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 80.4,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -1787,6 +2327,7 @@
           "ctx_src": "gemma-4-26B-A4B-it-qat-4bit config.json max_position_embeddings (sliding_window 1024)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 57.4,
               "setting": "Nemotron table",
@@ -1796,12 +2337,33 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 38.43,
               "setting": "Terminal-Bench 2.1 mean@5",
               "source_url": "https://huggingface.co/maxwell-model/Maxwell-V1-Flash",
               "source_date": "2026-11-14 (HF card last modified)",
               "reported_by": "third-party (Maxwell-V1-Flash card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 34.2,
+              "setting": "Terminal-Bench 2.0",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "third-party (Qwen3.6-35B-A3B card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 77.1,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/google/gemma-4-26B-A4B-it",
+              "source_date": "2026-07-20 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -1837,6 +2399,7 @@
           "class": "t32k",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 79.2,
               "setting": "bash only",
@@ -1846,6 +2409,17 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 5.6,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+              "source_date": "2026-11-21 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 71.6,
               "setting": "Terminal-Bench 2.1; Inkling 2 Mini in pi v0.83.0",
@@ -1875,6 +2449,7 @@
           "ctx_src": null,
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 79.2,
               "setting": "bash only",
@@ -1884,6 +2459,17 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 5.6,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+              "source_date": "2026-11-21 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 71.6,
               "setting": "Terminal-Bench 2.1; Inkling 2 Mini in pi v0.83.0",
@@ -1925,8 +2511,9 @@
           "class": "t1m",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 79,
+              "value": 79.0,
               "setting": "V4-Flash Max reasoning",
               "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
               "source_date": "2026-06-22 (HF card last modified)",
@@ -1934,12 +2521,43 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 54.2,
               "setting": "Terminal-Bench 2.1; \"DS-v4-Flash 284B-A13B\" column",
               "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
               "source_date": "2026-08-24 (HF card last modified)",
               "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 56.9,
+              "setting": "Terminal-Bench 2.0 (Acc), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 90.9,
+              "setting": "LiveCodeBench v6; \"DS-v4-Flash\" column",
+              "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+              "source_date": "2026-08-24 (HF card last modified)",
+              "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_nv",
+              "benchmark": "LiveCodeBench",
+              "value": 91.6,
+              "setting": "LiveCodeBench Pass@1 (window not stated), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -1971,8 +2589,9 @@
           "class": "t1m",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 79,
+              "value": 79.0,
               "setting": "V4-Flash Max reasoning",
               "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
               "source_date": "2026-06-22 (HF card last modified)",
@@ -1980,12 +2599,43 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 54.2,
               "setting": "Terminal-Bench 2.1; \"DS-v4-Flash 284B-A13B\" column",
               "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
               "source_date": "2026-08-24 (HF card last modified)",
               "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 56.9,
+              "setting": "Terminal-Bench 2.0 (Acc), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 90.9,
+              "setting": "LiveCodeBench v6; \"DS-v4-Flash\" column",
+              "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+              "source_date": "2026-08-24 (HF card last modified)",
+              "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_nv",
+              "benchmark": "LiveCodeBench",
+              "value": 91.6,
+              "setting": "LiveCodeBench Pass@1 (window not stated), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -2008,6 +2658,7 @@
           "retired_reason": "2026-11-22: same family, newer checkpoint (1017 over the September release) at higher bits per weight, and on this machine it is faster (18.5 against 12.1 tok/s) at half the download (182.7 against 366 GB) at the same 1M window; kept as history, not offered",
           "coding": [
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench 2.1",
               "value": 90.6,
               "setting": "Pass@1; reasoning_effort=100 (max); DeepSeek Harness Minimal mode, 1M ctx; temp 1.0 top_p 0.95",
@@ -2036,6 +2687,7 @@
           "class": "t1m",
           "coding": [
             {
+              "bench": "tb4_0",
               "benchmark": "Terminal-Bench",
               "value": 42.3,
               "setting": "Terminal-Bench 4.0; Claude Code harness",
@@ -2060,6 +2712,7 @@
           "ctx_src": "Qwen3-4B-Q4_K_M.gguf qwen3.context_length",
           "coding": [
             {
+              "bench": "lcb_v5",
               "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
               "value": 54.2,
               "setting": "thinking mode; Qwen3 Technical Report Table 17",
@@ -2086,6 +2739,7 @@
           "class": "t32k",
           "coding": [
             {
+              "bench": "lcb_v5",
               "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
               "value": 57.5,
               "setting": "thinking mode; Qwen3 Technical Report Table 17",
@@ -2110,6 +2764,7 @@
           "ctx_src": "Qwen_Qwen3.6-35B-A3B-Q4_K_M.gguf qwen35moe.context_length",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 73.4,
               "setting": "",
@@ -2119,12 +2774,33 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 52.5,
               "setting": "Terminal-Bench 2.1 (Terminus-2)",
               "source_url": "https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B",
               "source_date": "2026-08-23 (HF card last modified)",
               "reported_by": "third-party (Ornith-1.5-35B card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 51.5,
+              "setting": "Terminal-Bench 2.0",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 80.4,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -2143,8 +2819,9 @@
           "ctx_src": "muse-glimmer-30B-kquant-17gb.gguf muse-glimmer.context_length",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 76,
+              "value": 76.0,
               "setting": "High Reasoning",
               "source_url": "https://huggingface.co/meta-models/Muse-Glimmer-30B",
               "source_date": "card created 2026-08-09",
@@ -2152,6 +2829,7 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench 2.1",
               "value": 51.7,
               "setting": "with terminus2; High Reasoning",
@@ -2178,6 +2856,7 @@
           "ctx_src": "Qwen3-14B-Q4_K_M.gguf qwen3.context_length",
           "coding": [
             {
+              "bench": "lcb_v5",
               "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
               "value": 63.5,
               "setting": "thinking mode; Qwen3 Technical Report Table 15",
@@ -2203,6 +2882,7 @@
           "ctx_src": "Laguna-XS-2.1-Q4_K_L.gguf laguna.context_length + rope.scaling yarn x32",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 70.9,
               "setting": "Harbor + poolside pool harness, 500 steps, patched images",
@@ -2212,6 +2892,7 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_0",
               "benchmark": "Terminal-Bench",
               "value": 37.5,
               "setting": "Terminal-Bench 2.0",
@@ -2236,6 +2917,7 @@
           "ctx_src": "Qwen3-32B-Q4_K_M.gguf qwen3.context_length",
           "coding": [
             {
+              "bench": "lcb_v5",
               "benchmark": "LiveCodeBench v5 (2024.10-2025.02)",
               "value": 65.7,
               "setting": "thinking mode; Qwen3 Technical Report Table 13",
@@ -2260,6 +2942,7 @@
           "ctx_src": "Qwen3.8-27B-4bit config.json max_position_embeddings",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 77.8,
               "setting": "bash only; Inkling table",
@@ -2269,9 +2952,30 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
               "benchmark": "Terminal-Bench",
-              "value": 73,
+              "value": 6.3,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/Nanbeige/Nanbeige4.3-33B",
+              "source_date": "2026-10-28 (HF card last modified)",
+              "reported_by": "third-party (Nanbeige4.3 card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
+              "benchmark": "Terminal-Bench",
+              "value": 73.0,
               "setting": "Terminal-Bench 2.1 (Terminus)",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.8-27B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 90.3,
+              "setting": "LiveCodeBench v6",
               "source_url": "https://huggingface.co/Qwen/Qwen3.8-27B",
               "source_date": "2026-11-07 (HF card last modified)",
               "reported_by": "vendor",
@@ -2295,6 +2999,7 @@
           "class": "t256k",
           "coding": [
             {
+              "bench": "lcb_v6",
               "benchmark": "LiveCodeBench",
               "value": 56.57,
               "setting": "LiveCodeBench-v6, instruct mode (overall_performance_35ba3b_language.png on card)",
@@ -2320,6 +3025,17 @@
           "class": "t32k",
           "coding": [
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 23.8,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/Nanbeige/Nanbeige4.3-33B",
+              "source_date": "2026-10-28 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 80.9,
               "setting": "Terminal-Bench 2.1; Terminus 2",
@@ -2347,6 +3063,7 @@
           "class": "t256k",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 74.2,
               "setting": "mini-swe-agent, avg pass@1 over >=5 attempts",
@@ -2356,6 +3073,7 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 54.9,
               "setting": "Terminal-Bench 2.1; Terminus 2; web-retrieval solutions counted as failures",
@@ -2386,6 +3104,7 @@
           "ctx_src": "google/gemma-4-12B-it/config.json text_config.max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 44.2,
               "setting": "\"Gemma4 12B\", marked * (from public model cards/papers)",
@@ -2395,8 +3114,9 @@
               "source_class": "primary"
             },
             {
+              "bench": "lcb_v6",
               "benchmark": "LiveCodeBench",
-              "value": 72,
+              "value": 72.0,
               "setting": "LiveCodeBench v6 (\"Gemma 4 12B Unified\")",
               "source_url": "https://huggingface.co/google/gemma-4-12B-it",
               "source_date": "2026-10-30 (HF card last modified)",
@@ -2425,8 +3145,9 @@
           "ctx_src": "google/gemma-4-31B-it/config.json text_config.max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 52,
+              "value": 52.0,
               "setting": "Qwen table",
               "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
               "source_date": "2026-11-07 (HF card last modified)",
@@ -2434,12 +3155,43 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb4_0",
+              "benchmark": "Terminal-Bench",
+              "value": 0.0,
+              "setting": "Terminal-Bench 4.0; mini-swe-agent v2.4.6",
+              "source_url": "https://huggingface.co/thinkingmachines/Inkling-2-Mini",
+              "source_date": "2026-11-21 (HF card last modified)",
+              "reported_by": "third-party (Thinking Machines Inkling-2-Mini card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 47.2,
               "setting": "Terminal-Bench 2.1 (Terminus 2)",
               "source_url": "https://huggingface.co/Nanbeige/Nanbeige4.3-33B",
               "source_date": "2026-10-28 (HF card last modified)",
               "reported_by": "third-party (Nanbeige4.3 card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 42.9,
+              "setting": "Terminal-Bench 2.0",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+              "source_date": "2026-11-07 (HF card last modified)",
+              "reported_by": "third-party (Qwen3.6-35B-A3B card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 80.0,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/google/gemma-4-31B-it",
+              "source_date": "2026-07-20 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ],
@@ -2464,6 +3216,7 @@
           "ctx_src": "zai-org/GLM-4.7-Flash/config.json max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 59.2,
               "setting": "",
@@ -2473,8 +3226,9 @@
               "source_class": "primary"
             },
             {
+              "bench": "lcb_v6",
               "benchmark": "LiveCodeBench",
-              "value": 64,
+              "value": 64.0,
               "setting": "LCB v6",
               "source_url": "https://huggingface.co/zai-org/GLM-4.7-Flash",
               "source_date": "2026-01-29 (HF card last modified)",
@@ -2503,6 +3257,7 @@
           "ctx_src": "openai/gpt-oss-20b/config.json max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 60.7,
               "setting": "reasoning high (Figure 2, gpt-oss model card paper)",
@@ -2512,12 +3267,23 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 15.17,
               "setting": "Terminal-Bench 2.1",
               "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
               "source_date": "2026-08-24 (HF card last modified)",
               "reported_by": "third-party (NVIDIA Nemotron 3.5 Lightning card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 74.6,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+              "source_date": "2026-03-02 (HF card last modified)",
+              "reported_by": "third-party (Qwen3.5-9B card)",
               "source_class": "primary"
             }
           ],
@@ -2542,8 +3308,9 @@
           "ctx_src": "LiquidAI/LFM2.5-24B-A2B/config.json max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 51,
+              "value": 51.0,
               "setting": "OpenCode harness",
               "source_url": "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B",
               "source_date": "2026-11-03 (HF card last modified)",
@@ -2572,6 +3339,7 @@
           "ctx_src": "Qwen/Qwen3.5-4B/config.json text_config.max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 38.8,
               "setting": "reported as from public model cards/papers (*)",
@@ -2581,6 +3349,7 @@
               "source_class": "primary"
             },
             {
+              "bench": "lcb_v6",
               "benchmark": "LiveCodeBench",
               "value": 55.8,
               "setting": "LiveCodeBench v6",
@@ -2611,6 +3380,7 @@
           "ctx_src": "Qwen/Qwen3.5-9B/config.json text_config.max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 53.2,
               "setting": "Ornith table",
@@ -2620,12 +3390,23 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 21.7,
               "setting": "Terminal-Bench 2.1",
               "source_url": "https://huggingface.co/JetBrains/Mellum2.1-12B-A2.5B-Thinking",
               "source_date": "2026-10-07 (HF card last modified)",
               "reported_by": "third-party (JetBrains Mellum2.1 card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 65.6,
+              "setting": "LiveCodeBench v6",
+              "source_url": "https://huggingface.co/Qwen/Qwen3.5-9B",
+              "source_date": "2026-03-02 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ],
@@ -2650,6 +3431,7 @@
           "ctx_src": "Qwen/Qwen3-Coder-30B-A3B-Instruct/config.json max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 51.6,
               "setting": "OpenHands, 500 turns (and 100 turns: 51.6) (card image)",
@@ -2659,6 +3441,17 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb_nv",
+              "benchmark": "Terminal-Bench",
+              "value": 31.3,
+              "setting": "\"Terminal-Bench\", version not stated (2025-07 release, so the original TB)",
+              "source_url": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen3-Coder/qwen3-coder-30a3-main.jpg",
+              "source_date": "2025-12-03 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "aider",
               "benchmark": "Aider polyglot",
               "value": 33.3,
               "setting": "Aider-Polyglot (card image)",
@@ -2694,8 +3487,9 @@
           },
           "coding": [
             {
-              "benchmark": "SWE-bench Multilingual (not Verified)",
-              "value": 72.7,
+              "bench": "swe_pro",
+              "benchmark": "SWE-bench Pro (not Verified)",
+              "value": 61.2,
               "setting": "mini-SWE-agent, temp 1.0, top-p 0.95, 200K ctx, auto compaction, offline",
               "source_url": "https://huggingface.co/InternScience/Sage-A1.5",
               "source_date": "card last modified 2026-10-22",
@@ -2703,8 +3497,9 @@
               "source_class": "primary"
             },
             {
-              "benchmark": "SWE-bench Pro (not Verified)",
-              "value": 61.2,
+              "bench": "swe_ml",
+              "benchmark": "SWE-bench Multilingual (not Verified)",
+              "value": 72.7,
               "setting": "mini-SWE-agent, temp 1.0, top-p 0.95, 200K ctx, auto compaction, offline",
               "source_url": "https://huggingface.co/InternScience/Sage-A1.5",
               "source_date": "card last modified 2026-10-22",
@@ -2728,6 +3523,7 @@
           "ctx_src": "XHToken/Spark-X2.6-4B/config.json max_position_embeddings (HF config of the upstream model, not read from the GGUF)",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
               "value": 62.8,
               "setting": "SWE Verified, thinking=high (all_benchmark.svg on card)",
@@ -2772,8 +3568,9 @@
           "class": "t1m",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 79,
+              "value": 79.0,
               "setting": "V4-Flash Max reasoning",
               "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
               "source_date": "2026-06-22 (HF card last modified)",
@@ -2781,12 +3578,43 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 54.2,
               "setting": "Terminal-Bench 2.1; \"DS-v4-Flash 284B-A13B\" column",
               "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
               "source_date": "2026-08-24 (HF card last modified)",
               "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 56.9,
+              "setting": "Terminal-Bench 2.0 (Acc), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 90.9,
+              "setting": "LiveCodeBench v6; \"DS-v4-Flash\" column",
+              "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+              "source_date": "2026-08-24 (HF card last modified)",
+              "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_nv",
+              "benchmark": "LiveCodeBench",
+              "value": 91.6,
+              "setting": "LiveCodeBench Pass@1 (window not stated), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]
@@ -2807,8 +3635,9 @@
           "ctx_src": "deepseek-v4-flash-q2_k-0731.gguf deepseek4.context_length + rope.scaling yarn x16",
           "coding": [
             {
+              "bench": "swe_v",
               "benchmark": "SWE-bench Verified",
-              "value": 79,
+              "value": 79.0,
               "setting": "V4-Flash Max reasoning",
               "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
               "source_date": "2026-06-22 (HF card last modified)",
@@ -2816,12 +3645,43 @@
               "source_class": "primary"
             },
             {
+              "bench": "tb2_1",
               "benchmark": "Terminal-Bench",
               "value": 54.2,
               "setting": "Terminal-Bench 2.1; \"DS-v4-Flash 284B-A13B\" column",
               "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
               "source_date": "2026-08-24 (HF card last modified)",
               "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "tb2_0",
+              "benchmark": "Terminal-Bench",
+              "value": 56.9,
+              "setting": "Terminal-Bench 2.0 (Acc), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_v6",
+              "benchmark": "LiveCodeBench",
+              "value": 90.9,
+              "setting": "LiveCodeBench v6; \"DS-v4-Flash\" column",
+              "source_url": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+              "source_date": "2026-08-24 (HF card last modified)",
+              "reported_by": "third-party (NVIDIA Nemotron-3-Ultra card)",
+              "source_class": "primary"
+            },
+            {
+              "bench": "lcb_nv",
+              "benchmark": "LiveCodeBench",
+              "value": 91.6,
+              "setting": "LiveCodeBench Pass@1 (window not stated), V4-Flash Max",
+              "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash",
+              "source_date": "2026-06-22 (HF card last modified)",
+              "reported_by": "vendor",
               "source_class": "primary"
             }
           ]

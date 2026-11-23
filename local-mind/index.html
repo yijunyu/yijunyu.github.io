@@ -301,7 +301,7 @@
 
   /* A closed <details> does not print. Opening them for the print is done in
      script; this only keeps the chevrons out of the paper. */
-  #modeltable td:nth-child(2){white-space:normal;min-width:6.5rem;max-width:11rem;overflow-wrap:break-word} td.coding{font-size:.86em;min-width:10.5rem;white-space:normal;line-height:1.35} td.coding a{text-decoration:none;border-bottom:1px dotted currentColor} td.coding sup{font-size:.7em;opacity:.75;margin-left:1px} td.coding .unver{opacity:.8}
+  #modeltable td:nth-child(2){white-space:normal;min-width:6.5rem;max-width:11rem;overflow-wrap:break-word} td.coding{font-size:.86em;min-width:10.5rem;white-space:normal;line-height:1.35} td.coding a{text-decoration:none;border-bottom:1px dotted currentColor} td.coding sup{font-size:.7em;opacity:.75;margin-left:1px} td.coding .unver{opacity:.8} td.bench{white-space:nowrap;font-variant-numeric:tabular-nums} td.bench a{text-decoration:none;border-bottom:1px dotted currentColor} td.bench sup{font-size:.7em;opacity:.75;margin-left:1px} th.bench{text-align:right}
   @media print{ .chev,.allctl{display:none;} }
   .classpill{display:inline-block;margin-left:.35rem;padding:.05rem .45rem;border-radius:.7rem;background:#f0f4ff;color:#345;font-size:.72rem;letter-spacing:.02em;vertical-align:.05rem}
   .pickbar{margin:.65rem 0 0;display:flex;gap:.7rem;flex-wrap:wrap;align-items:baseline;font-size:.86rem;color:var(--mut)}
@@ -369,8 +369,7 @@
             <th scope="col" class="sortable" data-sort="runs"   aria-sort="none"><button type="button" class="sortbtn">Runs as<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="decode" aria-sort="none"><button type="button" class="sortbtn">Decode<span class="sarrow" aria-hidden="true"></span></button></th>
             <th scope="col" class="sortable" data-sort="prefill" aria-sort="none"><button type="button" class="sortbtn">Prefill<span class="sarrow" aria-hidden="true"></span></button></th>
-            <th scope="col" title="Published coding-agent benchmark scores for the full-precision model, not for the quantised file in this row. Hover or follow a score for its source, date and who reported it.">Coding (published)<sup>*</sup></th>
-            <th scope="col" title="Checks this catalogue ran itself on this row's server: a greedy 17x23 answer and a streaming OpenAI tool call.">Our checks</th>
+            <th scope="col" id="probehead" title="Checks this catalogue ran itself on this row's server: a greedy 17x23 answer and a streaming OpenAI tool call.">Our checks</th>
           </tr>
         </thead>
         <tbody id="modelrows"></tbody>
@@ -689,26 +688,21 @@ sh install --key DS4-… --email you@example.com</div>
   // The curated table is one row per class, so the class has to be visible;
   // otherwise the reader sees four models with no reason four.
   const CLASS = { small: "\u22648B", mid: "~30B", large: "~125B", frontier: "1M", t1m: "1M", t512k: "512K", t256k: "256K", t128k: "128K", t32k: "32K" };
-  // Coding column: published scores (full-precision model) with their source on hover and link,
+  // Coding columns: published scores (full-precision model) with their source on hover and link,
   // kept apart from the checks this catalogue ran itself.
-  const BENCH = s => {
-    const b = s.benchmark || "", set = (s.benchmark || "") + " " + (s.setting || "");
-    if (/SWE-?bench Verified/i.test(b)) return "SWE-V";
-    if (/Terminal/i.test(b)) { const v = (set.match(/(\d+\.\d+)/) || [])[1]; return v ? `TB${v}` : "TB (version not stated)"; }
-    if (/LiveCodeBench/i.test(b)) { const v = (set.match(/v\d+/i) || [])[0]; return v ? `LCB ${v}` : "LiveCodeBench"; }
-    if (/Aider/i.test(b)) return "Aider polyglot";
-    return b;
-  };
   const esc = t => String(t ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-  const codingCell = r => {
-    if (!r.coding || !r.coding.length) return '<span class="na">no published score</span>';
-    return r.coding.map(s => {
-      const tip = esc(`${s.benchmark}${s.setting ? " (" + s.setting + ")" : ""} \u00b7 ${s.reported_by || "reporter unknown"} \u00b7 ${s.source_date || "date not shown"} \u00b7 ${s.source_url || ""}`);
-      const third = /vendor/.test(s.reported_by || "") ? "" : '<sup title="third-party">3p</sup>';
-      const txt = `${BENCH(s)} ${s.value}${third}`;
-      const body = s.source_url ? `<a href="${esc(s.source_url)}" title="${tip}" rel="noopener">${txt}</a>` : `<span title="${tip}">${txt}</span>`;
-      return s.source_class === "unverified-session" ? `<em class="unver">${body}<sup>\u2020</sup></em>` : body;
-    }).join(" \u00b7 ");
+  // One numeric column per published benchmark (machines.json _coding_benchmarks, one per benchmark AND
+  // version, since versions are not comparable). A box shows only the columns some row on it carries.
+  let BENCHCOLS = [];
+  const benchOf = (r, k) => (r.coding || []).find(s => s.bench === k);
+  const benchCell = (r, k) => {
+    const s = benchOf(r, k);
+    if (!s || typeof s.value !== "number") return '<td class="num bench"><span class="na" title="no published score">\u2014</span></td>';
+    const tip = esc(`${s.benchmark}${s.setting ? " (" + s.setting + ")" : ""} \u00b7 ${s.reported_by || "reporter unknown"} \u00b7 ${s.source_date || "date not shown"} \u00b7 ${s.source_url || ""}`);
+    const third = /vendor/.test(s.reported_by || "") ? "" : '<sup title="third-party">3p</sup>';
+    const txt = `${s.value}${third}`;
+    const body = s.source_url ? `<a href="${esc(s.source_url)}" title="${tip}" rel="noopener">${txt}</a>` : `<span title="${tip}">${txt}</span>`;
+    return `<td class="num bench">${s.source_class === "unverified-session" ? `<em class="unver">${body}<sup>\u2020</sup></em>` : body}</td>`;
   };
   const probeCell = r => {
     const p = r.probes; if (!p) return '<span class="na">not run</span>';
@@ -776,6 +770,10 @@ sh install --key DS4-… --email you@example.com</div>
     decode: { first: -1, get: r => rateNum(r.decode) },
     prefill:{ first: -1, get: r => rateNum(r.prefill) },
   };
+  // A published-score column sorts on the number in machines.json, best first; rows without one sink.
+  const sortDef = col => SORTS[col] || (String(col).startsWith("bench:")
+    ? { first: -1, get: r => { const s = benchOf(r, col.slice(6)); return s && typeof s.value === "number" ? s.value : null; } }
+    : null);
   let sortCol = null, sortDir = 1, curBox = 0;
   // Curation, not completeness: one pick per size class per machine. The
   // full measurement set stays in machines.json and is one click away, but
@@ -784,8 +782,9 @@ sh install --key DS4-… --email you@example.com</div>
   let showAll = false;
 
   function sortRows(rows) {
-    if (!sortCol || !SORTS[sortCol]) return rows;
-    const get = SORTS[sortCol].get;
+    const def = sortCol && sortDef(sortCol);
+    if (!def) return rows;
+    const get = def.get;
     return rows.slice().sort((a, b) => {
       const av = get(a), bv = get(b);
       // An absent value is not a small one. "not measured" sinks to the bottom
@@ -799,16 +798,34 @@ sh install --key DS4-… --email you@example.com</div>
     });
   }
 
-  function wireSortHeaders() {
-    document.querySelectorAll("#modeltable th.sortable").forEach(th => {
-      const col = th.dataset.sort;
-      th.querySelector(".sortbtn").addEventListener("click", () => {
-        sortDir = (sortCol === col) ? -sortDir : SORTS[col].first;
-        sortCol = col;
-        render(curBox);
-      });
+  function wireSortHeader(th) {
+    const col = th.dataset.sort;
+    th.querySelector(".sortbtn").addEventListener("click", () => {
+      sortDir = (sortCol === col) ? -sortDir : sortDef(col).first;
+      sortCol = col;
+      render(curBox);
     });
   }
+  function wireSortHeaders() {
+    document.querySelectorAll("#modeltable th.sortable").forEach(wireSortHeader);
+  }
+  // Rebuilt per box: the benchmark columns that box's rows carry, in _coding_benchmarks order.
+  function benchHeads(rows) {
+    document.querySelectorAll("#modeltable th.bench").forEach(th => th.remove());
+    const keys = new Set(); rows.forEach(r => (r.coding || []).forEach(s => keys.add(s.bench)));
+    const cols = BENCHCOLS.filter(c => keys.has(c.key));
+    const probeHead = document.getElementById("probehead");
+    cols.forEach(c => {
+      const th = document.createElement("th");
+      th.scope = "col"; th.className = "sortable bench"; th.dataset.sort = "bench:" + c.key;
+      th.setAttribute("aria-sort", "none");
+      th.title = `${c.name}, ${c.unit}. Published for the full-precision model, not measured on the quantised file in the row; hover a score for its setting, reporter, date and source.`;
+      th.innerHTML = `<button type="button" class="sortbtn">${esc(c.label)}<sup>*</sup><span class="sarrow" aria-hidden="true"></span></button>`;
+      probeHead.before(th); wireSortHeader(th);
+    });
+    return cols;
+  }
+  const ncols = () => document.querySelectorAll("#modeltable thead th").length;
 
   function paintSortHeaders() {
     document.querySelectorAll("#modeltable th.sortable").forEach(th => {
@@ -825,14 +842,16 @@ sh install --key DS4-… --email you@example.com</div>
       // Supported, but nothing measured on it yet. Say which, rather than
       // showing an empty table that reads as "runs nothing".
       const be = BACKENDS.find(x => x.id === curBE);
+      benchHeads([]);
       paintSortHeaders();
-      rowsEl.innerHTML = `<tr><td colspan="7" class="na">no ${be ? be.label : ""} measurements published yet</td></tr>`;
+      rowsEl.innerHTML = `<tr><td colspan="${ncols()}" class="na">no ${be ? be.label : ""} measurements published yet</td></tr>`;
       priceEl.textContent = "";
       setNote(`Nothing has been measured on ${be ? be.label : "this backend"} yet. The backend is supported; the numbers are not published because they have not been taken.`, true);
       return;
     }
-    paintSortHeaders();
     const allRows = b.rows || [];
+    const bcols = benchHeads(allRows);
+    paintSortHeaders();
     const picked = allRows.filter(r => r.pick);
     const visible = showAll || picked.length === 0 ? allRows : picked;
     if (pickbarEl) {
@@ -883,14 +902,14 @@ sh install --key DS4-… --email you@example.com</div>
         ? ` <span class="classpill">${CLASS[r.class]}</span>` : "";
       return `<tr><td class="fam">${r.name} <span class="variant">${r.params}</span>${cls}</td>`
            + `<td class="num">${r.size}</td><td class="num">${cx}</td><td>${eng}</td><td>${runs}</td><td class="num">${d}</td>`
-           + `<td class="num">${pf}</td><td class="coding">${codingCell(r)}</td><td class="coding">${probeCell(r)}</td></tr>`;
+           + `<td class="num">${pf}</td>${bcols.map(c => benchCell(r, c.key)).join("")}<td class="coding">${probeCell(r)}</td></tr>`;
     }).join("");
     // Curated on purpose: the default table is one pick per size class, and
     // the full measurement set is one click away rather than 48 rows of choice.
     // A box with no recorded price says nothing rather than "$0" or "—".
     priceEl.textContent = b.price ? `≈ ${b.price}` : "";
     setNote((b.note || "")
-      + " <sup>*</sup>Coding scores are what each model's publisher (or, marked 3p, a third party) reported for the full-precision model, not measurements of the quantised file in the row; hover a score for its setting, date and source, and follow it to the page it was read from. They are not comparable across harnesses."
+      + " <sup>*</sup>The benchmark columns (SWE-V = SWE-bench Verified, SWE-Pro / SWE-ML = SWE-bench Pro / Multilingual, TB = Terminal-Bench by version, LCB = LiveCodeBench by version, Aider = Aider polyglot; all percentages) are what each model's publisher (or, marked 3p, a third party) reported for the full-precision model, not measurements of the quantised file in the row; hover a score for its setting, date and source, and follow it to the page it was read from. A dash means no published score was found. Click a header to sort; rows without a score sort last either way. Scores are not comparable across harnesses or benchmark versions."
       + " Sizes are the real download; residency is computed from that size against this"
       + " machine's memory and disk. Context is the window each model declares in its own"
       + " weights \u2014 context_length in the GGUF, max_position_embeddings in an MLX config \u2014"
@@ -1179,12 +1198,12 @@ sh install --key DS4-… --email you@example.com</div>
 
   fetch("machines.json", { cache: "no-cache" })
     .then(r => { if (!r.ok) throw new Error(`machines.json: HTTP ${r.status}`); return r.json(); })
-    .then(data => { BOXES = data.boxes || []; restoreChoice(); wireSortHeaders(); renderAll(); })
+    .then(data => { BOXES = data.boxes || []; BENCHCOLS = data._coding_benchmarks || []; restoreChoice(); wireSortHeaders(); renderAll(); })
     .catch(err => {
       // Say so plainly. An empty table would read as a product that runs
       // nothing, which is worse than admitting the data did not load.
       setNote(`Could not load the measurements (${err.message}).`, true);
-      rowsEl.innerHTML = `<tr><td colspan="7" class="na">measurements unavailable</td></tr>`;
+      rowsEl.innerHTML = `<tr><td colspan="${ncols()}" class="na">measurements unavailable</td></tr>`;
     });
 </script>
 
