@@ -952,27 +952,26 @@ sh install --key DS4-… --email you@example.com</div>
     return `<button type="button" class="chip${n === 0 ? " zero" : ""}" data-group="${group}" data-id="${esc(o.id)}"`
       + ` aria-pressed="${on}"${o.title ? ` title="${esc(o.title)}"` : ""}>${esc(o.label)}<span class="cn">${n}</span></button>`;
   }
+  // The rows the table shows for the current tab and filters, with group skip
+  // set to All: the same curation as render() (a filter lifts picks-only).
+  function visibleRows(scope, skip) {
+    const rows = scope.filter(r => matches(r, skip));
+    const filtering = ["engine", "family", "ctx"].some(g => g !== skip && F[g] !== "all") || F.measured;
+    const picked = rows.filter(r => r.pick);
+    return filtering || showAll || picked.length === 0 ? rows : picked;
+  }
   // While the table is sorted on a column, each group's options follow it: an
-  // option ranks by the BEST value its rows in this machine tab have in that
-  // column, in the sort's direction; options with no value there go last, and
-  // ties keep the default order. With no sort, the default order stands.
+  // option sits where its FIRST row appears in the table as sorted -- its single
+  // best value in that column, the row the eye meets first -- among the rows the
+  // table would show with this group at All (this machine tab, the other
+  // groups' filters, the picks-only default). Options with no such row go last
+  // in the default order. With no sort, the default order stands.
   function rankOptions(g, scope) {
-    const def = sortCol && sortDef(sortCol);
-    if (!def) return OPTS[g];
-    const better = (a, b) => (typeof a === "string" ? a.localeCompare(b) : a - b) * sortDir < 0;
-    const best = new Map();
-    scope.forEach(r => {
-      const v = def.get(r);
-      if (v === null || v === undefined || Number.isNaN(v)) return;
-      const k = KEY[g](r), cur = best.get(k);
-      if (cur === undefined || better(v, cur)) best.set(k, v);
-    });
-    return OPTS[g].map((o, i) => ({ o, i, v: best.get(o.id) })).sort((a, b) => {
-      const an = a.v === undefined, bn = b.v === undefined;
-      if (an || bn) return an && bn ? a.i - b.i : an ? 1 : -1;
-      if (a.v === b.v) return a.i - b.i;
-      return better(a.v, b.v) ? -1 : 1;
-    }).map(x => x.o);
+    if (!(sortCol && sortDef(sortCol))) return OPTS[g];
+    const first = new Map();
+    sortRows(visibleRows(scope, g)).forEach((r, n) => { const k = KEY[g](r); if (!first.has(k)) first.set(k, n); });
+    const at = o => first.has(o.id) ? first.get(o.id) : Infinity;
+    return OPTS[g].map((o, i) => ({ o, i })).sort((x, y) => (at(x.o) - at(y.o)) || (x.i - y.i)).map(x => x.o);
   }
   function renderFilters() {
     if (!filtersEl) return;
@@ -1049,7 +1048,7 @@ sh install --key DS4-… --email you@example.com</div>
     paintSortHeaders();
     const picked = allRows.filter(r => r.pick);
     // A filter asks for every matching row, so it lifts the picks-only curation.
-    const visible = filtering || showAll || picked.length === 0 ? allRows : picked;
+    const visible = visibleRows(scope, null);
     if (pickbarEl) {
       const hidden = allRows.length - picked.length;
       // Name only the classes this machine actually answers for: a single-row
