@@ -32,7 +32,7 @@ tells you the skill is missing rather than claiming 0 updates -- the binary alon
 leaves an agent without instructions. Verify:
 
 ```sh
-tilecov version      # tilecov 0.11.6
+tilecov version      # tilecov 0.11.7
 ```
 
 Published assets: `bin/tilecov-darwin-arm64`. To install elsewhere or from a
