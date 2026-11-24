@@ -9,6 +9,14 @@
 <li>When that build is not installed, the app can say so and fall back, instead of starting the general engine and reporting whatever it produces as though the tuned path had run.</li>
 </ul>
 <p>The second point is the important one. An engine selected by a flag on another engine cannot report its own absence; an engine selected by name can.</p>
+<h2 id=atomic>External engine: Atomic Engine</h2>
+<p><a href="https://github.com/AtomicBot-ai/atomic-engine/tree/codex/expert-weight-source#run-inkling-2-mini-on-apple-silicon">Atomic Engine</a> (AtomicBot-ai/atomic-engine, branch <code>codex/expert-weight-source</code>, MIT licence) is a fork of llama.cpp, by way of TheTom/llama-cpp-turboquant. It ships a single <code>llama-server</code> binary with a web chat and an OpenAI-compatible API, and it admits model, state, compute and expert buffers under one memory budget (<code>--engine-budget-mib</code>), streaming the MoE experts that do not fit from SSD with <code>pread</code>. It is not part of Local Mind; it is catalogued as an engine option for one model.</p>
+<table><tr><th>Model</th><td>Inkling-2-Mini, Metal (Apple Silicon)</td></tr>
+<tr><th>Target weights</th><td>AtomicChat&rsquo;s AD-quant GGUFs: <code>Inkling-2-Mini-AD-IQ2_M</code> (8.67&nbsp;GB), <code>AD-IQ3_S</code> (13.34&nbsp;GB), <code>AD-Q4_K</code> (16.53&nbsp;GB), from AtomicChat/Inkling-2-Mini-GGUF</td></tr>
+<tr><th>Draft</th><td><code>dspark-Inkling-2-Mini-Q8_0.gguf</code> (0.50&nbsp;GB, revision 3095098), passed with <code>-md</code> and <code>--spec-type draft-dspark</code>; 7 proposals per round for IQ2_M, 3 for IQ3_S and Q4_K</td></tr>
+<tr><th>Budget</th><td>8 to 20&nbsp;GiB plus 100&nbsp;MiB for a Q4_0 KV cache, at a 4,096-token context</td></tr>
+<tr><th>Upstream claim</th><td>M4 Max 48&nbsp;GB, 2026-11-23, one request per cell, 4,000-token prompt, 64 greedy tokens matching stock: AD-IQ2_M decodes 68.07&nbsp;tok/s at 8&nbsp;GiB and 105.71 at 14&nbsp;GiB; AD-Q4_K 41.64 at 8&nbsp;GiB and 77.31 at 20&nbsp;GiB; stock llama.cpp 31.6&ndash;33.1 on the same files. <b>Claimed by the publisher, not measured by us.</b></td></tr>
+<tr><th>Measured here</th><td>Nothing yet. The catalogue carries an M4 mini row (AD-IQ2_M at the 8&nbsp;GiB budget, the cheapest Mac it fits) with no rate.</td></tr></table>
 <h2>Availability</h2>
 <p>Engine availability depends on which builds are installed on the machine. The app shows an engine as available only when the binary that implements it is present. The named-engine mechanism described here is <b>on a development branch and is not in a released or TestFlight build</b>.</p>
 <footer>© 2026 Yijun Yu · <a href="mailto:yijun.yu@gmail.com">yijun.yu@gmail.com</a></footer>
