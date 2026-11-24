@@ -307,6 +307,24 @@
   .pickbar{margin:.65rem 0 0;display:flex;gap:.7rem;flex-wrap:wrap;align-items:baseline;font-size:.86rem;color:var(--mut)}
   .pickbar button{font:inherit;font-size:.82rem;padding:.2rem .6rem;border:1px solid #d7d7d7;border-radius:.4rem;background:#fff;color:#333;cursor:pointer}
   .pickbar button:hover{background:#f4f4f4}
+  /* Table filters. Chip groups built from machines.json; one choice per group,
+     "All" included; groups combine (AND). Hidden until script runs, so with
+     script off nothing is filtered out of view. */
+  .filters{display:grid;gap:.4rem;margin:.1rem 0 .85rem;}
+  .fgroup{display:flex;flex-wrap:wrap;align-items:baseline;gap:.3rem .6rem;}
+  .flabel{font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;
+          color:var(--ink-3);flex:0 0 6.2rem;}
+  .chips{display:flex;flex-wrap:wrap;gap:.25rem;flex:1 1 0;min-width:12rem;}
+  .chip{font-family:var(--mono);font-size:var(--step);letter-spacing:.03em;color:var(--ink-2);
+        background:var(--panel);border:1px solid var(--rule);border-radius:2px;
+        padding:.24rem .5rem;cursor:pointer;line-height:1.3;}
+  .chip:hover{border-color:var(--rule-2);color:var(--ink);}
+  .chip[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink);}
+  .chip .cn{opacity:.7;margin-left:.35rem;font-variant-numeric:tabular-nums;}
+  .chip.zero{opacity:.5;}
+  .chip.zero[aria-pressed="true"]{opacity:1;}
+  .fcount{font-family:var(--mono);font-size:var(--step);color:var(--ink-2);}
+  td.mach{font-family:var(--mono);font-size:.8em;color:var(--ink-2);white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -357,6 +375,18 @@
       <span class="price" id="boxprice"></span>
       <span class="bindnote">Engine binds 127.0.0.1:8000</span>
     </div>
+
+    <div class="filters" id="filters" role="group" aria-label="Filter the table" hidden>
+      <div class="fgroup"><span class="flabel" id="fl-machine">Machine</span><div class="chips" role="group" aria-labelledby="fl-machine" data-group="machine"></div></div>
+      <div class="fgroup"><span class="flabel" id="fl-engine">Engine</span><div class="chips" role="group" aria-labelledby="fl-engine" data-group="engine"></div></div>
+      <div class="fgroup"><span class="flabel" id="fl-family">Model</span><div class="chips" role="group" aria-labelledby="fl-family" data-group="family"></div></div>
+      <div class="fgroup"><span class="flabel" id="fl-ctx">Context</span><div class="chips" role="group" aria-labelledby="fl-ctx" data-group="ctx"></div></div>
+      <div class="fgroup"><span class="flabel">Show</span><div class="chips">
+        <button type="button" class="chip" id="measuredonly" aria-pressed="false" title="Only rows with a measured decode or prefill rate">Measured only</button>
+        <button type="button" class="chip" id="clearfilters" title="Engine, model, context and measured back to All">Clear filters</button>
+        <span class="fcount" id="fcount" aria-live="polite"></span></div></div>
+    </div>
+    <noscript><p class="note">This table is filled in by a script from <a href="machines.json">machines.json</a>, the file that holds every row; with JavaScript off, read that file directly. Nothing in it is filtered.</p></noscript>
 
     <div class="tscroll">
       <table id="modeltable">
@@ -836,11 +866,185 @@ sh install --key DS4-… --email you@example.com</div>
     });
   }
 
+  // ---- filters --------------------------------------------------------------
+  // Machine, engine, model family and context window, plus "measured only".
+  // One choice per group ("all" is a choice), groups combine with AND. Every
+  // option list is DERIVED from machines.json at load, so a new row, engine or
+  // family appears here without an HTML edit. State lives in the query string
+  // (?machine=&engine=&family=&ctx=&measured=1) so a filtered view is a link.
+  // Presentation only: no value in machines.json is read differently.
+  const F = { machine: null, engine: "all", family: "all", ctx: "all", measured: false };
+  const ROWBOX = new Map();                      // row object -> its box
+  const slug = s => String(s).toLowerCase().replace(/[^a-z0-9.]+/g, "-").replace(/^-+|-+$/g, "");
+  const boxShort = b => String(b && b.label || "").split(" · ")[0];
+  // The engine cell is free text ("llama.cpp (llama-bench, release b12633, Metal)").
+  // Its family is the text before the first bracket, comma, colon, plus or dash,
+  // with a version, build or flag tail and a trailing backend word removed; rows
+  // whose engine says it cannot run them share one "none" option.
+  function engineLabel(r) {
+    let t = String(r.engine || "").replace(/<[^>]*>/g, "").trim();
+    if (!t || /^(not |no |does not )/i.test(t)) return "none (not runnable here)";
+    t = t.split(/\s*[(,:+—]\s*/)[0];
+    t = t.replace(/\s+(?:b\d|\d|--).*$/, "").replace(/\s+(?:Metal|CUDA|ROCm|CANN|HIP)$/i, "").trim();
+    return t || "none (not runnable here)";
+  }
+  // The model family is the leading run of letters of the row's name (Qwen3.6 ->
+  // Qwen, DeepSeek-V4.1 -> DeepSeek), keeping a lower-case word suffix (gpt-oss).
+  function familyLabel(r) {
+    const n = String(r.name || "");
+    const m = n.match(/^[A-Za-z]+(?:-[a-z]{2,}(?=[-\s]|$))?/);
+    return m ? m[0] : (n.split(/\s/)[0] || "unnamed");
+  }
+  // Context buckets follow the catalogue's tiers, on the declared token count.
+  const CTX_TIERS = [
+    { id: "1m",   label: "1M",    min: 1048576, title: "1,048,576 tokens or more" },
+    { id: "512k", label: "512K",  min: 524288,  title: "524,288 to 1,048,575 tokens" },
+    { id: "256k", label: "256K",  min: 262144,  title: "262,144 to 524,287 tokens" },
+    { id: "128k", label: "128K",  min: 131072,  title: "131,072 to 262,143 tokens" },
+    { id: "le64k", label: "≤64K", min: 0, title: "under 131,072 tokens" },
+  ];
+  const ctxKey = r => typeof r.ctx_tokens === "number"
+    ? CTX_TIERS.find(t => r.ctx_tokens >= t.min).id : "unread";
+  const isMeasured = r => rateNum(r.decode) !== null || rateNum(r.prefill) !== null;
+  const KEY = { engine: r => slug(engineLabel(r)), family: r => slug(familyLabel(r)), ctx: ctxKey };
+  let OPTS = { machine: [], engine: [], family: [], ctx: [] };
+
+  function buildOptions() {
+    ROWBOX.clear();
+    BOXES.forEach(b => (b.rows || []).forEach(r => ROWBOX.set(r, b)));
+    const rows = [...ROWBOX.keys()];
+    const collect = (labelOf) => {
+      const seen = new Map();                    // id -> label; first label with a capital wins
+      rows.forEach(r => {
+        const l = labelOf(r), id = slug(l), had = seen.get(id);
+        if (!had || (!/[A-Z]/.test(had) && /[A-Z]/.test(l))) seen.set(id, l);
+      });
+      return [...seen].map(([id, label]) => ({ id, label }));
+    };
+    const byCount = (key) => (a, b) =>
+      rows.filter(r => KEY[key](r) === b.id).length - rows.filter(r => KEY[key](r) === a.id).length
+      || a.label.localeCompare(b.label);
+    OPTS.machine = BOXES.map(b => ({ id: b.id, label: boxShort(b), title: b.label }));
+    OPTS.engine = collect(engineLabel).sort(byCount("engine"));
+    OPTS.family = collect(familyLabel).sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+    const present = new Set(rows.map(ctxKey));
+    OPTS.ctx = CTX_TIERS.filter(t => present.has(t.id)).map(t => ({ id: t.id, label: t.label, title: t.title }))
+      .concat(present.has("unread") ? [{ id: "unread", label: "not read", title: "no context length recorded" }] : []);
+  }
+
+  const filtersActive = () => F.engine !== "all" || F.family !== "all" || F.ctx !== "all" || F.measured;
+  // skip: the group whose own chips are being counted, so each chip says how many
+  // rows it would show with the other groups as they are.
+  function matches(r, skip) {
+    for (const g of ["engine", "family", "ctx"]) {
+      if (g !== skip && F[g] !== "all" && KEY[g](r) !== F[g]) return false;
+    }
+    return !F.measured || isMeasured(r);
+  }
+  const scopeRows = () => F.machine === "all"
+    ? [...ROWBOX.keys()]
+    : ((BOXES.find(b => b.id === F.machine) || {}).rows || []);
+
+  const filtersEl = document.getElementById("filters");
+  const fcountEl = document.getElementById("fcount");
+  const measuredBtn = document.getElementById("measuredonly");
+  const clearBtn = document.getElementById("clearfilters");
+
+  function chip(group, o, n, on) {
+    return `<button type="button" class="chip${n === 0 ? " zero" : ""}" data-group="${group}" data-id="${esc(o.id)}"`
+      + ` aria-pressed="${on}"${o.title ? ` title="${esc(o.title)}"` : ""}>${esc(o.label)}<span class="cn">${n}</span></button>`;
+  }
+  function renderFilters() {
+    if (!filtersEl) return;
+    const scope = scopeRows();
+    const allRows = [...ROWBOX.keys()];
+    filtersEl.querySelectorAll(".chips[data-group]").forEach(el => {
+      const g = el.dataset.group;
+      let html;
+      if (g === "machine") {
+        const n = b => (b.rows || []).filter(r => matches(r)).length;
+        html = chip(g, { id: "all", label: "All", title: "every machine, with a Machine column" },
+                    allRows.filter(r => matches(r)).length, F.machine === "all")
+          + OPTS.machine.map(o => chip(g, o, n(BOXES.find(b => b.id === o.id)), F.machine === o.id)).join("");
+      } else {
+        const base = scope.filter(r => matches(r, g));
+        html = chip(g, { id: "all", label: "All" }, base.length, F[g] === "all")
+          + OPTS[g].map(o => chip(g, o, base.filter(r => KEY[g](r) === o.id).length, F[g] === o.id)).join("");
+      }
+      el.innerHTML = html;
+    });
+    measuredBtn.setAttribute("aria-pressed", String(F.measured));
+    clearBtn.hidden = !filtersActive();
+  }
+
+  function writeURL() {
+    try {
+      const q = new URLSearchParams(location.search);
+      ["machine", "engine", "family", "ctx", "measured"].forEach(k => q.delete(k));
+      if (F.machine) q.set("machine", F.machine);
+      ["engine", "family", "ctx"].forEach(k => { if (F[k] !== "all") q.set(k, F[k]); });
+      if (F.measured) q.set("measured", "1");
+      const s = q.toString();
+      history.replaceState(null, "", location.pathname + (s ? "?" + s : "") + location.hash);
+    } catch (e) { /* file:// or a sandboxed frame: the view still works, only the link does not update */ }
+  }
+  // A value that no longer matches an option (a renamed engine, a retired box)
+  // is ignored rather than producing an empty table.
+  function readURL() {
+    const q = new URLSearchParams(location.search);
+    ["engine", "family", "ctx"].forEach(k => {
+      const v = q.get(k);
+      if (v && OPTS[k].some(o => o.id === v)) F[k] = v;
+    });
+    F.measured = q.get("measured") === "1";
+    const m = q.get("machine");
+    if (m === "all") F.machine = "all";
+    else {
+      const b = BOXES.find(x => x.id === m);
+      if (b) { curOS = b.os; curBE = b.backend; wantMachine = b.id; }
+    }
+  }
+  function selectMachineFilter(id) {
+    if (id === "all") { F.machine = "all"; render(curBox); return; }
+    const b = BOXES.find(x => x.id === id);
+    if (!b) return;
+    F.machine = null; curOS = b.os; curBE = b.backend; wantMachine = b.id;
+    renderAll();
+  }
+  function wireFilters() {
+    filtersEl.addEventListener("click", e => {
+      const btn = e.target.closest("button.chip[data-group]");
+      if (!btn) return;
+      const g = btn.dataset.group, id = btn.dataset.id;
+      if (g === "machine") selectMachineFilter(id);
+      else { F[g] = id; render(curBox); }
+      // The chips are rebuilt on render; keep focus on the one just pressed.
+      const again = filtersEl.querySelector(`button.chip[data-group="${g}"][data-id="${CSS.escape(id)}"]`);
+      if (again) again.focus();
+    });
+    measuredBtn.addEventListener("click", () => { F.measured = !F.measured; render(curBox); });
+    clearBtn.addEventListener("click", () => {
+      F.engine = F.family = F.ctx = "all"; F.measured = false; render(curBox); measuredBtn.focus();
+    });
+    filtersEl.hidden = false;
+  }
+  function machineHead(on) {
+    let th = document.getElementById("machinehead");
+    if (on && !th) {
+      th = document.createElement("th");
+      th.scope = "col"; th.id = "machinehead"; th.textContent = "Machine";
+      document.querySelector("#modeltable thead tr").prepend(th);
+    } else if (!on && th) th.remove();
+  }
+
   function render(i) {
     curBox = i;
+    const all = F.machine === "all";
     const shown = machinesFor(curOS, curBE);
-    const b = shown[i];
-    if (!b) {
+    const b = all ? null : shown[i];
+    machineHead(all);
+    if (!all && !b) {
+      F.machine = null;
       // Supported, but nothing measured on it yet. Say which, rather than
       // showing an empty table that reads as "runs nothing".
       const be = BACKENDS.find(x => x.id === curBE);
@@ -849,13 +1053,19 @@ sh install --key DS4-… --email you@example.com</div>
       rowsEl.innerHTML = `<tr><td colspan="${ncols()}" class="na">no ${be ? be.label : ""} measurements published yet</td></tr>`;
       priceEl.textContent = "";
       setNote(`Nothing has been measured on ${be ? be.label : "this backend"} yet. The backend is supported; the numbers are not published because they have not been taken.`, true);
+      renderFilters(); writeURL();
       return;
     }
-    const allRows = b.rows || [];
+    if (!all) F.machine = b.id;
+    const scope = all ? [...ROWBOX.keys()] : (b.rows || []);
+    const allRows = scope.filter(r => matches(r));
+    const filtering = filtersActive();
+    const where = all ? "on these machines" : "on this machine";
     const bcols = benchHeads(allRows);
     paintSortHeaders();
     const picked = allRows.filter(r => r.pick);
-    const visible = showAll || picked.length === 0 ? allRows : picked;
+    // A filter asks for every matching row, so it lifts the picks-only curation.
+    const visible = filtering || showAll || picked.length === 0 ? allRows : picked;
     if (pickbarEl) {
       const hidden = allRows.length - picked.length;
       // Name only the classes this machine actually answers for: a single-row
@@ -864,13 +1074,13 @@ sh install --key DS4-… --email you@example.com</div>
       const classes = [...new Set(picked.map(r => r.class).filter(Boolean))]
         .sort((a, b) => CLASS_ORDER.indexOf(a) - CLASS_ORDER.indexOf(b))
         .map(c => CLASS[c] || c);
-      pickbarEl.hidden = picked.length === 0;
+      pickbarEl.hidden = picked.length === 0 || filtering;
       if (showAll) {
         picktextEl.textContent = `All ${allRows.length} measurements.`;
       } else if (hidden === 0) {
         picktextEl.textContent = picked.length === 1
-          ? `Every measurement on this machine is shown.`
-          : `Every measurement on this machine is shown (${classes.join(", ")}).`;
+          ? `Every measurement ${where} is shown.`
+          : `Every measurement ${where} is shown (${classes.join(", ")}).`;
       } else {
         picktextEl.textContent =
           `Picks on the Pareto front per context tier (${classes.join(", ")}). `
@@ -905,15 +1115,20 @@ sh install --key DS4-… --email you@example.com</div>
       const qm = String(r.size || "").match(/\b(?:UD-|AD-)?(?:IQ\d_[A-Z]+|Q\d_K(?:_[A-Z]+)?|Q\d_\d|SQ-\d+|w8a8|q4_0|MXFP4|NVFP4|BF16|F16)\b|\b\d-bit\b/i);
       const quant = qm && !String(r.name).toLowerCase().includes(qm[0].toLowerCase()) ? ` <span class="variant">${qm[0]}</span>` : "";
       const tip = String(r.params || "").replace(/"/g, "&quot;");
-      return `<tr><td class="fam" title="${tip}">${r.name}${quant}</td>`
+      const mb = ROWBOX.get(r);
+      const mcell = all ? `<td class="mach" title="${esc(mb ? mb.label : "")}">${esc(boxShort(mb))}</td>` : "";
+      return `<tr>${mcell}<td class="fam" title="${tip}">${r.name}${quant}</td>`
            + `<td class="num">${r.size}</td><td class="num">${cx}</td><td>${eng}</td><td>${runs}</td><td class="num">${d}</td>`
            + `<td class="num">${pf}</td>${bcols.map(c => benchCell(r, c.key)).join("")}<td class="coding">${probeCell(r)}</td></tr>`;
     }).join("");
+    if (!visible.length) rowsEl.innerHTML = `<tr><td colspan="${ncols()}" class="na">no rows match these filters</td></tr>`;
+    if (fcountEl) fcountEl.textContent = `${visible.length} of ${scope.length} rows shown ${all ? "across all machines" : "on the " + boxShort(b)}`
+      + (visible !== allRows ? " (picks only)" : "");
     // Curated on purpose: the default table is one pick per size class, and
     // the full measurement set is one click away rather than 48 rows of choice.
     // A box with no recorded price says nothing rather than "$0" or "—".
-    priceEl.textContent = b.price ? `≈ ${b.price}` : "";
-    setNote((b.note || "")
+    priceEl.textContent = b && b.price ? `≈ ${b.price}` : "";
+    setNote((all ? "All machines: each row names its machine in the first column. Choose one machine to read its note on how its rows were measured." : (b.note || ""))
       + " <sup>*</sup>The benchmark columns (SWE-V = SWE-bench Verified, SWE-Pro / SWE-ML = SWE-bench Pro / Multilingual, TB = Terminal-Bench by version, LCB = LiveCodeBench by version, Aider = Aider polyglot; all percentages) are what each model's publisher (or, marked 3p, a third party) reported for the full-precision model, not measurements of the quantised file in the row; hover a score for its setting, date and source, and follow it to the page it was read from. A dash means no published score was found. Click a header to sort; rows without a score sort last either way. Scores are not comparable across harnesses or benchmark versions."
       + " Sizes are the real download; residency is computed from that size against this"
       + " machine's memory and disk. Context is the window each model declares in its own"
@@ -923,7 +1138,8 @@ sh install --key DS4-… --email you@example.com</div>
       + " decodes at that length, every decode figure here was taken short-context, and an engine"
       + " can support less than the file declares. GLM-5.3-Flash is the clearest case \u2014 it"
       + " declares 1M and this engine's full-attention window ends just under 4k.", false);
-    [...tabsEl.children].forEach((t, n) => t.setAttribute("aria-selected", String(n === i)));
+    [...tabsEl.children].forEach((t, n) => t.setAttribute("aria-selected", String(!all && n === i)));
+    renderFilters(); writeURL();
   }
 
   // ---- platform state -----------------------------------------------------
@@ -1051,15 +1267,17 @@ sh install --key DS4-… --email you@example.com</div>
   function selectBackend(id) {
     const b = BACKENDS.find(x => x.id === id);
     if (!b) return;
-    if (b.os === curOS && b.id === curBE) return;
+    if (b.os === curOS && b.id === curBE && F.machine !== "all") return;
     curOS = b.os;
     curBE = b.id;
+    F.machine = null;
     renderAll();
   }
 
   function selectOS(os) {
-    if (os === curOS) return;
+    if (os === curOS && F.machine !== "all") return;
     curOS = os;
+    F.machine = null;
     // Land on this OS's first backend that actually has a machine, so switching
     // OS never drops the reader onto an empty table.
     const mine = BACKENDS.filter(b => b.os === os);
@@ -1108,6 +1326,7 @@ sh install --key DS4-… --email you@example.com</div>
   // Machine picked by hand, so remember it. Sorting the table also re-renders,
   // but through render() directly: a sort is not a change of machine.
   function selectMachine(i) {
+    F.machine = null;
     render(i);
     saveChoice();
   }
@@ -1203,7 +1422,7 @@ sh install --key DS4-… --email you@example.com</div>
 
   fetch("machines.json", { cache: "no-cache" })
     .then(r => { if (!r.ok) throw new Error(`machines.json: HTTP ${r.status}`); return r.json(); })
-    .then(data => { BOXES = data.boxes || []; BENCHCOLS = data._coding_benchmarks || []; restoreChoice(); wireSortHeaders(); renderAll(); })
+    .then(data => { BOXES = data.boxes || []; BENCHCOLS = data._coding_benchmarks || []; buildOptions(); restoreChoice(); readURL(); wireSortHeaders(); wireFilters(); renderAll(); })
     .catch(err => {
       // Say so plainly. An empty table would read as a product that runs
       // nothing, which is worse than admitting the data did not load.
