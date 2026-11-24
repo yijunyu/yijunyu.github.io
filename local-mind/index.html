@@ -952,6 +952,28 @@ sh install --key DS4-… --email you@example.com</div>
     return `<button type="button" class="chip${n === 0 ? " zero" : ""}" data-group="${group}" data-id="${esc(o.id)}"`
       + ` aria-pressed="${on}"${o.title ? ` title="${esc(o.title)}"` : ""}>${esc(o.label)}<span class="cn">${n}</span></button>`;
   }
+  // While the table is sorted on a column, each group's options follow it: an
+  // option ranks by the BEST value its rows in this machine tab have in that
+  // column, in the sort's direction; options with no value there go last, and
+  // ties keep the default order. With no sort, the default order stands.
+  function rankOptions(g, scope) {
+    const def = sortCol && sortDef(sortCol);
+    if (!def) return OPTS[g];
+    const better = (a, b) => (typeof a === "string" ? a.localeCompare(b) : a - b) * sortDir < 0;
+    const best = new Map();
+    scope.forEach(r => {
+      const v = def.get(r);
+      if (v === null || v === undefined || Number.isNaN(v)) return;
+      const k = KEY[g](r), cur = best.get(k);
+      if (cur === undefined || better(v, cur)) best.set(k, v);
+    });
+    return OPTS[g].map((o, i) => ({ o, i, v: best.get(o.id) })).sort((a, b) => {
+      const an = a.v === undefined, bn = b.v === undefined;
+      if (an || bn) return an && bn ? a.i - b.i : an ? 1 : -1;
+      if (a.v === b.v) return a.i - b.i;
+      return better(a.v, b.v) ? -1 : 1;
+    }).map(x => x.o);
+  }
   function renderFilters() {
     if (!filtersEl) return;
     const scope = scopeRows();
@@ -959,7 +981,7 @@ sh install --key DS4-… --email you@example.com</div>
       const g = el.dataset.group;
       const base = scope.filter(r => matches(r, g));
       el.innerHTML = chip(g, { id: "all", label: "All" }, base.length, F[g] === "all")
-        + OPTS[g].map(o => chip(g, o, base.filter(r => KEY[g](r) === o.id).length, F[g] === o.id)).join("");
+        + rankOptions(g, scope).map(o => chip(g, o, base.filter(r => KEY[g](r) === o.id).length, F[g] === o.id)).join("");
     });
     measuredBtn.setAttribute("aria-pressed", String(F.measured));
     clearBtn.hidden = !filtersActive();
